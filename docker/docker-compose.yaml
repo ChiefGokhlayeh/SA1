@@ -1,0 +1,36 @@
+version: '2.0'
+services:
+  db:
+    image: mysql:8
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_ROOT_PASSWORD: "12345678"
+  tomcat:
+    image: tomcat:9
+    volumes:
+      - ../tomcat:/usr/local/tomcat/webapps
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    links:
+      - db
+  nodejs:
+    image: node:13
+    command: npm run dev
+    volumes:
+      - ../nodejs:/usr/app/
+      - nodejs_data:/usr/app/node_modules
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    links:
+      - db
+
+volumes:
+  db_data: {}
+  nodejs_data: {}
