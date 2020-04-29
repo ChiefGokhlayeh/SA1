@@ -137,3 +137,7 @@ temp/
 ### vscode ###
 
 .vscode
+
+### Task Specific ###
+
+FileCounter.initial
