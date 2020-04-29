@@ -18,7 +18,7 @@ docker-compose up -d
 
 You should now find two new folders in the project root:
 
-* `tomcat/`
+* `tomcat/webapps`
 * `nodejs/`
 
 These are volumes, linked into the newly created service containers.
