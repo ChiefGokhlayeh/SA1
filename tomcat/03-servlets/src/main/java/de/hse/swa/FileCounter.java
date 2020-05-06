@@ -2,7 +2,6 @@ package de.hse.swa;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -10,7 +9,7 @@ import java.nio.file.Paths;
 
 public class FileCounter {
 
-    private String fileName = "FileCounter.initial";
+    private final String fileName = "FileCounter.initial";
 
     public int getCount() throws IOException {
 
@@ -27,7 +26,7 @@ public class FileCounter {
         }
     }
 
-    public void save(int count) throws IOException {
+    public void save(final int count) throws IOException {
         try (final PrintWriter pw = new PrintWriter(fileName)) {
             pw.println(count);
         }

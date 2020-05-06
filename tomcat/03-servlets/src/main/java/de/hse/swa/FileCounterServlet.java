@@ -21,10 +21,10 @@ public class FileCounterServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        FileCounter dao = new FileCounter();
+        final FileCounter dao = new FileCounter();
         try {
             dao.getCount(); // just to initialize
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getServletContext().log("An exception occurred in FileCounter", e);
             throw new ServletException("An exception occurred in FileCounter" + e.getMessage());
         }
@@ -34,18 +34,18 @@ public class FileCounterServlet extends HttpServlet {
      * @see HttpServlet#doGet()
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         // Set a cookie for the user, so that the counter does not increase
         // every time the user press refresh
-        HttpSession session = request.getSession(true);
+        final HttpSession session = request.getSession(true);
         // Set the session valid for 5 secs
         session.setMaxInactiveInterval(5);
-        FileCounter dao = new FileCounter();
+        final FileCounter dao = new FileCounter();
         int count = 0;
         count = dao.getCount(); // just to initialize
         response.setContentType("text/plain");
-        PrintWriter out = response.getWriter();
+        final PrintWriter out = response.getWriter();
         if (session.isNew()) {
             count++;
             dao.save(count);
@@ -57,7 +57,7 @@ public class FileCounterServlet extends HttpServlet {
      * @see HttpServlet#doPost()
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
         doGet(request, response);
     }
