@@ -1,0 +1,18 @@
+{
+    "name": "Software Architecture Course",
+    "dockerComposeFile": "../docker/docker-compose.yaml",
+    "service": "dev",
+    "shutdownAction": "stopCompose",
+    "workspaceFolder": "/workspace",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "extensions": [
+        "vscjava.vscode-java-pack",
+        "adashen.vscode-tomcat"
+    ],
+    "forwardPorts": [
+        8080
+    ],
+    "remoteUser": "vscode"
+}
