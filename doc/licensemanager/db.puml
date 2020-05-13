@@ -1,0 +1,77 @@
+@startuml db
+!define table(x) class x << (T,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+!define foreign_key(x) <i>x</i>
+hide methods
+hide stereotypes
+
+title Software Architecture 1: License Manager
+
+table(t_user) {
+  primary_key(id) : INT
+  firstname : VARCHAR
+  lastname : VARCHAR
+  loginname : VARCHAR
+  email : VARCHAR
+  password_hash : BINARY
+  verified : BOOLEAN
+  active : BOOLEAN
+  foreign_key(company) : t_company
+  foreign_key(system_group) : t_system_group
+}
+
+table(t_system_group) {
+  primary_key(id) : INT
+  displayname : VARCHAR
+}
+
+table(t_company) {
+  primary_key(id) : INT
+  name : VARCHAR
+  department : VARCHAR
+  address : VARCHAR
+}
+
+table(t_service_contract) {
+  primary_key(id) : INT
+  foreign_key(contractor) : t_company
+  start : DATETIME
+  end : DATETIME
+}
+
+table(t_service_group) {
+  primary_key(foreign_key(user)) : t_user
+  primary_key(foreign_key(service_contract)) : t_service_contract
+}
+
+table(t_license) {
+  primary_key(id) : INT
+  foreign_key(service_contract) : t_service_contract
+  expiration_date : DATETIME
+  key : VARCHAR
+  count : INT
+  foreign_key(product_variant) : t_product_variant
+}
+
+table(t_ip_mapping) {
+  primary_key(id) : INT
+  foreign_key(license) : t_license
+  ip_address : VARBINARY
+}
+
+table(t_product_variant) {
+  primary_key(id) : INT
+  product : VARCHAR
+  version : VARCHAR
+}
+
+t_user "0..*" -- "1" t_system_group
+t_user "1..*" -- "1" t_company
+t_service_contract "0..*" -- "1" t_company
+t_service_group "0..*" -- "1" t_user
+t_service_group "0..*" -- "1" t_service_contract
+t_license "1..*" -- "0..4" t_ip_mapping
+t_license "0..*" -- "1" t_service_contract
+t_license "0..*" -- "1" t_product_variant
+
+@enduml
