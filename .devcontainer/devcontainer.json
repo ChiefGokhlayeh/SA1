@@ -8,8 +8,11 @@
         "terminal.integrated.shell.linux": "/bin/bash"
     },
     "extensions": [
+        "adashen.vscode-tomcat",
+        "davidanson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker-german",
+        "streetsidesoftware.code-spell-checker",
         "vscjava.vscode-java-pack",
-        "adashen.vscode-tomcat"
     ],
     "forwardPorts": [
         8080
