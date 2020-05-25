@@ -16,7 +16,7 @@ table(t_user) {
   password_hash : BINARY
   verified : BOOLEAN
   active : BOOLEAN
-  foreign_key(company) : t_company
+  foreign_key(company_department) : t_company_department
   foreign_key(system_group) : t_system_group
 }
 
@@ -28,7 +28,6 @@ table(t_system_group) {
 table(t_company) {
   primary_key(id) : INT
   name : VARCHAR
-  department : VARCHAR
   address : VARCHAR
 }
 
@@ -65,8 +64,15 @@ table(t_product_variant) {
   version : VARCHAR
 }
 
+table(t_company_department) {
+  primary_key(id) : INT
+  name : VARCHAR
+  foreign_key(company) : INT
+}
+
 t_user "0..*" -- "1" t_system_group
-t_user "1..*" -- "1" t_company
+t_user "1..*" -- "1" t_company_department
+t_company_department "1..*" -- "1" t_company
 t_service_contract "0..*" -- "1" t_company
 t_service_group "0..*" -- "1" t_user
 t_service_group "0..*" -- "1" t_service_contract
