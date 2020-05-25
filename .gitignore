@@ -142,3 +142,7 @@ temp/
 ### Task Specific ###
 
 FileCounter.initial
+
+### MySQL Workbench ###
+
+*.mwb.bak
