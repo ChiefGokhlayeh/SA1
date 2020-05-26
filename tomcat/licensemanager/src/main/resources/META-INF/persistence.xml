@@ -2,7 +2,15 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
   version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
   <persistence-unit name="licensemanager" transaction-type="RESOURCE_LOCAL">
+    <class>de.hse.licensemanager.Company</class>
+    <class>de.hse.licensemanager.CompanyDepartment</class>
+    <class>de.hse.licensemanager.IpMapping</class>
+    <class>de.hse.licensemanager.License</class>
+    <class>de.hse.licensemanager.ProductVariant</class>
+    <class>de.hse.licensemanager.ServiceContract</class>
+    <class>de.hse.licensemanager.ServiceGroup</class>
     <class>de.hse.licensemanager.SystemGroup</class>
+    <class>de.hse.licensemanager.User</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://db/sa1_licensemanager" />

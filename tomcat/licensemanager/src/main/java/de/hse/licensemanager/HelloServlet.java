@@ -17,29 +17,31 @@ public class HelloServlet extends HttpServlet {
     private static final long serialVersionUID = 5736844113933764478L;
     private static final String PERSISTENCE_UNIT_NAME = "licensemanager";
 
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
+
     public HelloServlet() {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-
-        entityManager.getTransaction().begin();
-
-        final Query q = entityManager.createQuery("SELECT m FROM SystemGroup m");
-
-        System.out.println("We found " + q.getResultList().size() + " entries for SystemGroup");
-
-        for (Object obj : q.getResultList()) {
-            final SystemGroup sg = (SystemGroup) obj;
-            System.out.println("\t" + sg.getDisplayName());
-        }
-
-        entityManager.getTransaction().commit();
-
-        entityManager.close();
+        entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        entityManager = entityManagerFactory.createEntityManager();
     }
 
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        response.getWriter().print("Hello, World!");
+        response.getWriter().println("Hello, World!");
+
+        entityManager.getTransaction().begin();
+
+        final Query q = entityManager.createQuery("SELECT m FROM User m");
+
+        response.getWriter().println("We found " + q.getResultList().size() + " users:");
+
+        for (Object obj : q.getResultList()) {
+            final User user = (User) obj;
+            response.getWriter().println(
+                    "\t" + user.getLoginname() + " from company " + user.getCompanyDepartment().getCompany().getName());
+        }
+
+        entityManager.getTransaction().commit();
     }
 
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)

@@ -7,21 +7,28 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 
 @Entity
-@Table(name = "t_system_group")
-public class SystemGroup {
+@Table(name = "t_product_variant")
+public class ProductVariant {
     @Id
     @GeneratedValue
     @Column(name = "id")
     private long id;
 
-    @Column(name = "displayname", unique = true)
-    private String displayName;
+    @Column(name = "product", nullable = false)
+    private String product;
+
+    @Column(name = "version", nullable = false)
+    private String version;
 
     public long getId() {
         return id;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getProduct() {
+        return product;
+    }
+
+    public String getVersion() {
+        return version;
     }
 }
