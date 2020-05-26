@@ -1,11 +1,11 @@
 <persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
   version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
-  <persistence-unit name="test" transaction-type="RESOURCE_LOCAL">
-    <class>de.hse.licensemanageer.Test</class>
+  <persistence-unit name="licensemanager" transaction-type="RESOURCE_LOCAL">
+    <class>de.hse.licensemanager.SystemGroup</class>
     <properties>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/licensemanager" />
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://db/sa1_licensemanager" />
       <property name="javax.persistence.jdbc.user" value="root" />
       <property name="javax.persistence.jdbc.password" value="12345678" />
     </properties>
