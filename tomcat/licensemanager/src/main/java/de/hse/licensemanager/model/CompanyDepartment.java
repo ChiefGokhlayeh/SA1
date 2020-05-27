@@ -1,4 +1,4 @@
-package de.hse.licensemanager;
+package de.hse.licensemanager.model;
 
 import javax.persistence.Id;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package de.hse.licensemanager;
+package de.hse.licensemanager.model;
 
 import java.util.Set;
 
