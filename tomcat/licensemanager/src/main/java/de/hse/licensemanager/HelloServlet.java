@@ -32,7 +32,7 @@ public class HelloServlet extends HttpServlet {
                     "\t" + user.getLoginname() + " from company " + user.getCompanyDepartment().getCompany().getName());
         }
 
-        CompanyDao.getInstance().getCompanys().forEach((c) -> {
+        CompanyDao.getInstance().getCompanies().forEach((c) -> {
             try {
                 response.getWriter().println(c.getName() + ":");
 

@@ -28,7 +28,7 @@ public class CompanyDao {
         return em.find(Company.class, id);
     }
 
-    public List<Company> getCompanys() {
+    public List<Company> getCompanies() {
         final List<?> objs = em.createQuery("SELECT c FROM Company c").getResultList();
         return objs.stream().filter(Company.class::isInstance).map(Company.class::cast).collect(Collectors.toList());
     }
