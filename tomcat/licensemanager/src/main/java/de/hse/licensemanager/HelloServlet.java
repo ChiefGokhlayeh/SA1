@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.model.CompanyDepartment;
+import de.hse.licensemanager.model.License;
+import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.User;
 
 @WebServlet(name = "HelloServlet", urlPatterns = { "/hello" }, loadOnStartup = 1)
@@ -27,6 +31,31 @@ public class HelloServlet extends HttpServlet {
             response.getWriter().println(
                     "\t" + user.getLoginname() + " from company " + user.getCompanyDepartment().getCompany().getName());
         }
+
+        CompanyDao.getInstance().getCompanys().forEach((c) -> {
+            try {
+                response.getWriter().println(c.getName() + ":");
+
+                for (final CompanyDepartment cd : c.getDepartments()) {
+                    response.getWriter().println("\t" + cd.getName() + ":");
+
+                    for (final User user : cd.getUsers()) {
+                        response.getWriter().print("\t\t" + user.getLoginname());
+
+                        for (final ServiceContract sc : user.getServiceContracts()) {
+                            for (final License license : sc.getLicenses()) {
+                                response.getWriter().print(" [" + license.getProductVariant().getProduct() + ":'"
+                                        + license.getProductVariant().getVersion() + "']");
+                            }
+                        }
+                        response.getWriter().print("\n");
+                    }
+                }
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
