@@ -6,67 +6,18 @@ import static org.hamcrest.Matchers.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.PrepareTests;
 import de.hse.licensemanager.model.Company;
+import de.hse.licensemanager.model.CompanyDepartment;
 
 public class CompanyDaoTest {
 
-    private static final int COMPANY_ID_LICENSEMANAGER;
-    private static final int COMPANY_ID_NOTABROTHEL;
-    private static final String COMPANY_NAME_NOTABROTHEL = "Not a Brothel e. K.";
-    private static final String COMPANY_ADDRESS_NOTABROTHEL = "Reeperbahn 31\nHamburg";
-
-    private static final int COMPANY_DEPARTMENT_ID_IT;
-    private static final int COMPANY_DEPARTMENT_ID_ACCOUNTING;
-    private static final String COMPANY_DEPARTMENT_NAME_ACCOUNTING = "Accounting";
-
-    static {
-        int id = 1;
-        COMPANY_ID_LICENSEMANAGER = id++;
-        COMPANY_ID_NOTABROTHEL = id++;
-
-        id = 1;
-        COMPANY_DEPARTMENT_ID_IT = id++;
-        COMPANY_DEPARTMENT_ID_ACCOUNTING = id++;
-    }
-
-    @BeforeClass
-    public static void SetUpBeforeClass() {
+    @Before
+    public void setupBeforeTest() {
         PrepareTests.initDatabase();
-
-        final EntityManager em = DaoManager.getEntityManager();
-
-        final EntityTransaction et = em.getTransaction();
-        et.begin();
-
-        int param = 1;
-        em.createNativeQuery("INSERT INTO t_company (id, name, address) VALUES (?1, ?2, ?3)")
-                .setParameter(param++, COMPANY_ID_LICENSEMANAGER).setParameter(param++, "LicenseManager GmbH")
-                .setParameter(param++, "Sesamstraße 123\nIrgendwo in Deutschland").executeUpdate();
-
-        param = 1;
-        em.createNativeQuery("INSERT INTO t_company (id, name, address) VALUES (?1, ?2, ?3)")
-                .setParameter(param++, COMPANY_ID_NOTABROTHEL).setParameter(param++, COMPANY_NAME_NOTABROTHEL)
-                .setParameter(param++, COMPANY_ADDRESS_NOTABROTHEL).executeUpdate();
-
-        param = 1;
-        em.createNativeQuery("INSERT INTO t_company_department (id, name, company) VALUES (?1, ?2, ?3)")
-                .setParameter(param++, COMPANY_DEPARTMENT_ID_IT).setParameter(param++, "IT")
-                .setParameter(param++, COMPANY_ID_LICENSEMANAGER).executeUpdate();
-
-        param = 1;
-        em.createNativeQuery("INSERT INTO t_company_department (id, name, company) VALUES (?1, ?2, ?3)")
-                .setParameter(param++, COMPANY_DEPARTMENT_ID_ACCOUNTING)
-                .setParameter(param++, COMPANY_DEPARTMENT_NAME_ACCOUNTING).setParameter(param++, COMPANY_ID_NOTABROTHEL)
-                .executeUpdate();
-
-        et.commit();
     }
 
     @Test
@@ -83,24 +34,26 @@ public class CompanyDaoTest {
 
     @Test
     public void testFindCompanyById() {
-        final Company licensemanager = CompanyDao.getInstance().getCompany(COMPANY_ID_LICENSEMANAGER);
+        final Company licensemanager = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
         assertThat(licensemanager, notNullValue());
     }
 
     @Test
     public void testFoundCompanyDataPopulated() {
-        final Company notABrothel = CompanyDao.getInstance().getCompany(COMPANY_ID_NOTABROTHEL);
+        final Company notABrothel = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_NOTABROTHEL);
 
-        assertThat(notABrothel.getName(), equalTo(COMPANY_NAME_NOTABROTHEL));
-        assertThat(notABrothel.getAddress(), equalTo(COMPANY_ADDRESS_NOTABROTHEL));
+        assertThat(notABrothel.getName(), equalTo(PrepareTests.COMPANY_NAME_NOTABROTHEL));
+        assertThat(notABrothel.getAddress(), equalTo(PrepareTests.COMPANY_ADDRESS_NOTABROTHEL));
     }
 
     @Test
     public void testFoundCompanyNestedDataPopulated() {
-        final Company notABrothel = CompanyDao.getInstance().getCompany(COMPANY_ID_NOTABROTHEL);
+        final Company notABrothel = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_NOTABROTHEL);
 
+        assertThat(PrepareTests.COMPANY_DEPARTMENT_NAME_ACCOUNTING,
+                equalTo(notABrothel.getDepartments().get(0).getName()));
         assertThat(notABrothel.getDepartments().stream().map((d) -> d.getName()).collect(Collectors.toList()),
-                containsInAnyOrder(COMPANY_DEPARTMENT_NAME_ACCOUNTING));
+                containsInAnyOrder(PrepareTests.COMPANY_DEPARTMENT_NAME_ACCOUNTING));
     }
 
     @Test
@@ -109,7 +62,70 @@ public class CompanyDaoTest {
 
         assertThat(companies, not(empty()));
         assertThat(companies, hasSize(2));
-        assertThat(companies.stream().map((c) -> c.getId()).collect(Collectors.toList()),
-                containsInAnyOrder((long) COMPANY_ID_LICENSEMANAGER, (long) COMPANY_ID_NOTABROTHEL));
+        assertThat(companies.stream().map((c) -> c.getId()).collect(Collectors.toList()), containsInAnyOrder(
+                (long) PrepareTests.COMPANY_ID_LICENSEMANAGER, (long) PrepareTests.COMPANY_ID_NOTABROTHEL));
+    }
+
+    @Test
+    public void testSaveSimple() {
+        final Company company = new Company();
+        company.setName("Test Firma");
+        company.setAddress("Langestraße 123\n123456 Bielefeld");
+
+        CompanyDao.getInstance().save(company);
+
+        final List<Company> companies = CompanyDao.getInstance().getCompanies();
+
+        assertThat(company.getId(), is(in(companies.stream().map((c) -> c.getId()).collect(Collectors.toList()))));
+    }
+
+    @Test
+    public void testSaveNewDepartment() {
+        final Company company = new Company();
+
+        final CompanyDepartment department = new CompanyDepartment();
+
+        department.setName("Test Abteilung");
+
+        company.setName("Test Firma Mit Abteilung");
+        company.setAddress("Langestraße 123\n123456 Bielefeld");
+        company.addDepartment(department);
+
+        CompanyDao.getInstance().save(company);
+
+        final List<Company> companies = CompanyDao.getInstance().getCompanies();
+
+        assertThat(company.getId(), is(in(companies.stream().map((c) -> c.getId()).collect(Collectors.toList()))));
+    }
+
+    @Test
+    public void testSaveNameChange() {
+        final Company company = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+
+        company.setName("LicenseManager 2 GmbH");
+
+        CompanyDao.getInstance().save(company);
+
+        final List<Company> companies = CompanyDao.getInstance().getCompanies();
+
+        assertThat(company.getName(), is(in(companies.stream().map((c) -> c.getName()).collect(Collectors.toList()))));
+    }
+
+    @Test
+    public void testAddDepartment() {
+        final CompanyDepartment department = new CompanyDepartment();
+        department.setName("Test Department");
+        final Company company = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+        final CompanyDepartment[] currentDepartments = company.getDepartments()
+                .toArray(new CompanyDepartment[company.getDepartments().size()]);
+
+        company.addDepartment(department);
+
+        CompanyDao.getInstance().save(company);
+
+        final List<CompanyDepartment> departments = CompanyDepartmentDao.getInstance().getCompanyDepartments();
+        assertThat(department, is(in(departments)));
+        assertThat(company.getDepartments(), hasItems(currentDepartments));
+        assertThat(department, is(in(company.getDepartments())));
     }
 }

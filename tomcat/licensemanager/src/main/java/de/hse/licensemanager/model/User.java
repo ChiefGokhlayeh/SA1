@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -18,7 +19,7 @@ import javax.persistence.Table;
 @Table(name = "t_user")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
@@ -101,5 +102,45 @@ public class User {
 
     public Set<ServiceContract> getServiceContracts() {
         return serviceContracts;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
+    }
+
+    public void setFirstname(final String firstname) {
+        this.firstname = firstname;
+    }
+
+    public void setLastname(final String lastname) {
+        this.lastname = lastname;
+    }
+
+    public void setLoginname(final String loginname) {
+        this.loginname = loginname;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
+    }
+
+    public void setPasswordHash(final byte[] passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public void setVerified(final boolean verified) {
+        this.verified = verified;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
+    }
+
+    public void setSystemGroup(final SystemGroup systemGroup) {
+        this.systemGroup = systemGroup;
+    }
+
+    public void setCompanyDepartment(final CompanyDepartment companyDepartment) {
+        this.companyDepartment = companyDepartment;
     }
 }

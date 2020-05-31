@@ -34,4 +34,11 @@ public class SystemGroupDao {
                 .collect(Collectors.toList());
     }
 
+    public void save(final SystemGroup systemGroup) {
+        em.getTransaction().begin();
+
+        em.persist(systemGroup);
+
+        em.getTransaction().commit();
+    }
 }

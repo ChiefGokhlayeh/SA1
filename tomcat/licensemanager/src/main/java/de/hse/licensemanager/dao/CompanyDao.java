@@ -32,4 +32,10 @@ public class CompanyDao {
         final List<?> objs = em.createQuery("SELECT c FROM Company c").getResultList();
         return objs.stream().filter(Company.class::isInstance).map(Company.class::cast).collect(Collectors.toList());
     }
+
+    public void save(final Company company) {
+        em.getTransaction().begin();
+        em.persist(company);
+        em.getTransaction().commit();
+    }
 }

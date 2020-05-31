@@ -32,4 +32,19 @@ public class UserDao {
         final List<?> objs = em.createQuery("SELECT u FROM User u").getResultList();
         return objs.stream().filter(User.class::isInstance).map(User.class::cast).collect(Collectors.toList());
     }
+
+    public void save(final User user) {
+        em.getTransaction().begin();
+        em.persist(user);
+        em.getTransaction().commit();
+    }
+
+    public void delete(final long id) {
+        final User user = em.find(User.class, id);
+        if (user != null) {
+            em.getTransaction().begin();
+            em.remove(user);
+            em.getTransaction().commit();
+        }
+    }
 }

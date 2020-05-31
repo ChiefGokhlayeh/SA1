@@ -1,5 +1,7 @@
 package de.hse.licensemanager.model;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -24,5 +26,31 @@ public class ServiceGroup {
 
     public User getUser() {
         return user;
+    }
+
+    public void setServiceContract(final ServiceContract serviceContract) {
+        this.serviceContract = serviceContract;
+    }
+
+    public void setUser(final User user) {
+        this.user = user;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceContract, user);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other)
+            return true;
+
+        if (other == null || other.getClass() != this.getClass())
+            return false;
+
+        final ServiceGroup otherServiceGroup = (ServiceGroup) other;
+        return Objects.equals(this.serviceContract, otherServiceGroup.serviceContract)
+                && Objects.equals(this.user, otherServiceGroup.user);
     }
 }
