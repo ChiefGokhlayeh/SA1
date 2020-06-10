@@ -2,6 +2,7 @@ plugins {
     id 'war'
     id 'org.gretty' version '2.3.0'
     id 'eclipse'
+    id 'jacoco'
 }
 
 repositories {
