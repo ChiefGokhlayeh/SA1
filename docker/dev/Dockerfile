@@ -25,12 +25,13 @@ RUN apt-get update \
   curl \
   git \
   gradle \
+  maven \
   nodejs \
   openjdk-11-jdk
 
 RUN mkdir -p /usr/local/tomcat \
   && cd /usr/local/tomcat \
-  && curl https://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/dist/tomcat/tomcat-9/v9.0.34/bin/apache-tomcat-9.0.34.tar.gz --output tomcat.tar.gz \
+  && curl https://ftp-stud.hs-esslingen.de/pub/Mirrors/ftp.apache.org/dist/tomcat/tomcat-9/v9.0.36/bin/apache-tomcat-9.0.36.tar.gz --output tomcat.tar.gz \
   && tar xvzf tomcat.tar.gz --strip-components=1 \
   && rm -f tomcat.tar.gz \
   && chown tomcat:tomcat -R . \
