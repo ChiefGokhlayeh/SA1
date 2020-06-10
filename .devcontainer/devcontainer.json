@@ -9,7 +9,9 @@
     },
     "extensions": [
         "adashen.vscode-tomcat",
+        "auchenberg.vscode-browser-preview",
         "davidanson.vscode-markdownlint",
+        "eamodio.gitlens",
         "streetsidesoftware.code-spell-checker-german",
         "streetsidesoftware.code-spell-checker",
         "vscjava.vscode-java-pack",
