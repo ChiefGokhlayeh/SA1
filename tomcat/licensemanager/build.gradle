@@ -13,8 +13,11 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.0'
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
     implementation group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.7.7'
+    implementation group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.31'
+    implementation group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '2.31'
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
     testImplementation group: 'junit', name:'junit', version: '4.12'
