@@ -36,8 +36,7 @@ RUN mkdir -p /usr/local/tomcat \
   && tar xvzf tomcat.tar.gz --strip-components=1 \
   && rm -f tomcat.tar.gz \
   && chown tomcat:tomcat -R . \
-  && chmod -R g+r conf \
-  && chmod g+x conf
+  && chmod -R g=u .
 
 USER $DEV_USERNAME
 
