@@ -58,6 +58,14 @@ public class PrepareTests {
     public static final long IP_MAPPING_ID_HOST1;
     public static final String IP_MAPPING_IP_ADDRESS_HOST1 = "123";
 
+    public static final long CREDENTIALS_ID_MUSTERMANN;
+    public static final long CREDENTIALS_ID_HANNELORE;
+    public static final long CREDENTIALS_ID_DELETEME;
+
+    public static final String CREDENTIALS_LOGINNAME_MUSTERMANN = "maexle";
+    public static final String CREDENTIALS_LOGINNAME_HANNELORE = "hanni";
+    public static final String CREDENTIALS_LOGINNAME_DELETEME = "hansi";
+
     static {
         int id = 1;
         SYSTEM_GROUP_ID_ADMIN = id++;
@@ -110,6 +118,11 @@ public class PrepareTests {
         id = 1;
         PRODUCT_VARIANT_ID_MATLAB = id++;
         PRODUCT_VARIANT_ID_WINDOWS = id++;
+
+        id = 1;
+        CREDENTIALS_ID_MUSTERMANN = id++;
+        CREDENTIALS_ID_HANNELORE = id++;
+        CREDENTIALS_ID_DELETEME = id++;
     }
 
     @Test
@@ -132,6 +145,7 @@ public class PrepareTests {
         em.createNativeQuery("DELETE FROM t_company_department").executeUpdate();
         em.createNativeQuery("DELETE FROM t_company").executeUpdate();
         em.createNativeQuery("DELETE FROM t_system_group").executeUpdate();
+        em.createNativeQuery("DELETE FROM t_credentials").executeUpdate();
 
         int param = 1;
         em.createNativeQuery("INSERT INTO t_system_group (id, displayname) VALUES (?1, ?2)")
@@ -164,30 +178,45 @@ public class PrepareTests {
                 .executeUpdate();
 
         param = 1;
+        em.createNativeQuery("INSERT INTO t_credentials (id, loginname, password_hash) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, CREDENTIALS_ID_MUSTERMANN)
+                .setParameter(param++, CREDENTIALS_LOGINNAME_MUSTERMANN).setParameter(param++, new byte[16])
+                .executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_credentials (id, loginname, password_hash) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, CREDENTIALS_ID_HANNELORE).setParameter(param++, CREDENTIALS_LOGINNAME_HANNELORE)
+                .setParameter(param++, new byte[16]).executeUpdate();
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_credentials (id, loginname, password_hash) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, CREDENTIALS_ID_DELETEME).setParameter(param++, CREDENTIALS_LOGINNAME_DELETEME)
+                .setParameter(param++, new byte[16]).executeUpdate();
+
+        param = 1;
         em.createNativeQuery(
-                "INSERT INTO t_user (id, firstname, lastname, loginname, email, password_hash, verified, active, system_group, company_department) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)")
+                "INSERT INTO t_user (id, firstname, lastname, email, verified, active, system_group, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)")
                 .setParameter(param++, USER_ID_MUSTERMANN).setParameter(param++, "Max")
-                .setParameter(param++, "Mustermann").setParameter(param++, "maexle")
-                .setParameter(param++, "mustermann@example.com").setParameter(param++, new byte[16])
+                .setParameter(param++, "Mustermann").setParameter(param++, "mustermann@example.com")
                 .setParameter(param++, true).setParameter(param++, true).setParameter(param++, SYSTEM_GROUP_ID_ADMIN)
-                .setParameter(param++, COMPANY_DEPARTMENT_ID_IT).executeUpdate();
+                .setParameter(param++, COMPANY_DEPARTMENT_ID_IT).setParameter(param++, CREDENTIALS_ID_MUSTERMANN)
+                .executeUpdate();
 
         param = 1;
         em.createNativeQuery(
-                "INSERT INTO t_user (id, firstname, lastname, loginname, email, password_hash, verified, active, system_group, company_department) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)")
+                "INSERT INTO t_user (id, firstname, lastname, email, verified, active, system_group, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)")
                 .setParameter(param++, USER_ID_HANNELORE).setParameter(param++, "Greta")
-                .setParameter(param++, "Hannelore").setParameter(param++, "hanni")
-                .setParameter(param++, "hanni@notabrothel.com").setParameter(param++, new byte[16])
+                .setParameter(param++, "Hannelore").setParameter(param++, "hanni@notabrothel.com")
                 .setParameter(param++, true).setParameter(param++, true).setParameter(param++, SYSTEM_GROUP_ID_USER)
-                .setParameter(param++, COMPANY_DEPARTMENT_ID_ACCOUNTING).executeUpdate();
+                .setParameter(param++, COMPANY_DEPARTMENT_ID_ACCOUNTING).setParameter(param++, CREDENTIALS_ID_HANNELORE)
+                .executeUpdate();
 
         param = 1;
         em.createNativeQuery(
-                "INSERT INTO t_user (id, firstname, lastname, loginname, email, password_hash, verified, active, system_group, company_department) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)")
+                "INSERT INTO t_user (id, firstname, lastname, email, verified, active, system_group, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)")
                 .setParameter(param++, USER_ID_DELETEME).setParameter(param++, "Hans").setParameter(param++, "Deleteme")
-                .setParameter(param++, "hansi").setParameter(param++, "hans@licensemanager.com")
-                .setParameter(param++, new byte[16]).setParameter(param++, true).setParameter(param++, true)
-                .setParameter(param++, SYSTEM_GROUP_ID_USER).setParameter(param++, COMPANY_DEPARTMENT_ID_IT)
+                .setParameter(param++, "hans@licensemanager.com").setParameter(param++, true)
+                .setParameter(param++, true).setParameter(param++, SYSTEM_GROUP_ID_USER)
+                .setParameter(param++, COMPANY_DEPARTMENT_ID_IT).setParameter(param++, CREDENTIALS_ID_DELETEME)
                 .executeUpdate();
 
         param = 1;

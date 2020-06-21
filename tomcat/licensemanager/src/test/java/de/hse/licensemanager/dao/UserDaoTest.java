@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
 
 public class UserDaoTest {
@@ -43,7 +44,7 @@ public class UserDaoTest {
 
         assertThat(hannelore.getFirstname(), not(emptyOrNullString()));
         assertThat(hannelore.getLastname(), not(emptyOrNullString()));
-        assertThat(hannelore.getLoginname(), not(emptyOrNullString()));
+        assertThat(hannelore.getEmail(), not(emptyOrNullString()));
     }
 
     @Test
@@ -67,17 +68,19 @@ public class UserDaoTest {
 
     @Test
     public void testSaveSimple() {
+        final Credentials credentials = new Credentials();
+        credentials.setLoginname("max_mu");
+        credentials.setPasswordHash(new byte[60]);
         final User user = new User();
         user.setFirstname("Max");
         user.setLastname("Mustermann");
-        user.setLoginname("max_mu");
         user.setEmail("max.mustermann@email.com");
-        user.setPasswordHash(new byte[60]);
         user.setActive(true);
         user.setVerified(true);
         user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
         user.setCompanyDepartment(
                 CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_IT));
+        user.setCredentials(credentials);
 
         UserDao.getInstance().save(user);
 

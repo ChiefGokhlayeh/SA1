@@ -4,6 +4,7 @@
   <persistence-unit name="licensemanager" transaction-type="RESOURCE_LOCAL">
     <class>de.hse.licensemanager.model.Company</class>
     <class>de.hse.licensemanager.model.CompanyDepartment</class>
+    <class>de.hse.licensemanager.model.Credentials</class>
     <class>de.hse.licensemanager.model.IpMapping</class>
     <class>de.hse.licensemanager.model.License</class>
     <class>de.hse.licensemanager.model.ProductVariant</class>

@@ -2,6 +2,7 @@ package de.hse.licensemanager.model;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,14 +35,8 @@ public class User {
     @Column(name = "lastname")
     private String lastname;
 
-    @Column(name = "loginname", nullable = false, unique = true)
-    private String loginname;
-
     @Column(name = "email", nullable = false)
     private String email;
-
-    @Column(name = "password_hash", nullable = false)
-    private byte passwordHash[];
 
     @Column(name = "verified", nullable = false)
     private boolean verified;
@@ -49,7 +44,7 @@ public class User {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "system_group", nullable = false)
     private SystemGroup systemGroup;
 
@@ -60,6 +55,10 @@ public class User {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "t_service_group", joinColumns = @JoinColumn(name = "`user`"), inverseJoinColumns = @JoinColumn(name = "service_contract"))
     private Set<ServiceContract> serviceContracts;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "credentials", nullable = false)
+    private Credentials credentials;
 
     public long getId() {
         return id;
@@ -73,16 +72,8 @@ public class User {
         return lastname;
     }
 
-    public String getLoginname() {
-        return loginname;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    public byte[] getPasswordHash() {
-        return passwordHash;
     }
 
     public boolean isVerified() {
@@ -110,6 +101,10 @@ public class User {
         return serviceContracts;
     }
 
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
     public void setId(final long id) {
         this.id = id;
     }
@@ -122,16 +117,8 @@ public class User {
         this.lastname = lastname;
     }
 
-    public void setLoginname(final String loginname) {
-        this.loginname = loginname;
-    }
-
     public void setEmail(final String email) {
         this.email = email;
-    }
-
-    public void setPasswordHash(final byte[] passwordHash) {
-        this.passwordHash = passwordHash;
     }
 
     public void setVerified(final boolean verified) {
@@ -148,5 +135,9 @@ public class User {
 
     public void setCompanyDepartment(final CompanyDepartment companyDepartment) {
         this.companyDepartment = companyDepartment;
+    }
+
+    public void setCredentials(final Credentials credentials) {
+        this.credentials = credentials;
     }
 }

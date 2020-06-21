@@ -18,10 +18,12 @@ import de.hse.licensemanager.PrepareTests;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
 import de.hse.licensemanager.dao.SystemGroupDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
 
 public class UserResourceTest {
 
+    private Credentials credentials;
     private User user;
     private UserResource userResource;
     private UriInfo uriInfo;
@@ -30,17 +32,19 @@ public class UserResourceTest {
     public void setUp() {
         PrepareTests.initDatabase();
 
+        credentials = new Credentials();
+        credentials.setLoginname("testuser");
+        credentials.setPasswordHash(new byte[16]);
         user = new User();
         user.setFirstname("Test");
         user.setLastname("User");
-        user.setLoginname("testuser");
         user.setEmail("test@user.com");
         user.setCompanyDepartment(
                 CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_ACCOUNTING));
         user.setActive(true);
         user.setVerified(true);
-        user.setPasswordHash(new byte[16]);
         user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
+        user.setCredentials(credentials);
 
         UserDao.getInstance().save(user);
 

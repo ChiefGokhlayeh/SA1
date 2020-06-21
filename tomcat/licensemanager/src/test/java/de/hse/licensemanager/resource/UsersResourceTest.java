@@ -14,6 +14,7 @@ import de.hse.licensemanager.PrepareTests;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
 import de.hse.licensemanager.dao.SystemGroupDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
 
 public class UsersResourceTest {
@@ -42,17 +43,19 @@ public class UsersResourceTest {
 
     @Test
     public void testNewUserCreated() throws IOException {
+        final Credentials credentials = new Credentials();
+        credentials.setLoginname("testuser");
+        credentials.setPasswordHash(new byte[16]);
         final User user = new User();
         user.setFirstname("Test");
         user.setLastname("User");
-        user.setLoginname("testuser");
         user.setEmail("some.email@test.org");
         user.setActive(true);
         user.setVerified(false);
-        user.setPasswordHash(new byte[16]);
         user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
         user.setCompanyDepartment(
                 CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_IT));
+        user.setCredentials(credentials);
 
         usersResource.newUser(user, null);
 
