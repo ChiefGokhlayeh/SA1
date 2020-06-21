@@ -10,6 +10,7 @@ import javax.persistence.EntityTransaction;
 import org.junit.Test;
 
 import de.hse.licensemanager.dao.DaoManager;
+import de.hse.licensemanager.model.Credentials;
 
 public class PrepareTests {
 
@@ -65,6 +66,13 @@ public class PrepareTests {
     public static final String CREDENTIALS_LOGINNAME_MUSTERMANN = "maexle";
     public static final String CREDENTIALS_LOGINNAME_HANNELORE = "hanni";
     public static final String CREDENTIALS_LOGINNAME_DELETEME = "hansi";
+
+    public static final String CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN = "test password 123";
+    public static final byte[] CREDENTIALS_PASSWORD_HASH_MUSTERMANN;
+
+    public static final byte[] CREDENTIALS_PASSWORD_SALT_MUSTERMANN = Credentials.generateSalt();
+
+    public static final int CREDENTIALS_PASSWORD_ITERATIONS_MUSTERMANN = Credentials.ITERATIONS;
 
     static {
         int id = 1;
@@ -123,6 +131,9 @@ public class PrepareTests {
         CREDENTIALS_ID_MUSTERMANN = id++;
         CREDENTIALS_ID_HANNELORE = id++;
         CREDENTIALS_ID_DELETEME = id++;
+
+        CREDENTIALS_PASSWORD_HASH_MUSTERMANN = Credentials.generateSecret(CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN,
+                CREDENTIALS_PASSWORD_SALT_MUSTERMANN, CREDENTIALS_PASSWORD_ITERATIONS_MUSTERMANN);
     }
 
     @Test
@@ -178,19 +189,28 @@ public class PrepareTests {
                 .executeUpdate();
 
         param = 1;
-        em.createNativeQuery("INSERT INTO t_credentials (id, loginname, password_hash) VALUES (?1, ?2, ?3)")
+        em.createNativeQuery(
+                "INSERT INTO t_credentials (id, loginname, password_hash, password_salt, password_iterations) VALUES (?1, ?2, ?3, ?4, ?5)")
                 .setParameter(param++, CREDENTIALS_ID_MUSTERMANN)
-                .setParameter(param++, CREDENTIALS_LOGINNAME_MUSTERMANN).setParameter(param++, new byte[16])
-                .executeUpdate();
+                .setParameter(param++, CREDENTIALS_LOGINNAME_MUSTERMANN)
+                .setParameter(param++, CREDENTIALS_PASSWORD_HASH_MUSTERMANN)
+                .setParameter(param++, CREDENTIALS_PASSWORD_SALT_MUSTERMANN)
+                .setParameter(param++, CREDENTIALS_PASSWORD_ITERATIONS_MUSTERMANN).executeUpdate();
 
         param = 1;
-        em.createNativeQuery("INSERT INTO t_credentials (id, loginname, password_hash) VALUES (?1, ?2, ?3)")
+        em.createNativeQuery(
+                "INSERT INTO t_credentials (id, loginname, password_hash, password_salt, password_iterations) VALUES (?1, ?2, ?3, ?4, ?5)")
                 .setParameter(param++, CREDENTIALS_ID_HANNELORE).setParameter(param++, CREDENTIALS_LOGINNAME_HANNELORE)
-                .setParameter(param++, new byte[16]).executeUpdate();
+                .setParameter(param++, new byte[Credentials.HASH_LENGTH])
+                .setParameter(param++, new byte[Credentials.SALT_LENGTH]).setParameter(param++, Credentials.ITERATIONS)
+                .executeUpdate();
         param = 1;
-        em.createNativeQuery("INSERT INTO t_credentials (id, loginname, password_hash) VALUES (?1, ?2, ?3)")
+        em.createNativeQuery(
+                "INSERT INTO t_credentials (id, loginname, password_hash, password_salt, password_iterations) VALUES (?1, ?2, ?3, ?4, ?5)")
                 .setParameter(param++, CREDENTIALS_ID_DELETEME).setParameter(param++, CREDENTIALS_LOGINNAME_DELETEME)
-                .setParameter(param++, new byte[16]).executeUpdate();
+                .setParameter(param++, new byte[Credentials.HASH_LENGTH])
+                .setParameter(param++, new byte[Credentials.SALT_LENGTH])
+                .setParameter(param++, Credentials.ITERATIONS - 1000).executeUpdate();
 
         param = 1;
         em.createNativeQuery(

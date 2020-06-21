@@ -1,7 +1,9 @@
 package de.hse.licensemanager.resource;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -9,13 +11,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
+import de.hse.licensemanager.dao.CredentialsDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.model.Credentials;
+import de.hse.licensemanager.model.PlainCredentials;
 import de.hse.licensemanager.model.User;
 
 @Path("/users")
@@ -45,23 +51,23 @@ public class UsersResource {
         return String.valueOf(count);
     }
 
-    // @POST
-    // @Path("login")
-    // @Produces(MediaType.APPLICATION_JSON)
-    // @Consumes(MediaType.APPLICATION_JSON)
-    // public Map<String, Object> login(final User user, @Context final
-    // HttpServletResponse servletResponse) {
-    // User checkUser =
-    // UserDao.getInstance().getUserByFacebookId(user.getFacebookId());
-    // if (checkUser == null) {
-    // UserDao.getInstance().save(user);
-    // checkUser = UserDao.getInstance().getUserByFacebookId(user.getFacebookId());
-    // }
-    // final Map<String, Object> response = new HashMap<>();
-    // response.put("success", true);
-    // response.put("user", checkUser);
-    // return response;
-    // }
+    @POST
+    @Path("login")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Map<String, Object> login(final PlainCredentials credentials,
+            @Context final HttpServletResponse servletResponse) throws IOException {
+        final Credentials checkCredentials = CredentialsDao.getInstance()
+                .getCredentialsByLoginname(credentials.getLoginname());
+        final Map<String, Object> response = new HashMap<>();
+        if (checkCredentials != null && credentials.verify(checkCredentials)) {
+            response.put("success", true);
+            response.put("user", checkCredentials);
+        } else {
+            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        return response;
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

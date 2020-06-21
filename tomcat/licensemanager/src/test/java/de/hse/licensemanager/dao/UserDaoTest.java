@@ -70,7 +70,7 @@ public class UserDaoTest {
     public void testSaveSimple() {
         final Credentials credentials = new Credentials();
         credentials.setLoginname("max_mu");
-        credentials.setPasswordHash(new byte[60]);
+        credentials.generateNewHash("hello world");
         final User user = new User();
         user.setFirstname("Max");
         user.setLastname("Mustermann");

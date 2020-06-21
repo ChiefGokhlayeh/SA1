@@ -79,7 +79,7 @@ public class CredentialsDaoTest {
     public void testSaveSimple() {
         final Credentials credentials = new Credentials();
         credentials.setLoginname("max_mu");
-        credentials.setPasswordHash(new byte[60]);
+        credentials.generateNewHash("hello world");
 
         CredentialsDao.getInstance().save(credentials);
 

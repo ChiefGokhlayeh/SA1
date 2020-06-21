@@ -1,5 +1,12 @@
 package de.hse.licensemanager.model;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -19,6 +27,33 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Table(name = "t_credentials")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@query_id")
 public class Credentials {
+    public static final int HASH_LENGTH = 64;
+    public static final int SALT_LENGTH = HASH_LENGTH;
+    public static final int ITERATIONS = 5000;
+    public static final String ALGORITHM = "PBKDF2WithHmacSHA512";
+
+    private static final SecureRandom rng = new SecureRandom();
+
+    public static byte[] generateSecret(final String password, final byte[] salt, final int iterations) {
+        final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, Credentials.HASH_LENGTH * 8);
+        try {
+            final SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
+            return factory.generateSecret(spec).getEncoded();
+        } catch (final NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Unknown secret key factory algorithm: " + ALGORITHM, e);
+        } catch (final InvalidKeySpecException e) {
+            throw new IllegalStateException(
+                    "Invalid key spec with " + ITERATIONS + " iterations and " + HASH_LENGTH + " byte length", e);
+        }
+    }
+
+    @Transient
+    public static byte[] generateSalt() {
+        final byte[] salt = new byte[SALT_LENGTH];
+        rng.nextBytes(salt);
+        return salt;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -29,6 +64,12 @@ public class Credentials {
 
     @Column(name = "password_hash", nullable = false)
     private byte passwordHash[];
+
+    @Column(name = "password_salt", nullable = false)
+    private byte[] passwordSalt;
+
+    @Column(name = "password_iterations", nullable = false)
+    private int passwordIterations;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "t_user", joinColumns = @JoinColumn(name = "credentials"), inverseJoinColumns = @JoinColumn(name = "credentials"))
@@ -50,6 +91,14 @@ public class Credentials {
         return passwordHash;
     }
 
+    public byte[] getPasswordSalt() {
+        return passwordSalt;
+    }
+
+    public int getPasswordIterations() {
+        return passwordIterations;
+    }
+
     public void setId(final long id) {
         this.id = id;
     }
@@ -60,5 +109,22 @@ public class Credentials {
 
     public void setPasswordHash(final byte[] passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public void setPasswordSalt(final byte[] passwordSalt) {
+        this.passwordSalt = passwordSalt;
+    }
+
+    public void setPasswordIterations(final int passwordIterations) {
+        this.passwordIterations = passwordIterations;
+    }
+
+    @Transient
+    public void generateNewHash(final String passwordPlaintext) {
+        final byte[] salt = generateSalt();
+        final int iterations = Credentials.ITERATIONS;
+        passwordHash = Credentials.generateSecret(passwordPlaintext, salt, iterations);
+        passwordSalt = salt;
+        passwordIterations = iterations;
     }
 }

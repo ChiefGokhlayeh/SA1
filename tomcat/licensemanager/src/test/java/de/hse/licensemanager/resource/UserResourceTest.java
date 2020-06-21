@@ -34,7 +34,7 @@ public class UserResourceTest {
 
         credentials = new Credentials();
         credentials.setLoginname("testuser");
-        credentials.setPasswordHash(new byte[16]);
+        credentials.generateNewHash("hello world");
         user = new User();
         user.setFirstname("Test");
         user.setLastname("User");
