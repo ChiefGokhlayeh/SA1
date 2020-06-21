@@ -69,10 +69,14 @@ public class PrepareTests {
 
     public static final String CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN = "test password 123";
     public static final byte[] CREDENTIALS_PASSWORD_HASH_MUSTERMANN;
+    public static final String CREDENTIALS_PASSWORD_PLAIN_HANNELORE = "test password 123";
+    public static final byte[] CREDENTIALS_PASSWORD_HASH_HANNELORE;
 
     public static final byte[] CREDENTIALS_PASSWORD_SALT_MUSTERMANN = Credentials.generateSalt();
+    public static final byte[] CREDENTIALS_PASSWORD_SALT_HANNELORE = Credentials.generateSalt();
 
     public static final int CREDENTIALS_PASSWORD_ITERATIONS_MUSTERMANN = Credentials.ITERATIONS;
+    public static final int CREDENTIALS_PASSWORD_ITERATIONS_HANNELORE = Credentials.ITERATIONS;
 
     static {
         int id = 1;
@@ -134,6 +138,8 @@ public class PrepareTests {
 
         CREDENTIALS_PASSWORD_HASH_MUSTERMANN = Credentials.generateSecret(CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN,
                 CREDENTIALS_PASSWORD_SALT_MUSTERMANN, CREDENTIALS_PASSWORD_ITERATIONS_MUSTERMANN);
+        CREDENTIALS_PASSWORD_HASH_HANNELORE = Credentials.generateSecret(CREDENTIALS_PASSWORD_PLAIN_HANNELORE,
+                CREDENTIALS_PASSWORD_SALT_HANNELORE, CREDENTIALS_PASSWORD_ITERATIONS_HANNELORE);
     }
 
     @Test
@@ -201,9 +207,9 @@ public class PrepareTests {
         em.createNativeQuery(
                 "INSERT INTO t_credentials (id, loginname, password_hash, password_salt, password_iterations) VALUES (?1, ?2, ?3, ?4, ?5)")
                 .setParameter(param++, CREDENTIALS_ID_HANNELORE).setParameter(param++, CREDENTIALS_LOGINNAME_HANNELORE)
-                .setParameter(param++, new byte[Credentials.HASH_LENGTH])
-                .setParameter(param++, new byte[Credentials.SALT_LENGTH]).setParameter(param++, Credentials.ITERATIONS)
-                .executeUpdate();
+                .setParameter(param++, CREDENTIALS_PASSWORD_HASH_HANNELORE)
+                .setParameter(param++, CREDENTIALS_PASSWORD_SALT_HANNELORE)
+                .setParameter(param++, CREDENTIALS_PASSWORD_ITERATIONS_HANNELORE).executeUpdate();
         param = 1;
         em.createNativeQuery(
                 "INSERT INTO t_credentials (id, loginname, password_hash, password_salt, password_iterations) VALUES (?1, ?2, ?3, ?4, ?5)")

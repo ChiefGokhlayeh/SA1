@@ -12,11 +12,13 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.HttpHeaders;
 
 @WebFilter(description = "Filter to check if session is active", displayName = "Log-In", value = "/*")
 public class AuthenticationFilter implements Filter {
 
-    private final String LOGIN_URL = "/login.html";
+    private final String LOGIN_BROWSER = "/login.html";
+    private final String LOGIN_REST = "/rest/users/login";
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
@@ -29,10 +31,12 @@ public class AuthenticationFilter implements Filter {
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
         final HttpServletResponse httpResponse = (HttpServletResponse) response;
         final HttpSession httpSession = httpRequest.getSession(false);
-        final String loginURI = httpRequest.getContextPath() + LOGIN_URL;
+        final String loginURI = httpRequest.getContextPath() + LOGIN_BROWSER;
+        final String requestURI = httpRequest.getRequestURI();
 
-        final boolean loggedIn = httpSession != null && httpSession.getAttribute("user") != null;
-        final boolean loginRequest = httpRequest.getRequestURI().equals(loginURI);
+        final boolean loggedIn = httpSession != null && httpSession.getAttribute(HttpHeaders.AUTHORIZATION) != null;
+        final boolean loginRequest = requestURI.equals(loginURI)
+                || requestURI.equals(httpRequest.getContextPath() + LOGIN_REST);
 
         if (loggedIn || loginRequest) {
             chain.doFilter(httpRequest, httpResponse);

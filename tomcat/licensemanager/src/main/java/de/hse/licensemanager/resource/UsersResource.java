@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
@@ -26,6 +28,7 @@ import de.hse.licensemanager.model.User;
 
 @Path("/users")
 public class UsersResource {
+
     @Context
     UriInfo uriInfo;
     @Context
@@ -56,13 +59,15 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Map<String, Object> login(final PlainCredentials credentials,
-            @Context final HttpServletResponse servletResponse) throws IOException {
+            @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
+            throws IOException {
         final Credentials checkCredentials = CredentialsDao.getInstance()
                 .getCredentialsByLoginname(credentials.getLoginname());
         final Map<String, Object> response = new HashMap<>();
         if (checkCredentials != null && credentials.verify(checkCredentials)) {
             response.put("success", true);
             response.put("user", checkCredentials);
+            servletRequest.getSession(true).setAttribute(HttpHeaders.AUTHORIZATION, checkCredentials);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
