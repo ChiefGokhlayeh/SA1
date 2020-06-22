@@ -19,6 +19,7 @@ public class AuthenticationFilter implements Filter {
 
     private final String LOGIN_BROWSER = "/login.html";
     private final String LOGIN_REST = "/rest/users/login";
+    private final String REST = "/rest/";
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
@@ -34,12 +35,15 @@ public class AuthenticationFilter implements Filter {
         final String loginURI = httpRequest.getContextPath() + LOGIN_BROWSER;
         final String requestURI = httpRequest.getRequestURI();
 
+        final boolean restRequest = requestURI.startsWith(httpRequest.getContextPath() + REST);
         final boolean loggedIn = httpSession != null && httpSession.getAttribute(HttpHeaders.AUTHORIZATION) != null;
         final boolean loginRequest = requestURI.equals(loginURI)
                 || requestURI.equals(httpRequest.getContextPath() + LOGIN_REST);
 
         if (loggedIn || loginRequest) {
             chain.doFilter(httpRequest, httpResponse);
+        } else if (restRequest) {
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             httpResponse.sendRedirect(loginURI);
         }

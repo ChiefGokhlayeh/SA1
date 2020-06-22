@@ -55,6 +55,30 @@ public class AuthenticationFilterTest {
     }
 
     @Test
+    public void testBlockUnauthenticatedRestRequest() throws IOException, ServletException {
+        when(httpRequest.getContextPath()).thenReturn("");
+        when(httpRequest.getRequestURI()).thenReturn("/rest/users");
+        when(httpRequest.getSession(false)).thenReturn(null);
+
+        filter.doFilter(httpRequest, httpResponse, filterChain);
+
+        verify(filterChain, never()).doFilter(httpRequest, httpResponse);
+        verify(httpResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void testPassRestLoginRequest() throws IOException, ServletException {
+        when(httpRequest.getContextPath()).thenReturn("");
+        when(httpRequest.getRequestURI()).thenReturn("/rest/users/login");
+        when(httpRequest.getSession(false)).thenReturn(null);
+
+        filter.doFilter(httpRequest, httpResponse, filterChain);
+
+        verify(filterChain).doFilter(httpRequest, httpResponse);
+        verify(httpResponse, never()).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    @Test
     public void testContinueChainOnLoginWithExistingSession() throws IOException, ServletException {
         when(httpRequest.getContextPath()).thenReturn("");
         when(httpRequest.getRequestURI()).thenReturn(CORRECT_LOGIN_URL);
