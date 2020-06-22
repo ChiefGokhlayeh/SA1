@@ -50,20 +50,12 @@ public class UserResourceTest {
 
         uriInfo = mock(UriInfo.class);
 
-        userResource = new UserResource(uriInfo, null, user.getId());
+        userResource = new UserResource(uriInfo, user.getId());
     }
 
     @Test
     public void testGetUser() {
         final User testUser = userResource.getUser();
-
-        assertThat(testUser, notNullValue());
-        assertThat(testUser, equalTo(user));
-    }
-
-    @Test
-    public void testGetUserHTML() {
-        final User testUser = userResource.getUserHTML();
 
         assertThat(testUser, notNullValue());
         assertThat(testUser, equalTo(user));

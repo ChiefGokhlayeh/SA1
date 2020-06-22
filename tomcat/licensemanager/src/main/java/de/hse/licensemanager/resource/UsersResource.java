@@ -11,7 +11,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import javax.ws.rs.GET;
@@ -29,19 +28,8 @@ import de.hse.licensemanager.model.User;
 @Path("/users")
 public class UsersResource {
 
-    @Context
-    UriInfo uriInfo;
-    @Context
-    Request request;
-
     @GET
-    @Produces(MediaType.TEXT_XML)
-    public List<User> getUsersBrowser() {
-        return UserDao.getInstance().getUsers();
-    }
-
-    @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces(MediaType.APPLICATION_JSON)
     public List<User> getUsers() {
         return UserDao.getInstance().getUsers();
     }
@@ -83,7 +71,7 @@ public class UsersResource {
     }
 
     @Path("{user}")
-    public UserResource getUser(@PathParam("user") final Long id) {
-        return new UserResource(uriInfo, request, id);
+    public UserResource getUser(@Context UriInfo uriInfo, @PathParam("user") final Long id) {
+        return new UserResource(uriInfo, id);
     }
 }

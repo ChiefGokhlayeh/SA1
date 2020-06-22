@@ -7,7 +7,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
@@ -17,20 +16,16 @@ import de.hse.licensemanager.model.User;
 
 public class UserResource {
     @Context
-    UriInfo uriInfo;
-    @Context
-    Request request;
-    Long id;
+    private UriInfo uriInfo;
+    private long id;
 
-    public UserResource(final UriInfo uriInfo, final Request request, final Long id) {
+    public UserResource(final UriInfo uriInfo, final long id) {
         this.uriInfo = uriInfo;
-        this.request = request;
         this.id = id;
     }
 
-    // Application integration
     @GET
-    @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces(MediaType.APPLICATION_JSON)
     public User getUser() {
         final User user = UserDao.getInstance().getUser(id);
         if (user == null)
@@ -38,18 +33,8 @@ public class UserResource {
         return user;
     }
 
-    // for the browser
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    public User getUserHTML() {
-        final User user = UserDao.getInstance().getUser(id);
-        if (user == null)
-            throw new RuntimeException("GET: User with " + id + " not found");
-        return user;
-    }
-
     @PUT
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response putUser(final JAXBElement<User> user) {
         final User c = user.getValue();
         return saveAndGetResponse(c);
