@@ -93,9 +93,9 @@ public class UsersResourceTest {
 
         assertThat(result.entrySet(), is(not(emptyIterable())));
         assertThat(result, hasEntry("success", true));
-        assertThat(result, hasEntry("user", expectedCredentials));
+        assertThat(result, hasEntry("user", expectedCredentials.getUser()));
         verify(servletRequest, atLeastOnce()).getSession(true);
-        verify(httpSession, times(1)).setAttribute(HttpHeaders.AUTHORIZATION, expectedCredentials);
+        verify(httpSession, times(1)).setAttribute(HttpHeaders.AUTHORIZATION, expectedCredentials.getUser());
     }
 
     @Test

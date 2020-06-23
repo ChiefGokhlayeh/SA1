@@ -50,14 +50,17 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "company_department", nullable = false)
+    @JsonIgnore
     private CompanyDepartment companyDepartment;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "t_service_group", joinColumns = @JoinColumn(name = "`user`"), inverseJoinColumns = @JoinColumn(name = "service_contract"))
+    @JsonIgnore
     private Set<ServiceContract> serviceContracts;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "credentials", nullable = false)
+    @JsonIgnore
     private Credentials credentials;
 
     public long getId() {

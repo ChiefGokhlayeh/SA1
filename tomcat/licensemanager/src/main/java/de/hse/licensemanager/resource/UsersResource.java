@@ -54,8 +54,8 @@ public class UsersResource {
         final Map<String, Object> response = new HashMap<>();
         if (checkCredentials != null && credentials.verify(checkCredentials)) {
             response.put("success", true);
-            response.put("user", checkCredentials);
-            servletRequest.getSession(true).setAttribute(HttpHeaders.AUTHORIZATION, checkCredentials);
+            response.put("user", checkCredentials.getUser());
+            servletRequest.getSession(true).setAttribute(HttpHeaders.AUTHORIZATION, checkCredentials.getUser());
         } else {
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
