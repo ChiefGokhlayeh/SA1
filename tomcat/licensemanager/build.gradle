@@ -1,8 +1,14 @@
 plugins {
-    id 'war'
-    id 'org.gretty' version '2.3.0'
     id 'eclipse'
     id 'jacoco'
+    id 'org.gretty' version '3.0.3'
+    id 'war'
+}
+
+gretty {
+    httpPort = 8081
+    servletContainer = 'tomcat9'
+    scanInterval = 1
 }
 
 repositories {
