@@ -1,7 +1,9 @@
 package de.hse.licensemanager.model;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -40,6 +43,9 @@ public class License {
     @JoinColumn(name = "product_variant", nullable = false)
     private ProductVariant productVariant;
 
+    @OneToMany(mappedBy = "license", cascade = CascadeType.ALL)
+    private Set<IpMapping> ipMappings;
+
     public long getId() {
         return id;
     }
@@ -62,5 +68,9 @@ public class License {
 
     public ProductVariant getProductVariant() {
         return productVariant;
+    }
+
+    public Set<IpMapping> getIpMappings() {
+        return ipMappings;
     }
 }

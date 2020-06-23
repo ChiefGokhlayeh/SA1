@@ -1,5 +1,6 @@
 package de.hse.licensemanager.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,11 +8,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.sql.Date;
@@ -27,7 +28,6 @@ public class ServiceContract {
     @Column(name = "id")
     private long id;
 
-    @ManyToOne
     @JoinColumn(name = "contractor", nullable = false)
     private Company contractor;
 
@@ -38,10 +38,10 @@ public class ServiceContract {
     private Date end;
 
     @ManyToMany(mappedBy = "serviceContracts")
+    @JsonIgnore
     private Set<User> users;
 
-    @OneToMany(mappedBy = "serviceContract")
-    @JoinColumn(name = "service_contract")
+    @OneToMany(mappedBy = "serviceContract", cascade = CascadeType.ALL)
     private Set<License> licenses;
 
     public long getId() {

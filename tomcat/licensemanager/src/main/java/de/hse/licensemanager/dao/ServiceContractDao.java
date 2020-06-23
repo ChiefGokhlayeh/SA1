@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.ServiceContract;
+import de.hse.licensemanager.model.User;
 
 public class ServiceContractDao {
 
@@ -32,5 +34,35 @@ public class ServiceContractDao {
         final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s").getResultList();
         return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
                 .collect(Collectors.toList());
+    }
+
+    public List<ServiceContract> getServiceContractsOfUser(final User user) {
+        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s, ServiceGroup sg WHERE sg.user=:user")
+                .setParameter("user", user).getResultList();
+        return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    public List<ServiceContract> getServiceContractsOfCompany(final Company company) {
+        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s WHERE s.contractor=:contractor")
+                .setParameter("contractor", company).getResultList();
+        return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    public void delete(long id) {
+        delete(em.find(ServiceContract.class, id));
+    }
+
+    public void delete(final ServiceContract serviceContract) {
+        em.getTransaction().begin();
+        em.remove(serviceContract);
+        em.getTransaction().commit();
+    }
+
+    public void save(final ServiceContract serviceContract) {
+        em.getTransaction().begin();
+        em.persist(serviceContract);
+        em.getTransaction().commit();
     }
 }
