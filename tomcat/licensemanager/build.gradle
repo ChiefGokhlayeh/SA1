@@ -6,9 +6,13 @@ plugins {
 }
 
 gretty {
-    httpPort = 8081
+    httpPort = 8080
+    httpsPort = 8443
     servletContainer = 'tomcat9'
     scanInterval = 1
+    httpsEnabled = true
+    sslKeyStorePath = '../../docker/cert/sa1.p12'
+    sslKeyStorePassword = "${System.env.KEYSTORE_PASSWORD}"
 }
 
 repositories {

@@ -26,6 +26,7 @@ RUN apt-get update \
   curl \
   git \
   gradle \
+  libnss3-tools \
   maven \
   nodejs \
   openjdk-11-jdk
@@ -37,6 +38,10 @@ RUN mkdir -p /usr/local/tomcat \
   && rm -f tomcat.tar.gz \
   && chown tomcat:tomcat -R . \
   && chmod -R g=u .
+
+RUN cd /usr/local/bin \
+  && curl -L -o mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.1/mkcert-v1.4.1-linux-amd64 \
+  && chmod +x mkcert
 
 USER $DEV_USERNAME
 
