@@ -1,6 +1,7 @@
 plugins {
     id 'eclipse'
     id 'jacoco'
+    id 'java'
     id 'org.gretty' version '3.0.3'
     id 'war'
 }
@@ -10,10 +11,40 @@ gretty {
     httpsPort = 8443
     servletContainer = 'tomcat9'
     scanInterval = 1
+    integrationTestTask = 'integrationTest'
     httpsEnabled = true
     sslKeyStorePath = '../../docker/cert/sa1.p12'
     sslKeyStorePassword = "${System.env.KEYSTORE_PASSWORD}"
 }
+
+sourceSets {
+    integrationTest {
+        java {
+            srcDir 'src/integrationTest/java'
+        }
+        resources {
+            srcDir 'src/integrationTest/resources'
+        }
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom implementation
+    integrationTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+}
+
+check.dependsOn integrationTest
 
 repositories {
     jcenter()
@@ -22,18 +53,27 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+ext {
+    hamcrestDateVersion = '2.0.7'
+    hamcrestLibraryVersion = '2.2'
+    junitVersion = '4.13'
+    jerseyVersion = '2.31'
+}
+
 dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.0'
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
     implementation group: 'org.eclipse.persistence', name: 'eclipselink', version: '2.7.7'
-    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: '2.31'
-    implementation group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.31'
-    implementation group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '2.31'
-    implementation group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '2.31'
+    implementation group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: "${jerseyVersion}"
+    implementation group: 'org.glassfish.jersey.core', name: 'jersey-server', version: "${jerseyVersion}"
+    implementation group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: "${jerseyVersion}"
+    implementation group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: "${jerseyVersion}"
+    integrationTestImplementation group: 'junit', name:'junit', version: "${junitVersion}"
+    integrationTestImplementation group: 'org.exparity', name: 'hamcrest-date', version: "${hamcrestDateVersion}"
+    integrationTestImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: "${hamcrestLibraryVersion}"
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
-    testImplementation group: 'junit', name:'junit', version: '4.13'
-    testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
-    testImplementation group: 'org.exparity', name: 'hamcrest-date', version: '2.0.7'
-    testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.2'
+    testImplementation group: 'junit', name:'junit', version: "${junitVersion}"
+    testImplementation group: 'org.exparity', name: 'hamcrest-date', version: "${hamcrestDateVersion}"
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: "${hamcrestLibraryVersion}"
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
 }
