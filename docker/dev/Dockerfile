@@ -29,6 +29,7 @@ RUN apt-get update \
   libnss3-tools \
   maven \
   nodejs \
+  npm \
   openjdk-11-jdk
 
 RUN mkdir -p /usr/local/tomcat \

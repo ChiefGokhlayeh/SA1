@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.node-gradle.node' version '2.2.4'
     id 'eclipse'
     id 'jacoco'
     id 'java'
@@ -76,4 +77,44 @@ dependencies {
     testImplementation group: 'org.exparity', name: 'hamcrest-date', version: "${hamcrestDateVersion}"
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: "${hamcrestLibraryVersion}"
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+}
+
+node {
+    download = false
+
+    nodeModulesDir = file("${project.projectDir}/src/main/frontend")
+}
+
+task npmInstallDependencies(type: NpmTask) {
+    description = "Install npm packages in frontend app"
+    dependsOn 'npmSetup'
+    execOverrides {
+        it.ignoreExitValue = true
+        it.workingDir = "${project.projectDir}/src/main/frontend"
+    }
+    args = ['install']
+}
+
+task npmBuild(type: NpmTask) {
+    description = "Build npm frontend app"
+    dependsOn 'npmInstallDependencies'
+    execOverrides {
+        it.workingDir = "${project.projectDir}/src/main/frontend"
+    }
+    args = ['run', 'build']
+}
+
+task copyFrontendToInplaceWebapp(type: Copy) {
+    description = "Copy compiled frontend app into inplace-webapp folder for use with gretty"
+    dependsOn 'npmBuild'
+    from "${project.projectDir}/src/main/frontend/build"
+    into "${project.buildDir}/resources/inplaceWebapp"
+}
+
+processResources {
+    dependsOn copyFrontendToInplaceWebapp
+}
+
+war {
+    from "${project.projectDir}/src/main/frontend/build"
 }
