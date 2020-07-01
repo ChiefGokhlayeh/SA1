@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 
 import de.hse.licensemanager.dao.CredentialsDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.filter.AdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.PlainCredentials;
@@ -31,6 +32,7 @@ public class UsersResource {
 
     @GET
     @Login
+    @AdminOnly
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> getUsers() {
         return UserDao.getInstance().getUsers();
@@ -67,6 +69,7 @@ public class UsersResource {
 
     @POST
     @Login
+    @AdminOnly
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<User> newUser(final User user, @Context final HttpServletResponse servletResponse) throws IOException {

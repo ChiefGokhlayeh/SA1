@@ -1,17 +1,19 @@
 package de.hse.licensemanager.resource;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.filter.AdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.User;
 
@@ -19,6 +21,7 @@ import de.hse.licensemanager.model.User;
 public class UserResource {
     @Context
     private final UriInfo uriInfo;
+
     private final long id;
 
     public UserResource(final UriInfo uriInfo, final long id) {
@@ -43,6 +46,7 @@ public class UserResource {
     }
 
     @DELETE
+    @AdminOnly
     public void deleteUser() {
         UserDao.getInstance().delete(id);
     }
