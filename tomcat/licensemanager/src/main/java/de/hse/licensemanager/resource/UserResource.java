@@ -40,9 +40,15 @@ public class UserResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response putUser(final JAXBElement<User> user) {
-        final User c = user.getValue();
-        return saveAndGetResponse(c);
+    public Response putUser(final User modifiedUser, @Context final HttpServletRequest httpServletRequest) {
+        final User loginUser = (User) httpServletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
+
+        if ((loginUser.getId() == id || loginUser.getSystemGroup().getDisplayName().equals("admin"))
+                && loginUser.isActive()) {
+            return saveAndGetResponse(modifiedUser);
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 
     @DELETE

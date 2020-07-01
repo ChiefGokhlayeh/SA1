@@ -4,12 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -68,13 +63,5 @@ public class UserResourceTest {
         userResource.deleteUser();
 
         assertThat(user, not(in(UserDao.getInstance().getUsers())));
-    }
-
-    @Test
-    public void testPutUser() throws URISyntaxException {
-        when(uriInfo.getAbsolutePath()).thenReturn(new URI("http://www.test.org/user/" + user.getId()));
-        final JAXBElement<User> dummyElement = new JAXBElement<>(new QName("http://www.test.org", "user"), User.class,
-                user);
-        userResource.putUser(dummyElement);
     }
 }
