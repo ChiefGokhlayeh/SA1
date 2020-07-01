@@ -15,22 +15,15 @@ import org.junit.Test;
 public class AllIntegrationTests {
 
     private Client client;
-    private String baseURI;
     private String restURI;
 
     @Before
     public void setUp() {
         client = ClientBuilder.newClient();
+        restURI = IntegrationTestSupport.getRestURI();
 
-        if (System.getProperty("gretty.httpsBaseURI") != null) {
-            baseURI = System.getProperty("gretty.httpsBaseURI");
-        } else {
-            baseURI = System.getProperty("gretty.httpBaseURI");
-        }
-
-        System.out.println("Integration Test is using base-URI: " + baseURI);
-
-        restURI = baseURI + "/rest";
+        System.out.println("Integration Test is using base-URI: " + IntegrationTestSupport.getBaseURI()
+                + "\n\tAnd REST-URI: " + IntegrationTestSupport.getRestURI());
     }
 
     @Test
@@ -40,5 +33,4 @@ public class AllIntegrationTests {
 
         assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
     }
-
 }

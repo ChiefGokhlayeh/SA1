@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import de.hse.licensemanager.model.Credentials;
 
@@ -28,8 +29,13 @@ public class CredentialsDao {
     }
 
     public Credentials getCredentialsByLoginname(final String login) {
-        return (Credentials) em.createQuery("SELECT u FROM Credentials u WHERE u.loginname=:login")
-                .setParameter("login", login).getSingleResult();
+        try {
+            return (Credentials) em.createQuery("SELECT u FROM Credentials u WHERE u.loginname=:login")
+                    .setParameter("login", login).getSingleResult();
+        } catch (final NoResultException e) {
+            /* No user has been found. Indicate result via null value. */
+            return null;
+        }
     }
 
     public List<Credentials> getCredentials() {
