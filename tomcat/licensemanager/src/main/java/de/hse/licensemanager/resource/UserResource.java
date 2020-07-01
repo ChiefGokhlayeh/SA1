@@ -16,8 +16,8 @@ import de.hse.licensemanager.model.User;
 
 public class UserResource {
     @Context
-    private UriInfo uriInfo;
-    private long id;
+    private final UriInfo uriInfo;
+    private final long id;
 
     public UserResource(final UriInfo uriInfo, final long id) {
         this.uriInfo = uriInfo;

@@ -71,7 +71,7 @@ public class UsersResource {
     }
 
     @Path("{user}")
-    public UserResource getUser(@Context UriInfo uriInfo, @PathParam("user") final Long id) {
+    public UserResource getUser(@Context final UriInfo uriInfo, @PathParam("user") final Long id) {
         return new UserResource(uriInfo, id);
     }
 }
