@@ -9,8 +9,10 @@ public class IntegrationTestSupport {
     public static String getBaseURI() {
         if (System.getProperty("gretty.httpsBaseURI") != null) {
             return System.getProperty("gretty.httpsBaseURI");
-        } else {
+        } else if (System.getProperty("gretty.httpBaseURI") != null) {
             return System.getProperty("gretty.httpBaseURI");
+        } else {
+            return "http://localhost:8080/licensemanager";
         }
     }
 }
