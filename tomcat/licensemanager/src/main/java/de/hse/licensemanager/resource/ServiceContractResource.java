@@ -12,8 +12,10 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
 import de.hse.licensemanager.dao.ServiceContractDao;
+import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceContract;
 
+@Login
 public class ServiceContractResource {
     @Context
     private final UriInfo uriInfo;

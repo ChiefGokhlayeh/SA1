@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 
 import de.hse.licensemanager.dao.CredentialsDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.PlainCredentials;
 import de.hse.licensemanager.model.User;
@@ -29,6 +30,7 @@ import de.hse.licensemanager.model.User;
 public class UsersResource {
 
     @GET
+    @Login
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> getUsers() {
         return UserDao.getInstance().getUsers();
@@ -36,6 +38,7 @@ public class UsersResource {
 
     @GET
     @Path("count")
+    @Login
     @Produces(MediaType.TEXT_PLAIN)
     public String getCount() {
         final int count = UserDao.getInstance().getUsers().size();
@@ -63,6 +66,7 @@ public class UsersResource {
     }
 
     @POST
+    @Login
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<User> newUser(final User user, @Context final HttpServletResponse servletResponse) throws IOException {
@@ -71,6 +75,7 @@ public class UsersResource {
     }
 
     @Path("{user}")
+    @Login
     public UserResource getUser(@Context final UriInfo uriInfo, @PathParam("user") final Long id) {
         return new UserResource(uriInfo, id);
     }

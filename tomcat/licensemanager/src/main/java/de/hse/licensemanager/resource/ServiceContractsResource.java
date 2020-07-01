@@ -14,10 +14,12 @@ import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.ServiceContractDao;
+import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.User;
 
 @Path("/service-contracts")
+@Login
 public class ServiceContractsResource {
 
     @GET
