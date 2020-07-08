@@ -60,7 +60,6 @@ public class User {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "credentials", nullable = false)
-    @JsonIgnore
     private Credentials credentials;
 
     public long getId() {

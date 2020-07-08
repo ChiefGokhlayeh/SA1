@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -47,7 +48,6 @@ public class Credentials {
         }
     }
 
-    @Transient
     public static byte[] generateSalt() {
         final byte[] salt = new byte[SALT_LENGTH];
         rng.nextBytes(salt);
@@ -63,16 +63,20 @@ public class Credentials {
     private String loginname;
 
     @Column(name = "password_hash", nullable = false)
+    @JsonIgnore
     private byte passwordHash[];
 
     @Column(name = "password_salt", nullable = false)
+    @JsonIgnore
     private byte[] passwordSalt;
 
     @Column(name = "password_iterations", nullable = false)
+    @JsonIgnore
     private int passwordIterations;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "t_user", joinColumns = @JoinColumn(name = "credentials"), inverseJoinColumns = @JoinColumn(name = "credentials"))
+    @JsonIgnore
     private User user;
 
     public long getId() {
