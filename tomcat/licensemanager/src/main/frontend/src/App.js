@@ -65,6 +65,13 @@ class App extends Component {
                   {...props}
                   onLogout={() => {
                     this.setState({ loginUser: null });
+                    fetch(
+                      "https://localhost:8443/licensemanager/rest/users/logout",
+                      {
+                        credentials: "include",
+                        method: "GET",
+                      }
+                    ).catch(console.warn);
                   }}
                 />
               )}

@@ -8,10 +8,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import javax.ws.rs.GET;
@@ -67,6 +69,31 @@ public class UsersResource {
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
         return response;
+    }
+
+    @POST /*
+           * POST causes issues with tomcat v9: Access-Control-Origin header is not
+           * appended when using this method. However, according to
+           * https://tomcat.apache.org/tomcat-9.0-doc/images/cors-flowchart.png it should.
+           */
+    @Path("logout")
+    public Response logoutPost(@Context final HttpServletRequest servletRequest) {
+        return logout(servletRequest);
+    }
+
+    @GET
+    @Path("logout")
+    public Response logoutGet(@Context final HttpServletRequest servletRequest) {
+        return logout(servletRequest);
+    }
+
+    private Response logout(final HttpServletRequest servletRequest) {
+        final HttpSession session = servletRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return Response.status(Response.Status.NO_CONTENT).build();
+
     }
 
     private void addSameSiteCookieAttribute(final HttpServletResponse response) {
