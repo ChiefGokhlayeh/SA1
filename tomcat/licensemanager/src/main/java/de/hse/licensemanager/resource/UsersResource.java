@@ -1,6 +1,7 @@
 package de.hse.licensemanager.resource;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +62,24 @@ public class UsersResource {
             response.put("success", true);
             response.put("user", checkCredentials.getUser());
             servletRequest.getSession(true).setAttribute(HttpHeaders.AUTHORIZATION, checkCredentials.getUser());
+            addSameSiteCookieAttribute(servletResponse);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
         return response;
+    }
+
+    private void addSameSiteCookieAttribute(final HttpServletResponse response) {
+        final Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
+        boolean firstHeader = true;
+        for (final String header : headers) { // there can be multiple Set-Cookie attributes
+            if (firstHeader) {
+                response.setHeader(HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=None"));
+                firstHeader = false;
+                continue;
+            }
+            response.addHeader(HttpHeaders.SET_COOKIE, String.format("%s; %s", header, "SameSite=None"));
+        }
     }
 
     @POST
