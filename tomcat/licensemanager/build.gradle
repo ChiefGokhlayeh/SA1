@@ -108,7 +108,7 @@ task copyFrontendToInplaceWebapp(type: Copy) {
     description = "Copy compiled frontend app into inplace-webapp folder for use with gretty"
     dependsOn 'npmBuild'
     from "${project.projectDir}/src/main/frontend/build"
-    into "${project.buildDir}/resources/inplaceWebapp"
+    into "${project.buildDir}/inplaceWebapp"
 }
 
 processResources {
@@ -117,4 +117,9 @@ processResources {
 
 war {
     from "${project.projectDir}/src/main/frontend/build"
+}
+
+clean.doFirst {
+    delete "${project.projectDir}/src/main/frontend/build"
+    delete "${project.projectDir}/src/main/frontend/node_modules"
 }
