@@ -1,23 +1,22 @@
 {
-    "name": "Software Architecture Course",
-    "dockerComposeFile": "../docker/docker-compose.yaml",
-    "service": "dev",
-    "shutdownAction": "stopCompose",
-    "workspaceFolder": "/workspace",
-    "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash"
-    },
-    "extensions": [
-        "adashen.vscode-tomcat",
-        "auchenberg.vscode-browser-preview",
-        "davidanson.vscode-markdownlint",
-        "eamodio.gitlens",
-        "streetsidesoftware.code-spell-checker-german",
-        "streetsidesoftware.code-spell-checker",
-        "vscjava.vscode-java-pack",
-    ],
-    "forwardPorts": [
-        8080
-    ],
-    "remoteUser": "vscode"
+  "name": "Software Architecture Course",
+  "dockerComposeFile": "../docker/docker-compose.yaml",
+  "service": "dev",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspace",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "adashen.vscode-tomcat",
+    "auchenberg.vscode-browser-preview",
+    "davidanson.vscode-markdownlint",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker-german",
+    "streetsidesoftware.code-spell-checker",
+    "vscjava.vscode-java-pack"
+  ],
+  "forwardPorts": [8080],
+  "remoteUser": "vscode"
 }
