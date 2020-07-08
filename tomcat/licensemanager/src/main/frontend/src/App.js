@@ -25,7 +25,7 @@ class App extends Component {
 
   render() {
     return (
-      <Router>
+      <Router basename="/licensemanager">
         <div>
           <nav>
             <ul>
