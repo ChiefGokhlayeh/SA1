@@ -124,4 +124,13 @@ public class UsersResource {
     public UserResource getUser(@Context final UriInfo uriInfo, @PathParam("user") final Long id) {
         return new UserResource(uriInfo, id);
     }
+
+    @GET
+    @Path("me")
+    @Login
+    @Produces(MediaType.APPLICATION_JSON)
+    public User me(@Context final HttpServletRequest servletRequest) {
+        final HttpSession session = servletRequest.getSession(false);
+        return session == null ? null : (User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
+    }
 }
