@@ -6,11 +6,28 @@ import Login from "./Login";
 import Logout from "./Logout";
 import React, { Component } from "react";
 
+function normalizeSearchParameters(params) {
+  let newParams = new URLSearchParams();
+  for (const it of params.getAll("sc")) {
+    if (!newParams.getAll("sc").includes(it)) {
+      newParams.append("sc", it);
+    }
+  }
+  let sortedParams = new URLSearchParams();
+  newParams
+    .getAll("sc")
+    .sort()
+    .forEach((val) => sortedParams.append("sc", val));
+  if (params.has("sel")) sortedParams.set("sel", params.get("sel"));
+  return sortedParams;
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loginUser: null,
+      selectedTab: 0,
     };
   }
 
@@ -18,19 +35,27 @@ class App extends Component {
     return this.state.loginUser != null;
   }
 
-  render() {
-    let query = new URLSearchParams(this.props.location.search);
+  componentDidMount() {
+    this.setState({ selectedTab: 0 });
+    this.openQueriedTabs(
+      normalizeSearchParameters(new URLSearchParams(this.props.location.search))
+    );
 
-    let serviceContractTabs = query.getAll("sc").map((sc, index) => {
+    let querySelection = new URLSearchParams(this.props.location.search).get(
+      "sel"
+    );
+    this.serviceContractTabs.forEach((tab) => {
+      if (tab.id === querySelection) this.setState({ selectedTab: tab.index });
+    });
+  }
+
+  openQueriedTabs(query) {
+    this.serviceContractTabs = query.getAll("sc").map((sc, index) => {
       return { id: sc, index: index + 1 };
     });
+  }
 
-    let selectedTab = { id: -1, index: 0 };
-    let querySelection = query.get("sel");
-    serviceContractTabs.forEach((tab) => {
-      if (tab.id === querySelection) selectedTab = tab;
-    });
-
+  render() {
     return (
       <div>
         <div>
@@ -67,7 +92,7 @@ class App extends Component {
                       loginUser: loginUser,
                     });
                     this.props.history.push(
-                      oldLocation.state.referrer
+                      oldLocation.state && oldLocation.state.referrer
                         ? oldLocation.state.referrer
                         : "/"
                     );
@@ -91,10 +116,21 @@ class App extends Component {
               path="/"
               render={(props) =>
                 this.isLoggedIn() ? (
-                  <Tabs defaultIndex={selectedTab.index}>
+                  <Tabs
+                    selectedIndex={this.state.selectedTab}
+                    onSelect={(index) => {
+                      this.setState({ selectedTab: index });
+                      let loc = this.props.location;
+                      let params = new URLSearchParams(loc.search);
+                      if (index > 0) params.set("sel", index);
+                      else params.delete("sel");
+                      loc.search = normalizeSearchParameters(params).toString();
+                      this.props.history.replace(loc);
+                    }}
+                  >
                     <TabList tabIndex={0}>
                       <Tab>Dashboard</Tab>
-                      {serviceContractTabs.map((tab) => {
+                      {this.serviceContractTabs.map((tab) => {
                         return (
                           <Tab index={tab.index} key={tab.id}>
                             Service Contract #{tab.id}
@@ -103,9 +139,28 @@ class App extends Component {
                       })}
                     </TabList>
                     <TabPanel>
-                      <Dashboard {...props} loginUser={this.state.loginUser} />
+                      <Dashboard
+                        {...props}
+                        loginUser={this.state.loginUser}
+                        onOpenServiceContract={(sc, query) => {
+                          let normQuery = normalizeSearchParameters(query);
+                          this.openQueriedTabs(
+                            normalizeSearchParameters(normQuery)
+                          );
+                          console.log(normQuery.toString());
+
+                          let loc = this.props.location;
+                          loc.search = normQuery.toString();
+                          this.props.history.replace(loc);
+                          this.setState({
+                            selectedTab: this.serviceContractTabs.find(
+                              (scFromTabs) => scFromTabs.id === `${sc.id}`
+                            ).index,
+                          });
+                        }}
+                      />
                     </TabPanel>
-                    {serviceContractTabs.map((tab) => {
+                    {this.serviceContractTabs.map((tab) => {
                       return (
                         <TabPanel index={tab.index} key={tab.id}>
                           {tab.id}

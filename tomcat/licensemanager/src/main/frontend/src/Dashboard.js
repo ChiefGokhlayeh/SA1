@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import Async from "react-async";
 import React, { Component } from "react";
@@ -22,6 +21,14 @@ class Dashboard extends Component {
 
   render() {
     const earlier = (a, b) => (a < b ? a.toLocaleString() : b.toLocaleString());
+
+    const createServiceContractSearchQuery = (search, sc) => {
+      let params = new URLSearchParams(search);
+      params.append("sc", sc.id);
+      params.set("sel", sc.id);
+      return params;
+    };
+
     return (
       <div>
         <h1>Dashboard</h1>
@@ -70,11 +77,20 @@ class Dashboard extends Component {
                             </ul>
                           </td>
                           <td>
-                            <Link
-                              to={`/service-contracts/${serviceContract.id}`}
+                            <button
+                              onClick={() => {
+                                if (this.props.onOpenServiceContract)
+                                  this.props.onOpenServiceContract(
+                                    serviceContract,
+                                    createServiceContractSearchQuery(
+                                      this.props.location.search,
+                                      serviceContract
+                                    )
+                                  );
+                              }}
                             >
-                              #{serviceContract.id}
-                            </Link>
+                              Edit #{serviceContract.id}
+                            </button>
                           </td>
                         </tr>
                       ))
