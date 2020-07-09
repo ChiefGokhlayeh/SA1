@@ -30,7 +30,10 @@ class App extends Component {
           <nav>
             <ul>
               <li>
-                <Link to="/">Dashboard</Link>
+                <Link to="/">Licenses</Link>
+              </li>
+              <li>
+                <Link to="/users/me">Profile</Link>
               </li>
               <li>
                 {this.isLoggedIn() ? (
