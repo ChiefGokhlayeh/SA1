@@ -1,11 +1,6 @@
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Link,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import { Link, Redirect, Route, Switch, withRouter } from "react-router-dom";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import Logout from "./Logout";
@@ -24,8 +19,20 @@ class App extends Component {
   }
 
   render() {
+    let query = new URLSearchParams(this.props.location.search);
+
+    let serviceContractTabs = query.getAll("sc").map((sc, index) => {
+      return { id: sc, index: index + 1 };
+    });
+
+    let selectedTab = { id: -1, index: 0 };
+    let querySelection = query.get("sel");
+    serviceContractTabs.forEach((tab) => {
+      if (tab.id === querySelection) selectedTab = tab;
+    });
+
     return (
-      <Router basename="/licensemanager">
+      <div>
         <div>
           <nav>
             <ul>
@@ -53,11 +60,17 @@ class App extends Component {
                 <Login
                   {...props}
                   oldUser={this.state.loginUser}
-                  onLogin={(loginUser) => {
+                  oldLocation={this.props.location}
+                  onLogin={(loginUser, oldLocation) => {
                     console.debug("Setting new loginUser state");
                     this.setState({
                       loginUser: loginUser,
                     });
+                    this.props.history.push(
+                      oldLocation.state.referrer
+                        ? oldLocation.state.referrer
+                        : "/"
+                    );
                   }}
                 />
               )}
@@ -76,12 +89,37 @@ class App extends Component {
             />
             <Route
               path="/"
-              exact={true}
               render={(props) =>
-                !this.isLoggedIn() ? (
-                  <Redirect to="/login" />
+                this.isLoggedIn() ? (
+                  <Tabs defaultIndex={selectedTab.index}>
+                    <TabList tabIndex={0}>
+                      <Tab>Dashboard</Tab>
+                      {serviceContractTabs.map((tab) => {
+                        return (
+                          <Tab index={tab.index} key={tab.id}>
+                            Service Contract #{tab.id}
+                          </Tab>
+                        );
+                      })}
+                    </TabList>
+                    <TabPanel>
+                      <Dashboard {...props} loginUser={this.state.loginUser} />
+                    </TabPanel>
+                    {serviceContractTabs.map((tab) => {
+                      return (
+                        <TabPanel index={tab.index} key={tab.id}>
+                          {tab.id}
+                        </TabPanel>
+                      );
+                    })}
+                  </Tabs>
                 ) : (
-                  <Dashboard {...props} loginUser={this.state.loginUser} />
+                  <Redirect
+                    to={{
+                      pathname: "/login",
+                      state: { referrer: this.props.location },
+                    }}
+                  />
                 )
               }
             />
@@ -90,9 +128,9 @@ class App extends Component {
             </Route>
           </Switch>
         </div>
-      </Router>
+      </div>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

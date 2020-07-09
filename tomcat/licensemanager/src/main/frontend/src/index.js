@@ -1,4 +1,5 @@
 import "./index.css";
+import { BrowserRouter as Router } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 import App from "./App";
 import React from "react";
@@ -6,7 +7,9 @@ import ReactDOM from "react-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Router basename="/licensemanager">
+      <App />
+    </Router>
   </React.StrictMode>,
   document.getElementById("root")
 );

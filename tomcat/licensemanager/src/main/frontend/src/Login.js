@@ -1,5 +1,4 @@
 import "./App.css";
-import { useHistory } from "react-router-dom";
 import { useAsync } from "react-async";
 import React, { useState } from "react";
 
@@ -23,18 +22,16 @@ const queryLoginStatus = async ({ onLogin, signal }) => {
   }
 };
 
-function Login({ onLogin, oldUser }) {
+function Login({ oldUser, oldLocation, onLogin }) {
   const [loginName, setLoginName] = useState(
     oldUser ? oldUser.credentials.loginName : "hanni"
   );
   const [loginPassword, setLoginPassword] = useState("test password 123");
-  const { push: pushHistory } = useHistory({});
   const { data: loginStatus, error, isPending } = useAsync({
     promiseFn: queryLoginStatus,
     onResolve: (loginStatus) => {
       if (loginStatus.success) {
-        onLogin(loginStatus.user);
-        pushHistory("/");
+        onLogin(loginStatus.user, oldLocation);
       }
     },
   });
@@ -97,8 +94,7 @@ function Login({ onLogin, oldUser }) {
     let data = await resp.json();
 
     console.log("Logged in as: " + JSON.stringify(data.user, null, 2));
-    onLogin(data.user);
-    pushHistory("/");
+    onLogin(data.user, oldLocation);
   }
 }
 
