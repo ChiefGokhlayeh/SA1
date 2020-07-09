@@ -1,0 +1,23 @@
+@startsalt
+{+
+    {/
+        <&home> <b>Licenses</b>
+        | <&person> Profile
+        | <&account-logout> Logout
+    } |
+    {
+        {/ <&dashboard> <b>Dashboard</b> | MATLAB - Contract ID 12345 <&circle-x> | Office 2016 - Contract ID 2345 <&circle-x> }
+        Welcome Greg, here are your Licenses:
+        {SI
+            {#
+                <b>Product</b> | <b>Valid From</b> | <b>Valid To</b> | <b>Count</b> | <b>Mapping</b> | <b>Contract</b>
+                MATLAB | 2020-01-01 | 2022-12-31 | 5 | 3/4 <&pencil> | <&eye>
+                Windows 10 | 2020-01-01 | 2022-12-31 | 10 | 4/4 <&pencil> | <&eye>
+                Windows 7 | 2017-01-01 | 2020-12-31 | 3 | 1/4 <&pencil> | <&eye>
+                Office 2016 | 2017-01-01 | 2021-12-31 | 12 | 3/4 <&pencil> | <&eye>
+                Adobe Acrobat | 2019-05-01 | 2021-05-31 | 12 | 4/4 <&pencil> | <&eye>
+            }
+        }
+    }
+}
+@enduml

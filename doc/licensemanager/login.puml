@@ -1,0 +1,7 @@
+@startsalt
+{+
+    <&person> Username | "Username        "
+    <&key> Password | "Password        "
+    [<&account-login> Login]
+}
+@enduml

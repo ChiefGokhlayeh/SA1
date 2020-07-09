@@ -1,0 +1,33 @@
+@startsalt
+{+
+    {/
+        <&home> <b>Licenses</b>
+        | <&person> Profile
+        | <&briefcase> Company
+        | <&account-logout> Logout
+    } |
+    {
+        {/ <&dashboard> Dashboard | <b>New Contract <&circle-x></b> | Office 2016 - Contract ID 2345 <&circle-x> }
+        { Contractual period from | "YYYY-MM-dd" | to | "YYYY-MM-dd" }
+        Licenses in contract:
+        { {SI
+            {#
+                <b>Product</b> | <b>Variant</b> | <b>Valid From</b> | <b>Valid To</b> | <b>Count</b> | <b>Mapping</b>
+                CANoe | Bosch Special Extra | 2019-10-01 | 2020-12-31 | 10 | 0/4 <&pencil>
+                Vector Tools | Bosch Special Extra | 2019-10-01 | 2020-12-31 | 10 | 1/4 <&pencil>
+            }
+        } | { [Add    <&plus>]
+            | [Remove <&minus>] } }
+        Users with access:
+        { {SI
+            {#
+                <b>Username</b> | <b>Firstname</b> | <b>Lastname</b> | <b>Company</b> | <b>Department</b>
+                maexle | Max | Mustermann | Musterfirma GmbH | Muster Abteilung
+                homy | Homer | Simpson | AKW Springfield Ltd. | Reactor Safety
+            }
+        } | { [Add    <&plus>]
+            | [Remove <&minus>] } }
+        { [OK <&check>] | [Cancel <&circle-x>] }
+    }
+}
+@enduml
