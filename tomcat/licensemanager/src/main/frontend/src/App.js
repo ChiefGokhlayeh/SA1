@@ -52,7 +52,7 @@ class App extends Component {
               render={(props) => (
                 <Login
                   {...props}
-                  loginUser={this.state.loginUser}
+                  oldUser={this.state.loginUser}
                   onLogin={(loginUser) => {
                     console.debug("Setting new loginUser state");
                     this.setState({
