@@ -44,10 +44,11 @@ class Login extends Component {
       this.loginStatusAbortController.signal
     );
     let loginStatus = await this.loginStatusQuery;
+    this.forceUpdate();
     if (loginStatus.success) {
       this.props.onLogin(loginStatus.user);
       this.props.history.push("/");
-    } else this.forceUpdate();
+    }
   }
 
   componentWillUnmount() {
@@ -64,7 +65,7 @@ class Login extends Component {
             if (err) return `Something went wrong: ${err.message}`;
             if (data) {
               if (data.success) {
-                return "Already logged in.";
+                return "Already logged in. Redirecting...";
               } else {
                 return (
                   <form onSubmit={(e) => this.handleSubmit(e)}>

@@ -1,20 +1,34 @@
 import { Link } from "react-router-dom";
-import React, { Component } from "react";
+import { useAsync } from "react-async";
+import React from "react";
 
-class Logout extends Component {
-  constructor(props) {
-    super(props);
-    if (props.onLogout) props.onLogout();
-  }
+const logout = async ({ signal }) => {
+  return await fetch(
+    "https://localhost:8443/licensemanager/rest/users/logout",
+    {
+      credentials: "include",
+      method: "GET",
+      signal,
+    }
+  );
+};
 
-  render() {
-    return (
-      <div>
-        You are logged out. Please <Link to="/login">login</Link> again to
-        access the service.
-      </div>
-    );
-  }
+function Logout(onLogout) {
+  const { error, isPending } = useAsync({
+    promiseFn: logout,
+    onResolve: (response) => {
+      if (response.ok && onLogout) onLogout.onLogout();
+    },
+  });
+
+  if (isPending) return <p>Logging out...</p>;
+  if (error) return <p>Something went wrong: {error.message}</p>;
+  return (
+    <p>
+      You are logged out. Please <Link to="/login">login</Link> again to access
+      the service.
+    </p>
+  );
 }
 
 export default Logout;

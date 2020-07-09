@@ -54,6 +54,7 @@ class App extends Component {
                   {...props}
                   loginUser={this.state.loginUser}
                   onLogin={(loginUser) => {
+                    console.debug("Setting new loginUser state");
                     this.setState({
                       loginUser: loginUser,
                     });
@@ -67,14 +68,8 @@ class App extends Component {
                 <Logout
                   {...props}
                   onLogout={() => {
+                    console.debug("Invalidating loginUser");
                     this.setState({ loginUser: null });
-                    fetch(
-                      "https://localhost:8443/licensemanager/rest/users/logout",
-                      {
-                        credentials: "include",
-                        method: "GET",
-                      }
-                    ).catch(console.warn);
                   }}
                 />
               )}
