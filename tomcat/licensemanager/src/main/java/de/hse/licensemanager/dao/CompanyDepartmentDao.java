@@ -33,4 +33,10 @@ public class CompanyDepartmentDao {
         return objs.stream().filter(CompanyDepartment.class::isInstance).map(CompanyDepartment.class::cast)
                 .collect(Collectors.toList());
     }
+
+    public void save(final CompanyDepartment department) {
+        em.getTransaction().begin();
+        em.persist(department);
+        em.getTransaction().commit();
+    }
 }

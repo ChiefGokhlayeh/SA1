@@ -1,12 +1,13 @@
 package de.hse.licensemanager.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -21,12 +22,26 @@ public class IpMapping {
     @Column(name = "id")
     private long id;
 
-    @OneToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "license", nullable = false)
     private License license;
 
     @Column(name = "ip_address", nullable = false)
     private String ipAddress;
+
+    public IpMapping() {
+        this(0, null, null);
+    }
+
+    public IpMapping(final License license, final String ipAddress) {
+        this(0, license, ipAddress);
+    }
+
+    public IpMapping(final long id, final License license, final String ipAddress) {
+        this.id = id;
+        this.license = license;
+        this.ipAddress = ipAddress;
+    }
 
     public long getId() {
         return id;

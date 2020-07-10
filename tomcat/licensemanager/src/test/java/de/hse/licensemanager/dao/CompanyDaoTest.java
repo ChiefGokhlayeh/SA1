@@ -89,7 +89,6 @@ public class CompanyDaoTest {
 
         company.setName("Test Firma Mit Abteilung");
         company.setAddress("Langestraße 123\n123456 Bielefeld");
-        company.addDepartment(department);
 
         CompanyDao.getInstance().save(company);
 
@@ -104,28 +103,43 @@ public class CompanyDaoTest {
 
         company.setName("LicenseManager 2 GmbH");
 
-        CompanyDao.getInstance().save(company);
-
-        final List<Company> companies = CompanyDao.getInstance().getCompanies();
-
-        assertThat(company.getName(), is(in(companies.stream().map((c) -> c.getName()).collect(Collectors.toList()))));
+        assertThat(company.getName(),
+                is(equalTo(CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER).getName())));
     }
 
     @Test
-    public void testAddDepartment() {
-        final CompanyDepartment department = new CompanyDepartment();
-        department.setName("Test Department");
-        final Company company = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
-        final CompanyDepartment[] currentDepartments = company.getDepartments()
-                .toArray(new CompanyDepartment[company.getDepartments().size()]);
-
-        company.addDepartment(department);
+    public void testSaveCascadePersistence() {
+        final Company company = new Company("AKW Springfield", "Burning Tire Road 123, OH-Springfield, USA");
+        final CompanyDepartment department = new CompanyDepartment("Reactor Safety", company);
+        company.getDepartments().add(department);
 
         CompanyDao.getInstance().save(company);
 
-        final List<CompanyDepartment> departments = CompanyDepartmentDao.getInstance().getCompanyDepartments();
-        assertThat(department, is(in(departments)));
-        assertThat(company.getDepartments(), hasItems(currentDepartments));
-        assertThat(department, is(in(company.getDepartments())));
+        assertThat(department, is(in(CompanyDepartmentDao.getInstance().getCompanyDepartments())));
+    }
+
+    @Test
+    public void testDeleteDangling() {
+        final Company company = new Company("AKW Springfield", "Burning Tire Road 123, OH-Springfield, USA");
+
+        CompanyDao.getInstance().save(company);
+
+        assertThat(company, is(in(CompanyDao.getInstance().getCompanies())));
+
+        CompanyDao.getInstance().delete(company);
+
+        assertThat(company, is(not(in(CompanyDao.getInstance().getCompanies()))));
+    }
+
+    @Test
+    public void testDeleteCascadeRemoval() {
+        final Company company = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+        assertThat(company.getDepartments(),
+                containsInAnyOrder(is(in(CompanyDepartmentDao.getInstance().getCompanyDepartments()))));
+
+        CompanyDao.getInstance().delete(company);
+
+        assertThat(company.getDepartments(),
+                not(containsInAnyOrder(is(in(CompanyDepartmentDao.getInstance().getCompanyDepartments())))));
     }
 }

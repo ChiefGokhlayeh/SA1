@@ -4,7 +4,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
@@ -35,13 +34,27 @@ public class Company {
     @Column(name = "address")
     private String address;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
     @JoinColumn(name = "company", insertable = false, updatable = false)
     @JsonIgnore
-    private final List<CompanyDepartment> departments;
+    private final List<CompanyDepartment> departments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "contractor", cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
+    @JsonIgnore
+    private final List<ServiceContract> serviceContracts = new ArrayList<>();
 
     public Company() {
-        departments = new ArrayList<>();
+        this(null, null);
+    }
+
+    public Company(final String name, final String address) {
+        this(0, name, address);
+    }
+
+    public Company(final long id, final String name, final String address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
     }
 
     public long getId() {
@@ -60,23 +73,16 @@ public class Company {
         return departments;
     }
 
+    public void setId(final long id) {
+        this.id = id;
+    }
+
     public void setName(final String name) {
         this.name = name;
     }
 
     public void setAddress(final String address) {
         this.address = address;
-    }
-
-    public void addDepartment(final CompanyDepartment department) {
-        final Company prevCompany = department.getCompany();
-        department.setCompany(this);
-        try {
-            this.departments.add(department);
-        } catch (final Exception e) {
-            department.setCompany(prevCompany);
-            throw e;
-        }
     }
 
     @Override

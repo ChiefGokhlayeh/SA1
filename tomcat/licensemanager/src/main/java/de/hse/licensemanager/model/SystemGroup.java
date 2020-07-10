@@ -23,6 +23,19 @@ public class SystemGroup {
     @Column(name = "displayname", unique = true)
     private String displayName;
 
+    public SystemGroup() {
+        this(null);
+    }
+
+    public SystemGroup(final String displayName) {
+        this(0, displayName);
+    }
+
+    public SystemGroup(final long id, final String displayName) {
+        this.id = id;
+        this.displayName = displayName;
+    }
+
     public long getId() {
         return id;
     }

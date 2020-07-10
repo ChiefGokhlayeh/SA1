@@ -38,4 +38,18 @@ public class CompanyDao {
         em.persist(company);
         em.getTransaction().commit();
     }
+
+    public void delete(final Company company) {
+        em.getTransaction().begin();
+        company.getDepartments().forEach(em::remove);
+        em.remove(company);
+        em.getTransaction().commit();
+    }
+
+    public void delete(final long id) {
+        final Company company = em.find(Company.class, id);
+        if (company != null) {
+            delete(company);
+        }
+    }
 }

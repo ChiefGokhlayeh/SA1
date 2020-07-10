@@ -1,6 +1,7 @@
 package de.hse.licensemanager.model;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -26,7 +27,7 @@ public class License {
     @Column(name = "id")
     private long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "service_contract", nullable = false)
     private ServiceContract serviceContract;
 
@@ -39,12 +40,36 @@ public class License {
     @Column(name = "count", nullable = false)
     private int count;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "product_variant", nullable = false)
     private ProductVariant productVariant;
 
-    @OneToMany(mappedBy = "license", cascade = CascadeType.ALL)
-    private Set<IpMapping> ipMappings;
+    @OneToMany(mappedBy = "license", cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
+    private final Set<IpMapping> ipMappings = new HashSet<>();
+
+    public License() {
+        this(null, null, -1, null);
+    }
+
+    public License(final ServiceContract serviceContract, final String key, final int count,
+            final ProductVariant productVariant) {
+        this(0, serviceContract, null, key, count, productVariant);
+    }
+
+    public License(final ServiceContract serviceContract, final Timestamp expirationDate, final String key,
+            final int count, final ProductVariant productVariant) {
+        this(0, serviceContract, expirationDate, key, count, productVariant);
+    }
+
+    public License(final long id, final ServiceContract serviceContract, final Timestamp expirationDate,
+            final String key, final int count, final ProductVariant productVariant) {
+        this.id = id;
+        this.serviceContract = serviceContract;
+        this.expirationDate = expirationDate;
+        this.key = key;
+        this.count = count;
+        this.productVariant = productVariant;
+    }
 
     public long getId() {
         return id;

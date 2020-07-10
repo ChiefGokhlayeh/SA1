@@ -2,10 +2,12 @@ package de.hse.licensemanager.model;
 
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -17,12 +19,23 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@query_id")
 public class ServiceGroup {
     @Id
-    @JoinColumn(name = "service_contract")
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "service_contract", nullable = false)
     private ServiceContract serviceContract;
 
     @Id
-    @JoinColumn(name = "`user`")
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "`user`", nullable = false)
     private User user;
+
+    public ServiceGroup() {
+        this(null, null);
+    }
+
+    public ServiceGroup(final ServiceContract serviceContract, final User user) {
+        this.serviceContract = serviceContract;
+        this.user = user;
+    }
 
     public ServiceContract getServiceContract() {
         return serviceContract;

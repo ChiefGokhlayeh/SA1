@@ -9,7 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.model.Credentials;
+import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.ServiceGroup;
+import de.hse.licensemanager.model.User;
 
 public class ServiceGroupDaoTest {
 
@@ -48,15 +51,29 @@ public class ServiceGroupDaoTest {
 
     @Test
     public void testSaveSimple() {
-        final ServiceGroup serviceGroup = new ServiceGroup();
-        serviceGroup.setServiceContract(
-                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_B));
-        serviceGroup.setUser(UserDao.getInstance().getUser(PrepareTests.USER_ID_MUSTERMANN));
+        final ServiceGroup serviceGroup = new ServiceGroup(
+                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_B),
+                UserDao.getInstance().getUser(PrepareTests.USER_ID_MUSTERMANN));
 
         ServiceGroupDao.getInstance().save(serviceGroup);
 
         final List<ServiceGroup> serviceGroups = ServiceGroupDao.getInstance().getServiceGroups();
 
         assertThat(serviceGroup, is(in(serviceGroups)));
+    }
+
+    @Test
+    public void testSaveCascadePersistence() {
+        final ServiceGroup serviceGroup = new ServiceGroup(
+                new ServiceContract(CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER)),
+                new User("Homer", "Simpson", "homer.simpson@email.com",
+                        CompanyDepartmentDao.getInstance()
+                                .getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_ACCOUNTING),
+                        SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_ADMIN),
+                        new Credentials("homi", "1234")));
+
+        ServiceGroupDao.getInstance().save(serviceGroup);
+
+        assertThat(serviceGroup, is(in(ServiceGroupDao.getInstance().getServiceGroups())));
     }
 }

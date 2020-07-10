@@ -10,7 +10,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -74,10 +73,32 @@ public class Credentials {
     @JsonIgnore
     private int passwordIterations;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToOne(cascade = { CascadeType.ALL })
     @JoinTable(name = "t_user", joinColumns = @JoinColumn(name = "credentials"), inverseJoinColumns = @JoinColumn(name = "credentials"))
     @JsonIgnore
     private User user;
+
+    public Credentials() {
+    }
+
+    public Credentials(final String loginname, final String passwordPlaintext) {
+        this(0, loginname, null, null, 0);
+        generateNewHash(passwordPlaintext);
+    }
+
+    public Credentials(final String loginname, final byte[] passwordHash, final byte[] passwordSalt,
+            final int passwordIterations) {
+        this(0, loginname, passwordHash, passwordSalt, passwordIterations);
+    }
+
+    public Credentials(final long id, final String loginname, final byte[] passwordHash, final byte[] passwordSalt,
+            final int passwordIterations) {
+        this.id = id;
+        this.loginname = loginname;
+        this.passwordHash = passwordHash;
+        this.passwordSalt = passwordSalt;
+        this.passwordIterations = passwordIterations;
+    }
 
     public long getId() {
         return id;

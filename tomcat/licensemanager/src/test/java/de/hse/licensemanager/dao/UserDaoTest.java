@@ -10,7 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.model.CompanyDepartment;
 import de.hse.licensemanager.model.Credentials;
+import de.hse.licensemanager.model.SystemGroup;
 import de.hse.licensemanager.model.User;
 
 public class UserDaoTest {
@@ -68,19 +70,10 @@ public class UserDaoTest {
 
     @Test
     public void testSaveSimple() {
-        final Credentials credentials = new Credentials();
-        credentials.setLoginname("max_mu");
-        credentials.generateNewHash("hello world");
-        final User user = new User();
-        user.setFirstname("Max");
-        user.setLastname("Mustermann");
-        user.setEmail("max.mustermann@email.com");
-        user.setActive(true);
-        user.setVerified(true);
-        user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
-        user.setCompanyDepartment(
-                CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_IT));
-        user.setCredentials(credentials);
+        final User user = new User("Max", "Mustermann", "max.mustermann@email.com",
+                CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_IT),
+                SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER),
+                new Credentials("max_mu", "hello world"));
 
         UserDao.getInstance().save(user);
 
@@ -99,5 +92,18 @@ public class UserDaoTest {
         UserDao.getInstance().delete(user.getId());
 
         assertThat(user, not(in(UserDao.getInstance().getUsers())));
+    }
+
+    @Test
+    public void testSaveCascadePersistence() {
+        final User user = new User("A", "B", "C",
+                new CompanyDepartment("Some Department",
+                        CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER)),
+                new SystemGroup("some new group"), new Credentials("user A", "super secret password"));
+
+        UserDao.getInstance().save(user);
+
+        assertThat(user, in(UserDao.getInstance().getUsers()));
+        assertThat(user.getSystemGroup(), in(SystemGroupDao.getInstance().getSystemGroups()));
     }
 }

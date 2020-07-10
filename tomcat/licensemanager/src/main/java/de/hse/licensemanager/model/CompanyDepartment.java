@@ -1,11 +1,12 @@
 package de.hse.licensemanager.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,13 +30,27 @@ public class CompanyDepartment {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "company", nullable = false)
     private Company company;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
     @JoinColumn(name = "company_department", insertable = false, updatable = false)
-    private List<User> users;
+    private final List<User> users = new ArrayList<>();
+
+    public CompanyDepartment() {
+        this(null, null);
+    }
+
+    public CompanyDepartment(final String name, final Company company) {
+        this(0, name, company);
+    }
+
+    public CompanyDepartment(final long id, final String name, final Company company) {
+        this.id = id;
+        this.name = name;
+        this.company = company;
+    }
 
     public long getId() {
         return id;

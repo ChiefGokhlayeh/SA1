@@ -1,11 +1,11 @@
 package de.hse.licensemanager.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,23 +44,51 @@ public class User {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "system_group", nullable = false)
     private SystemGroup systemGroup;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "company_department", nullable = false)
     @JsonIgnore
     private CompanyDepartment companyDepartment;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "t_service_group", joinColumns = @JoinColumn(name = "`user`"), inverseJoinColumns = @JoinColumn(name = "service_contract"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
+    @JoinTable(name = "t_service_group", joinColumns = @JoinColumn(name = "`user`", nullable = false), inverseJoinColumns = @JoinColumn(name = "service_contract", nullable = false))
     @JsonIgnore
-    private Set<ServiceContract> serviceContracts;
+    private final Set<ServiceContract> serviceContracts = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "credentials", nullable = false)
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REFRESH, CascadeType.REMOVE })
+    @JoinColumn(name = "credentials", nullable = false, unique = true)
     private Credentials credentials;
+
+    public User() {
+        this(null, null, null, null, null, null);
+    }
+
+    public User(final String firstname, final String lastname, final String email,
+            final CompanyDepartment companyDepartment, final SystemGroup systemGroup, final Credentials credentials) {
+        this(0, firstname, lastname, email, companyDepartment, systemGroup, credentials);
+    }
+
+    public User(final long id, final String firstname, final String lastname, final String email,
+            final CompanyDepartment companyDepartment, final SystemGroup systemGroup, final Credentials credentials) {
+        this(id, firstname, lastname, email, companyDepartment, true, false, systemGroup, credentials);
+    }
+
+    public User(final long id, final String firstname, final String lastname, final String email,
+            final CompanyDepartment companyDepartment, final boolean active, boolean verified,
+            final SystemGroup systemGroup, final Credentials credentials) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.companyDepartment = companyDepartment;
+        this.active = active;
+        this.verified = verified;
+        this.systemGroup = systemGroup;
+        this.credentials = credentials;
+    }
 
     public long getId() {
         return id;

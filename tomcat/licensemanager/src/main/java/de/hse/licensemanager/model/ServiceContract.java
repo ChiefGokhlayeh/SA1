@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ public class ServiceContract {
     private long id;
 
     @JoinColumn(name = "contractor", nullable = false)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private Company contractor;
 
     @Column(name = "start")
@@ -37,12 +40,31 @@ public class ServiceContract {
     @Column(name = "end")
     private Date end;
 
-    @ManyToMany(mappedBy = "serviceContracts")
+    @ManyToMany(mappedBy = "serviceContracts", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JsonIgnore
-    private Set<User> users;
+    private final Set<User> users = new HashSet<>();
 
-    @OneToMany(mappedBy = "serviceContract", cascade = CascadeType.ALL)
-    private Set<License> licenses;
+    @OneToMany(mappedBy = "serviceContract", cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
+    private final Set<License> licenses = new HashSet<>();
+
+    public ServiceContract() {
+        this(null);
+    }
+
+    public ServiceContract(final Company contractor) {
+        this(0, contractor, null, null);
+    }
+
+    public ServiceContract(final Company contractor, final Date start, final Date end) {
+        this(0, contractor, start, end);
+    }
+
+    public ServiceContract(final long id, final Company contractor, final Date start, final Date end) {
+        this.id = id;
+        this.contractor = contractor;
+        this.start = start;
+        this.end = end;
+    }
 
     public long getId() {
         return id;
