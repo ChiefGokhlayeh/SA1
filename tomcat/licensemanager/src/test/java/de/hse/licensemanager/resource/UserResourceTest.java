@@ -4,6 +4,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -21,6 +24,8 @@ public class UserResourceTest {
 
     private Credentials credentials;
     private User user;
+    private Credentials someoneElsesCredentials;
+    private User someoneElse;
     private UserResource userResource;
     private UriInfo uriInfo;
 
@@ -42,7 +47,22 @@ public class UserResourceTest {
         user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
         user.setCredentials(credentials);
 
+        someoneElsesCredentials = new Credentials();
+        someoneElsesCredentials.setLoginname("testuser2");
+        someoneElsesCredentials.generateNewHash("hello world");
+        someoneElse = new User();
+        someoneElse.setFirstname("Somebody");
+        someoneElse.setLastname("Else");
+        someoneElse.setEmail("test2@admin.com");
+        someoneElse.setCompanyDepartment(
+                CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_ACCOUNTING));
+        someoneElse.setActive(true);
+        someoneElse.setVerified(true);
+        someoneElse.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
+        someoneElse.setCredentials(someoneElsesCredentials);
+
         UserDao.getInstance().save(user);
+        UserDao.getInstance().save(someoneElse);
 
         uriInfo = mock(UriInfo.class);
 
@@ -65,5 +85,38 @@ public class UserResourceTest {
         userResource.delete();
 
         assertThat(user, not(in(UserDao.getInstance().getUsers())));
+    }
+
+    @Test
+    public void testPutSelf() {
+        final String expectedFirstname = "Foo";
+        user.setFirstname(expectedFirstname);
+
+        final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
+        final HttpSession fakeSession = mock(HttpSession.class);
+        when(fakeSession.getAttribute(HttpHeaders.AUTHORIZATION)).thenReturn(user);
+        when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
+
+        final Response response = userResource.put(user, fakeRequest);
+
+        assertThat(response, notNullValue());
+        assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+        assertThat(UserDao.getInstance().getUser(user.getId()).getFirstname(), is(equalTo(expectedFirstname)));
+    }
+
+    @Test
+    public void testPutSomebodyElseAsNonAdmin() {
+        final String expectedFirstname = "Foo";
+        user.setFirstname(expectedFirstname);
+
+        final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
+        final HttpSession fakeSession = mock(HttpSession.class);
+        when(fakeSession.getAttribute(HttpHeaders.AUTHORIZATION)).thenReturn(someoneElse);
+        when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
+
+        final Response response = userResource.put(user, fakeRequest);
+
+        assertThat(response, notNullValue());
+        assertThat(response.getStatus(), is(Response.Status.FORBIDDEN.getStatusCode()));
     }
 }
