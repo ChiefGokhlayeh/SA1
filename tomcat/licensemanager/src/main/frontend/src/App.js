@@ -37,22 +37,26 @@ class App extends Component {
 
   componentDidMount() {
     this.setState({ selectedTab: 0 });
-    this.openQueriedTabs(
-      normalizeSearchParameters(new URLSearchParams(this.props.location.search))
+    let query = normalizeSearchParameters(
+      new URLSearchParams(this.props.location.search)
     );
+    this.openQueriedTabs(query);
 
-    let querySelection = new URLSearchParams(this.props.location.search).get(
-      "sel"
-    );
+    let querySelection = query.get("sel");
     this.serviceContractTabs.forEach((tab) => {
       if (tab.id === querySelection) this.setState({ selectedTab: tab.index });
     });
   }
 
   openQueriedTabs(query) {
-    this.serviceContractTabs = query.getAll("sc").map((sc, index) => {
-      return { id: sc, index: index + 1 };
-    });
+    this.serviceContractTabs = query
+      .getAll("sc")
+      .filter((sc) =>
+        this.serviceContractTabs !== null
+          ? this.serviceContractTabs.find((tab) => tab.id === sc) !== null
+          : true
+      )
+      .map((sc, index) => ({ id: sc, index: index + 1 }));
   }
 
   render() {
@@ -114,18 +118,28 @@ class App extends Component {
             />
             <Route
               path="/"
+              exact={true}
               render={(props) =>
                 this.isLoggedIn() ? (
                   <Tabs
                     selectedIndex={this.state.selectedTab}
                     onSelect={(index) => {
-                      this.setState({ selectedTab: index });
-                      let loc = this.props.location;
-                      let params = new URLSearchParams(loc.search);
-                      if (index > 0) params.set("sel", index);
-                      else params.delete("sel");
-                      loc.search = normalizeSearchParameters(params).toString();
-                      this.props.history.replace(loc);
+                      if (
+                        this.serviceContractTabs.find(
+                          (tab) => tab.index === index
+                        ) ||
+                        index === 0
+                      ) {
+                        this.setState({ selectedTab: index });
+                        let loc = this.props.location;
+                        let params = new URLSearchParams(loc.search);
+                        if (index > 0) params.set("sel", index);
+                        else params.delete("sel");
+                        loc.search = normalizeSearchParameters(
+                          params
+                        ).toString();
+                        this.props.history.replace(loc);
+                      }
                     }}
                   >
                     <TabList tabIndex={0}>
@@ -134,6 +148,29 @@ class App extends Component {
                         return (
                           <Tab index={tab.index} key={tab.id}>
                             Service Contract #{tab.id}
+                            <button
+                              onClick={() => {
+                                let loc = this.props.location;
+                                let oldQuery = new URLSearchParams(loc.search);
+                                let query = new URLSearchParams();
+                                for (const it of oldQuery.entries()) {
+                                  if (it[0] !== "sc" || it[1] !== `${tab.id}`) {
+                                    query.append(it[0], it[1]);
+                                  }
+                                }
+                                query.delete("sel");
+                                query = normalizeSearchParameters(query);
+                                this.openQueriedTabs(query);
+
+                                loc.search = query.toString();
+                                this.props.history.replace(loc);
+                                this.setState({
+                                  selectedTab: 0,
+                                });
+                              }}
+                            >
+                              x
+                            </button>
                           </Tab>
                         );
                       })}
@@ -144,10 +181,7 @@ class App extends Component {
                         loginUser={this.state.loginUser}
                         onOpenServiceContract={(sc, query) => {
                           let normQuery = normalizeSearchParameters(query);
-                          this.openQueriedTabs(
-                            normalizeSearchParameters(normQuery)
-                          );
-                          console.log(normQuery.toString());
+                          this.openQueriedTabs(normQuery);
 
                           let loc = this.props.location;
                           loc.search = normQuery.toString();
