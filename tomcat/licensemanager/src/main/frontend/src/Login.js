@@ -93,7 +93,7 @@ function Login({ oldUser, oldLocation, onLogin }) {
     );
     let data = await resp.json();
 
-    console.log("Logged in as: " + JSON.stringify(data.user, null, 2));
+    console.debug("Logged in as: " + JSON.stringify(data.user, null, 2));
     onLogin(data.user, oldLocation);
   }
 }
