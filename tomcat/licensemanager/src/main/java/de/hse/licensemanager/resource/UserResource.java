@@ -31,11 +31,11 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public User getUser() {
+    public Response getUser() {
         final User user = UserDao.getInstance().getUser(id);
         if (user == null)
-            throw new RuntimeException("GET: User with " + id + " not found");
-        return user;
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(user).build();
     }
 
     @PUT

@@ -4,12 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,10 +33,11 @@ public class ServiceContractResourceTest {
 
     @Test
     public void testGet() {
-        final ServiceContract testServiceContract = serviceContractResource.get();
+        final Response testServiceContractResponse = serviceContractResource.get();
 
-        assertThat(testServiceContract, notNullValue());
-        assertThat(testServiceContract, equalTo(serviceContract));
+        assertThat(testServiceContractResponse, notNullValue());
+        assertThat(testServiceContractResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertThat(testServiceContractResponse.getEntity(), equalTo(serviceContract));
     }
 
     @Test
@@ -53,11 +50,7 @@ public class ServiceContractResourceTest {
     }
 
     @Test
-    public void testPut() throws URISyntaxException {
-        when(uriInfo.getAbsolutePath())
-                .thenReturn(new URI("http://www.test.org/service-contracts/" + serviceContract.getId()));
-        final JAXBElement<ServiceContract> dummyElement = new JAXBElement<>(
-                new QName("http://www.test.org", "service-contract"), ServiceContract.class, serviceContract);
-        serviceContractResource.put(dummyElement);
+    public void testPut() {
+        serviceContractResource.put(serviceContract);
     }
 }

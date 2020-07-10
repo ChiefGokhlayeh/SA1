@@ -28,11 +28,11 @@ public class ServiceContractResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceContract get() {
+    public Response get() {
         final ServiceContract serviceContract = ServiceContractDao.getInstance().getServiceContract(id);
         if (serviceContract == null)
-            throw new RuntimeException("GET: ServiceContract with " + id + " not found");
-        return serviceContract;
+            return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(serviceContract).build();
     }
 
     @DELETE

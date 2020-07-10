@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.junit.Before;
@@ -50,10 +51,11 @@ public class UserResourceTest {
 
     @Test
     public void testGetUser() {
-        final User testUser = userResource.getUser();
+        final Response testUserResponse = userResource.getUser();
 
-        assertThat(testUser, notNullValue());
-        assertThat(testUser, equalTo(user));
+        assertThat(testUserResponse, notNullValue());
+        assertThat(testUserResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertThat(testUserResponse.getEntity(), equalTo(user));
     }
 
     @Test
