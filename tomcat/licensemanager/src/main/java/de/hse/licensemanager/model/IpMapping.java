@@ -54,4 +54,12 @@ public class IpMapping {
     public String getIpAddress() {
         return ipAddress;
     }
+
+    public void setLicense(final License license) {
+        this.license = license;
+    }
+
+    public void setIpAddress(final String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 }

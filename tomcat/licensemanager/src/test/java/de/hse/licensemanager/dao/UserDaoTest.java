@@ -29,8 +29,8 @@ public class UserDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final UserDao a = UserDao.getInstance();
-        final UserDao b = UserDao.getInstance();
+        final IUserDao a = UserDao.getInstance();
+        final IUserDao b = UserDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

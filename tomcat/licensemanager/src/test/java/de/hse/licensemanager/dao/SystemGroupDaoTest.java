@@ -26,8 +26,8 @@ public class SystemGroupDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final SystemGroupDao a = SystemGroupDao.getInstance();
-        final SystemGroupDao b = SystemGroupDao.getInstance();
+        final ISystemGroupDao a = SystemGroupDao.getInstance();
+        final ISystemGroupDao b = SystemGroupDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

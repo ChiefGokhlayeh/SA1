@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 
 import de.hse.licensemanager.model.SystemGroup;
 
-public class SystemGroupDao {
+public class SystemGroupDao implements ISystemGroupDao {
 
     private static SystemGroupDao dao;
 
@@ -17,7 +17,7 @@ public class SystemGroupDao {
         em = DaoManager.getEntityManager();
     }
 
-    public static synchronized SystemGroupDao getInstance() {
+    public static synchronized ISystemGroupDao getInstance() {
         if (dao == null) {
             dao = new SystemGroupDao();
         }
@@ -34,11 +34,44 @@ public class SystemGroupDao {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void delete(final SystemGroup systemGroup) {
+        em.getTransaction().begin();
+        em.remove(systemGroup);
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void delete(final long id) {
+        final SystemGroup systemGroup = em.find(SystemGroup.class, id);
+        if (systemGroup != null) {
+            delete(systemGroup);
+        }
+    }
+
+    @Override
+    public void modify(final long idToModify, final SystemGroup other) {
+        em.getTransaction().begin();
+        final SystemGroup systemGroup = getSystemGroup(idToModify);
+        if (systemGroup == null)
+            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+
+        em.refresh(systemGroup);
+        systemGroup.setDisplayName(other.getDisplayName());
+        em.flush();
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void refresh(final SystemGroup systemGroup) {
+        em.getTransaction().begin();
+        em.refresh(systemGroup);
+        em.getTransaction().commit();
+    }
+
     public void save(final SystemGroup systemGroup) {
         em.getTransaction().begin();
-
         em.persist(systemGroup);
-
         em.getTransaction().commit();
     }
 }

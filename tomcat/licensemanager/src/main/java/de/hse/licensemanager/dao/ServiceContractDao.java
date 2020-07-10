@@ -9,7 +9,7 @@ import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.User;
 
-public class ServiceContractDao {
+public class ServiceContractDao implements IServiceContractDao {
 
     private static ServiceContractDao dao;
 
@@ -19,30 +19,21 @@ public class ServiceContractDao {
         em = DaoManager.getEntityManager();
     }
 
-    public static synchronized ServiceContractDao getInstance() {
+    public static synchronized IServiceContractDao getInstance() {
         if (dao == null) {
             dao = new ServiceContractDao();
         }
         return dao;
     }
 
-    public ServiceContract getServiceContract(final long id) {
-        return em.find(ServiceContract.class, id);
-    }
-
+    @Override
     public List<ServiceContract> getServiceContracts() {
         final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s").getResultList();
         return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
                 .collect(Collectors.toList());
     }
 
-    public List<ServiceContract> getServiceContractsOfUser(final User user) {
-        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s, ServiceGroup sg WHERE sg.user=:user")
-                .setParameter("user", user).getResultList();
-        return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
-                .collect(Collectors.toList());
-    }
-
+    @Override
     public List<ServiceContract> getServiceContractsOfCompany(final Company company) {
         final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s WHERE s.contractor=:contractor")
                 .setParameter("contractor", company).getResultList();
@@ -50,16 +41,54 @@ public class ServiceContractDao {
                 .collect(Collectors.toList());
     }
 
-    public void delete(long id) {
+    @Override
+    public List<ServiceContract> getServiceContractsOfUser(final User user) {
+        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s, ServiceGroup sg WHERE sg.user=:user")
+                .setParameter("user", user).getResultList();
+        return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ServiceContract getServiceContract(final long id) {
+        return em.find(ServiceContract.class, id);
+    }
+
+    @Override
+    public void delete(final long id) {
         delete(em.find(ServiceContract.class, id));
     }
 
+    @Override
     public void delete(final ServiceContract serviceContract) {
         em.getTransaction().begin();
         em.remove(serviceContract);
         em.getTransaction().commit();
     }
 
+    @Override
+    public void modify(final long idToModify, final ServiceContract other) {
+        em.getTransaction().begin();
+        final ServiceContract serviceContract = getServiceContract(idToModify);
+        if (serviceContract == null)
+            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+
+        em.refresh(serviceContract);
+        serviceContract.setContractor(other.getContractor());
+        serviceContract.setEnd(other.getEnd());
+        serviceContract.setStart(other.getStart());
+        em.flush();
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void refresh(final ServiceContract serviceContract) {
+        em.getTransaction().begin();
+        em.refresh(serviceContract);
+        em.getTransaction().commit();
+    }
+
+    @Override
     public void save(final ServiceContract serviceContract) {
         em.getTransaction().begin();
         em.persist(serviceContract);

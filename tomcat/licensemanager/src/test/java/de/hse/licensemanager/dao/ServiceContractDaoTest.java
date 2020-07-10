@@ -26,8 +26,8 @@ public class ServiceContractDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final ServiceContractDao a = ServiceContractDao.getInstance();
-        final ServiceContractDao b = ServiceContractDao.getInstance();
+        final IServiceContractDao a = ServiceContractDao.getInstance();
+        final IServiceContractDao b = ServiceContractDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

@@ -26,8 +26,8 @@ public class LicenseDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final LicenseDao a = LicenseDao.getInstance();
-        final LicenseDao b = LicenseDao.getInstance();
+        final ILicenseDao a = LicenseDao.getInstance();
+        final ILicenseDao b = LicenseDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

@@ -102,4 +102,9 @@ public class Company {
         return Objects.equals(this.id, otherCompany.id) && Objects.equals(this.name, otherCompany.name)
                 && Objects.equals(this.address, otherCompany.address);
     }
+
+    @Override
+    public String toString() {
+        return String.format("{ id: %s, name: %s, address: %s }", id, name, address);
+    }
 }

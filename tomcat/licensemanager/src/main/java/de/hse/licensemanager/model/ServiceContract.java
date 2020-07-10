@@ -28,7 +28,7 @@ public class ServiceContract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private final long id;
 
     @JoinColumn(name = "contractor", nullable = false)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
@@ -84,6 +84,18 @@ public class ServiceContract {
 
     public Set<License> getLicenses() {
         return licenses;
+    }
+
+    public void setContractor(final Company contractor) {
+        this.contractor = contractor;
+    }
+
+    public void setEnd(final Date end) {
+        this.end = end;
+    }
+
+    public void setStart(final Date start) {
+        this.start = start;
     }
 
     @Override

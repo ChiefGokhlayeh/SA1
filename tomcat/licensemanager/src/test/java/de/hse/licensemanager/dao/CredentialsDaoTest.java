@@ -26,8 +26,8 @@ public class CredentialsDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final CredentialsDao a = CredentialsDao.getInstance();
-        final CredentialsDao b = CredentialsDao.getInstance();
+        final ICredentialsDao a = CredentialsDao.getInstance();
+        final ICredentialsDao b = CredentialsDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

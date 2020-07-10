@@ -26,8 +26,8 @@ public class IpMappingDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final IpMappingDao a = IpMappingDao.getInstance();
-        final IpMappingDao b = IpMappingDao.getInstance();
+        final IIpMappingDao a = IpMappingDao.getInstance();
+        final IIpMappingDao b = IpMappingDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

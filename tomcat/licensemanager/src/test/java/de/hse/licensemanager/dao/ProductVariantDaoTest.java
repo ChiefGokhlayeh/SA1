@@ -25,8 +25,8 @@ public class ProductVariantDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final ProductVariantDao a = ProductVariantDao.getInstance();
-        final ProductVariantDao b = ProductVariantDao.getInstance();
+        final IProductVariantDao a = ProductVariantDao.getInstance();
+        final IProductVariantDao b = ProductVariantDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

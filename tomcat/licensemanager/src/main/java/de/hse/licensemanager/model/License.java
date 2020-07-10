@@ -25,7 +25,7 @@ public class License {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private final long id;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "service_contract", nullable = false)
@@ -97,5 +97,25 @@ public class License {
 
     public Set<IpMapping> getIpMappings() {
         return ipMappings;
+    }
+
+    public void setCount(final int count) {
+        this.count = count;
+    }
+
+    public void setExpirationDate(final Timestamp expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public void setKey(final String key) {
+        this.key = key;
+    }
+
+    public void setProductVariant(final ProductVariant productVariant) {
+        this.productVariant = productVariant;
+    }
+
+    public void setServiceContract(final ServiceContract serviceContract) {
+        this.serviceContract = serviceContract;
     }
 }

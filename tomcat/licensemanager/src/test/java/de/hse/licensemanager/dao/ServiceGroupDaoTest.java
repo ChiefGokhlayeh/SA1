@@ -28,8 +28,8 @@ public class ServiceGroupDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final ServiceGroupDao a = ServiceGroupDao.getInstance();
-        final ServiceGroupDao b = ServiceGroupDao.getInstance();
+        final IServiceGroupDao a = ServiceGroupDao.getInstance();
+        final IServiceGroupDao b = ServiceGroupDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

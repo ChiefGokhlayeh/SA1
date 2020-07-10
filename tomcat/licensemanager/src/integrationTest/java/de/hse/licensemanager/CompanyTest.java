@@ -95,7 +95,7 @@ public class CompanyTest {
         final Response response = b.buildGet().invoke();
 
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-        assertThat(response.readEntity(Company.class), is(equalTo(company)));
+        assertThat(response.readEntity(Company.class).getId(), is(equalTo(company.getId())));
     }
 
     @Test

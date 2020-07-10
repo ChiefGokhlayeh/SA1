@@ -27,8 +27,8 @@ public class CompanyDaoTest {
 
     @Test
     public void testInstanceSingleton() {
-        final CompanyDao a = CompanyDao.getInstance();
-        final CompanyDao b = CompanyDao.getInstance();
+        final ICompanyDao a = CompanyDao.getInstance();
+        final ICompanyDao b = CompanyDao.getInstance();
         assertThat(a, sameInstance(b));
     }
 

@@ -37,4 +37,12 @@ public class ProductVariant {
     public String getVersion() {
         return version;
     }
+
+    public void setProduct(final String product) {
+        this.product = product;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
+    }
 }
