@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.ServiceContractDao;
+import de.hse.licensemanager.filter.AdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceContract;
 
@@ -35,11 +36,13 @@ public class ServiceContractResource {
     }
 
     @DELETE
+    @AdminOnly
     public void delete() {
         ServiceContractDao.getInstance().delete(id);
     }
 
     @PUT
+    @AdminOnly
     @Consumes(MediaType.APPLICATION_JSON)
     public Response put(final ServiceContract serviceContract) {
         ServiceContractDao.getInstance().save(serviceContract);
