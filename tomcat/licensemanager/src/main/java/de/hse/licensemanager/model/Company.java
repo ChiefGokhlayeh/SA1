@@ -100,7 +100,6 @@ public class Company {
 
         final Company otherCompany = (Company) other;
         return Objects.equals(this.id, otherCompany.id) && Objects.equals(this.name, otherCompany.name)
-                && Objects.equals(this.address, otherCompany.address)
-                && Objects.equals(this.departments, otherCompany.departments);
+                && Objects.equals(this.address, otherCompany.address);
     }
 }

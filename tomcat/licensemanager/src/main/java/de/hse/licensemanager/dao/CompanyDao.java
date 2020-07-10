@@ -52,4 +52,23 @@ public class CompanyDao {
             delete(company);
         }
     }
+
+    public void modify(final long idToModify, final Company other) {
+        em.getTransaction().begin();
+        final Company company = getCompany(idToModify);
+        if (company == null)
+            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+
+        em.refresh(company);
+        company.setName(other.getName());
+        company.setAddress(other.getAddress());
+        em.flush();
+        em.getTransaction().commit();
+    }
+
+    public void refresh(final Company company) {
+        em.getTransaction().begin();
+        em.refresh(company);
+        em.getTransaction().commit();
+    }
 }
