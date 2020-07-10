@@ -9,7 +9,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import de.hse.licensemanager.dao.ServiceContractDao;
 import de.hse.licensemanager.filter.Login;
@@ -42,12 +41,7 @@ public class ServiceContractResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final JAXBElement<ServiceContract> serviceContract) {
-        final ServiceContract sc = serviceContract.getValue();
-        return saveAndGetResponse(sc);
-    }
-
-    private Response saveAndGetResponse(final ServiceContract serviceContract) {
+    public Response put(final ServiceContract serviceContract) {
         ServiceContractDao.getInstance().save(serviceContract);
         return Response.created(uriInfo.getAbsolutePath()).build();
     }
