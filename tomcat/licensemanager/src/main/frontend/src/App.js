@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard";
 import Login from "./Login";
 import Logout from "./Logout";
 import React, { Component } from "react";
+import ServiceContract from "./ServiceContract";
 
 function normalizeSearchParameters(params) {
   let newParams = new URLSearchParams();
@@ -52,7 +53,7 @@ class App extends Component {
     this.serviceContractTabs = query
       .getAll("sc")
       .filter((sc) =>
-        this.serviceContractTabs !== null
+        this.serviceContractTabs
           ? this.serviceContractTabs.find((tab) => tab.id === sc) !== null
           : true
       )
@@ -197,7 +198,7 @@ class App extends Component {
                     {this.serviceContractTabs.map((tab) => {
                       return (
                         <TabPanel index={tab.index} key={tab.id}>
-                          {tab.id}
+                          <ServiceContract id={tab.id} />
                         </TabPanel>
                       );
                     })}
