@@ -50,8 +50,8 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testGetUser() {
-        final Response testUserResponse = userResource.getUser();
+    public void testGet() {
+        final Response testUserResponse = userResource.get();
 
         assertThat(testUserResponse, notNullValue());
         assertThat(testUserResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
@@ -59,10 +59,10 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testDeleteUser() {
+    public void testDelete() {
         assertThat(user, in(UserDao.getInstance().getUsers()));
 
-        userResource.deleteUser();
+        userResource.delete();
 
         assertThat(user, not(in(UserDao.getInstance().getUsers())));
     }

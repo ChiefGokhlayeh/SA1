@@ -31,7 +31,7 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUser() {
+    public Response get() {
         final User user = UserDao.getInstance().getUser(id);
         if (user == null)
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -40,12 +40,13 @@ public class UserResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response putUser(final User modifiedUser, @Context final HttpServletRequest httpServletRequest) {
+    public Response put(final User modifiedUser, @Context final HttpServletRequest httpServletRequest) {
         final User loginUser = (User) httpServletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
 
         if ((loginUser.getId() == id || loginUser.getSystemGroup().getDisplayName().equals("admin"))
                 && loginUser.isActive()) {
-            return saveAndGetResponse(modifiedUser);
+            UserDao.getInstance().save(modifiedUser);
+            return Response.created(uriInfo.getAbsolutePath()).build();
         } else {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -53,12 +54,7 @@ public class UserResource {
 
     @DELETE
     @AdminOnly
-    public void deleteUser() {
+    public void delete() {
         UserDao.getInstance().delete(id);
-    }
-
-    private Response saveAndGetResponse(final User user) {
-        UserDao.getInstance().save(user);
-        return Response.created(uriInfo.getAbsolutePath()).build();
     }
 }
