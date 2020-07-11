@@ -22,13 +22,6 @@ class Dashboard extends Component {
   render() {
     const earlier = (a, b) => (a < b ? a.toLocaleString() : b.toLocaleString());
 
-    const createServiceContractSearchQuery = (search, sc) => {
-      let params = new URLSearchParams(search);
-      params.append("sc", sc.id);
-      params.set("sel", sc.id);
-      return params;
-    };
-
     return (
       <div>
         <h1>Dashboard</h1>
@@ -81,11 +74,7 @@ class Dashboard extends Component {
                               onClick={() => {
                                 if (this.props.onOpenServiceContract)
                                   this.props.onOpenServiceContract(
-                                    serviceContract,
-                                    createServiceContractSearchQuery(
-                                      this.props.location.search,
-                                      serviceContract
-                                    )
+                                    serviceContract
                                   );
                               }}
                             >

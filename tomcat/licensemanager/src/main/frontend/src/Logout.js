@@ -28,8 +28,11 @@ function Logout(onLogout) {
   if (error) return <p>Something went wrong: {error.message}</p>;
   return (
     <p>
-      You are logged out. Please <Link to={loginUrl}>login</Link> again to
-      access the service.
+      You are logged out. Please{" "}
+      <Link to={loginUrl} replace>
+        login
+      </Link>{" "}
+      again to access the service.
     </p>
   );
 }

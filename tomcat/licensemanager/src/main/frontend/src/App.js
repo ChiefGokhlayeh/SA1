@@ -1,226 +1,187 @@
 import "./App.css";
-import { Link, Redirect, Route, Switch, withRouter } from "react-router-dom";
+import { Link, Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Dashboard from "./Dashboard";
 import Login, { url as loginUrl } from "./Login";
 import Logout, { url as logoutUrl } from "./Logout";
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import ServiceContract from "./ServiceContract";
 
-function normalizeSearchParameters(params) {
-  let newParams = new URLSearchParams();
-  for (const it of params.getAll("sc")) {
-    if (!newParams.getAll("sc").includes(it)) {
-      newParams.append("sc", it);
-    }
-  }
-  let sortedParams = new URLSearchParams();
-  newParams
-    .getAll("sc")
-    .sort()
-    .forEach((val) => sortedParams.append("sc", val));
-  if (params.has("sel")) sortedParams.set("sel", params.get("sel"));
-  return sortedParams;
-}
+const useStateWithLocalStorage = (sessionStorageKey, initialValue = null) => {
+  let storageValue = sessionStorage.getItem(sessionStorageKey);
+  const [value, setValue] = useState(
+    storageValue ? JSON.parse(storageValue) : initialValue
+  );
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loginUser: null,
-      selectedTab: 0,
-    };
-  }
+  useEffect(() => {
+    sessionStorage.setItem(sessionStorageKey, JSON.stringify(value));
+  }, [value, sessionStorageKey]);
 
-  isLoggedIn() {
-    return this.state.loginUser != null;
-  }
+  return [value, setValue];
+};
 
-  componentDidMount() {
-    this.setState({ selectedTab: 0 });
-    let query = normalizeSearchParameters(
-      new URLSearchParams(this.props.location.search)
-    );
-    this.openQueriedTabs(query);
+function App() {
+  let history = useHistory();
+  const [loginUser, setLoginUser] = useStateWithLocalStorage("login-user");
+  const [openTabs, setOpenTabs] = useStateWithLocalStorage(
+    "open-service-contract-tabs",
+    []
+  );
+  const [selectedTab, setSelectedTab] = useStateWithLocalStorage(
+    "selected-service-contract-tabs",
+    0
+  );
+  useEffect(() => {
+    if (!openTabs.find((openTab) => openTab.index === selectedTab))
+      setSelectedTab(0);
+  }, [openTabs, selectedTab, setSelectedTab]);
 
-    let querySelection = query.get("sel");
-    this.serviceContractTabs.forEach((tab) => {
-      if (tab.id === querySelection) this.setState({ selectedTab: tab.index });
-    });
-  }
-
-  openQueriedTabs(query) {
-    this.serviceContractTabs = query
-      .getAll("sc")
-      .filter((sc) =>
-        this.serviceContractTabs
-          ? this.serviceContractTabs.find((tab) => tab.id === sc) !== null
-          : true
-      )
-      .map((sc, index) => ({ id: sc, index: index + 1 }));
-  }
-
-  render() {
-    return (
+  return (
+    <div>
       <div>
-        <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Licenses</Link>
-              </li>
-              <li>
-                <Link to="/users/me">Profile</Link>
-              </li>
-              <li>
-                {this.isLoggedIn() ? (
-                  <Link to={logoutUrl}>Logout</Link>
-                ) : (
-                  <Link to={loginUrl}>Login</Link>
-                )}
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div>
-          <Switch>
-            <Route
-              path={loginUrl}
-              render={(props) => (
-                <Login
-                  {...props}
-                  oldUser={this.state.loginUser}
-                  oldLocation={this.props.location}
-                  onLogin={(loginUser, oldLocation) => {
-                    console.debug("Setting new loginUser state");
-                    this.setState({
-                      loginUser: loginUser,
-                    });
-                    this.props.history.push(
-                      oldLocation.state && oldLocation.state.referrer
-                        ? oldLocation.state.referrer
-                        : "/"
-                    );
-                  }}
-                />
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Licenses</Link>
+            </li>
+            <li>
+              <Link to="/users/myself">Profile</Link>
+            </li>
+            <li>
+              {loginUser ? (
+                <Link to={logoutUrl} replace>
+                  Logout
+                </Link>
+              ) : (
+                <Link to={loginUrl} replace>
+                  Login
+                </Link>
               )}
-            />
-            <Route
-              path={logoutUrl}
-              render={(props) => (
-                <Logout
-                  {...props}
-                  onLogout={() => {
-                    console.debug("Invalidating loginUser");
-                    this.setState({ loginUser: null });
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div>
+        <Switch>
+          <Route
+            path={loginUrl}
+            render={() => (
+              <Login
+                oldUser={loginUser}
+                oldLocation={history.location}
+                onLogin={(loginUser, oldLocation) => {
+                  console.debug("Setting new loginUser state");
+                  setLoginUser(loginUser);
+                  history.replace(
+                    oldLocation.state && oldLocation.state.referrer
+                      ? oldLocation.state.referrer
+                      : "/"
+                  );
+                }}
+              />
+            )}
+          />
+          <Route
+            path={logoutUrl}
+            render={(props) => (
+              <Logout
+                {...props}
+                onLogout={() => {
+                  console.debug("Invalidating loginUser");
+                  setLoginUser(null);
+                  setSelectedTab(0);
+                  setOpenTabs([]);
+                  sessionStorage.clear();
+                }}
+              />
+            )}
+          />
+          <Route
+            path="/"
+            exact={true}
+            render={(props) =>
+              loginUser != null ? (
+                <Tabs
+                  selectedIndex={selectedTab}
+                  onSelect={(index) => {
+                    if (
+                      openTabs.find((tab) => tab.index === index) ||
+                      index === 0
+                    ) {
+                      setSelectedTab(index);
+                    }
                   }}
-                />
-              )}
-            />
-            <Route
-              path="/"
-              exact={true}
-              render={(props) =>
-                this.isLoggedIn() ? (
-                  <Tabs
-                    selectedIndex={this.state.selectedTab}
-                    onSelect={(index) => {
-                      if (
-                        this.serviceContractTabs.find(
-                          (tab) => tab.index === index
-                        ) ||
-                        index === 0
-                      ) {
-                        this.setState({ selectedTab: index });
-                        let loc = this.props.location;
-                        let params = new URLSearchParams(loc.search);
-                        if (index > 0) params.set("sel", index);
-                        else params.delete("sel");
-                        loc.search = normalizeSearchParameters(
-                          params
-                        ).toString();
-                        this.props.history.replace(loc);
-                      }
-                    }}
-                  >
-                    <TabList tabIndex={0}>
-                      <Tab>Dashboard</Tab>
-                      {this.serviceContractTabs.map((tab) => {
-                        return (
-                          <Tab index={tab.index} key={tab.id}>
-                            Service Contract #{tab.id}
-                            <button
-                              onClick={() => {
-                                let loc = this.props.location;
-                                let oldQuery = new URLSearchParams(loc.search);
-                                let query = new URLSearchParams();
-                                for (const it of oldQuery.entries()) {
-                                  if (it[0] !== "sc" || it[1] !== `${tab.id}`) {
-                                    query.append(it[0], it[1]);
-                                  }
-                                }
-                                query.delete("sel");
-                                query = normalizeSearchParameters(query);
-                                this.openQueriedTabs(query);
-
-                                loc.search = query.toString();
-                                this.props.history.replace(loc);
-                                this.setState({
-                                  selectedTab: 0,
-                                });
-                              }}
-                            >
-                              x
-                            </button>
-                          </Tab>
-                        );
-                      })}
-                    </TabList>
-                    <TabPanel>
-                      <Dashboard
-                        {...props}
-                        loginUser={this.state.loginUser}
-                        onOpenServiceContract={(sc, query) => {
-                          let normQuery = normalizeSearchParameters(query);
-                          this.openQueriedTabs(normQuery);
-
-                          let loc = this.props.location;
-                          loc.search = normQuery.toString();
-                          this.props.history.replace(loc);
-                          this.setState({
-                            selectedTab: this.serviceContractTabs.find(
-                              (scFromTabs) => scFromTabs.id === `${sc.id}`
-                            ).index,
-                          });
-                        }}
-                      />
-                    </TabPanel>
-                    {this.serviceContractTabs.map((tab) => {
+                >
+                  <TabList>
+                    <Tab index={0}>Dashboard</Tab>
+                    {openTabs.map((tab) => {
                       return (
-                        <TabPanel index={tab.index} key={tab.id}>
-                          <ServiceContract id={tab.id} />
-                        </TabPanel>
+                        <Tab index={tab.index} key={tab.id}>
+                          Service Contract #{tab.id}
+                          <button
+                            onClick={() => {
+                              let newOpenTabs = openTabs.filter(
+                                (t) => tab !== t
+                              );
+                              setOpenTabs(newOpenTabs);
+                              setSelectedTab(0);
+                            }}
+                          >
+                            x
+                          </button>
+                        </Tab>
                       );
                     })}
-                  </Tabs>
-                ) : (
-                  <Redirect
-                    to={{
-                      pathname: loginUrl,
-                      state: { referrer: this.props.location },
-                    }}
-                  />
-                )
-              }
-            />
-            <Route>
-              <h1>Nobody here but us chickens</h1>
-            </Route>
-          </Switch>
-        </div>
+                  </TabList>
+                  <TabPanel>
+                    <Dashboard
+                      {...props}
+                      loginUser={loginUser}
+                      onOpenServiceContract={(sc) => {
+                        let alreadyOpenTab = openTabs.find(
+                          (openTab) => openTab.id === sc.id
+                        );
+                        let index = 0;
+                        if (alreadyOpenTab) {
+                          index = alreadyOpenTab.index;
+                        } else {
+                          index = openTabs.length + 1;
+                          let newOpenTabs = openTabs.slice();
+                          newOpenTabs.push({
+                            id: sc.id,
+                            index: index,
+                          });
+                          setOpenTabs(newOpenTabs);
+                        }
+                        setSelectedTab(index);
+                      }}
+                    />
+                  </TabPanel>
+                  {openTabs.map((tab) => {
+                    return (
+                      <TabPanel index={tab.index} key={tab.id}>
+                        <ServiceContract id={tab.id} />
+                      </TabPanel>
+                    );
+                  })}
+                </Tabs>
+              ) : (
+                <Redirect
+                  to={{
+                    pathname: loginUrl,
+                    state: { referrer: history.location },
+                  }}
+                />
+              )
+            }
+          />
+          <Route>
+            <h1>Nobody here but us chickens</h1>
+          </Route>
+        </Switch>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-export default withRouter(App);
+export default App;
