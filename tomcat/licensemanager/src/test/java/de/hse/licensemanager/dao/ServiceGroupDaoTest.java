@@ -34,6 +34,45 @@ public class ServiceGroupDaoTest {
     }
 
     @Test
+    public void testFindServiceGroupByUser() {
+        final List<ServiceGroup> groups = ServiceGroupDao.getInstance()
+                .getServiceGroupsByUser(UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE));
+        assertThat(groups, notNullValue());
+        assertThat(groups.size(), greaterThan(0));
+    }
+
+    @Test
+    public void testFindServiceGroupByUserId() {
+        final List<ServiceGroup> groups = ServiceGroupDao.getInstance()
+                .getServiceGroupsByUser(PrepareTests.USER_ID_HANNELORE);
+        assertThat(groups, notNullValue());
+        assertThat(groups.size(), greaterThan(0));
+        assertThat(groups.size(), equalTo(ServiceGroupDao.getInstance()
+                .getServiceGroupsByUser(UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE)).size()));
+    }
+
+    @Test
+    public void testFindServiceGroupByServiceContract() {
+        final List<ServiceGroup> groups = ServiceGroupDao.getInstance().getServiceGroupsByServiceContract(
+                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A));
+        assertThat(groups, notNullValue());
+        assertThat(groups.size(), greaterThan(0));
+    }
+
+    @Test
+    public void testFindServiceGroupByServiceContractId() {
+        final List<ServiceGroup> groups = ServiceGroupDao.getInstance()
+                .getServiceGroupsByServiceContract(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+        assertThat(groups, notNullValue());
+        assertThat(groups.size(), greaterThan(0));
+        assertThat(groups.size(),
+                equalTo(ServiceGroupDao.getInstance()
+                        .getServiceGroupsByServiceContract(
+                                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A))
+                        .size()));
+    }
+
+    @Test
     public void testFindServiceGroupById() {
         final ServiceGroup groupA = ServiceGroupDao.getInstance().getServiceGroup(PrepareTests.SERVICE_CONTRACT_ID_A,
                 PrepareTests.USER_ID_HANNELORE);

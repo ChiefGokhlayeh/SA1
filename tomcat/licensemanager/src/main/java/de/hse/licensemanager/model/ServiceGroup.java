@@ -67,7 +67,12 @@ public class ServiceGroup {
             return false;
 
         final ServiceGroup otherServiceGroup = (ServiceGroup) other;
-        return Objects.equals(this.serviceContract, otherServiceGroup.serviceContract)
-                && Objects.equals(this.user, otherServiceGroup.user);
+        return Objects.equals(this.serviceContract.getId(), otherServiceGroup.serviceContract.getId())
+                && Objects.equals(this.user.getId(), otherServiceGroup.user.getId());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{ service_contract.id: %s, user.id: %s }", serviceContract.getId(), user.getId());
     }
 }

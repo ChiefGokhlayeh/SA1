@@ -5,8 +5,10 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.ServiceGroup;
 import de.hse.licensemanager.model.ServiceGroupId;
+import de.hse.licensemanager.model.User;
 
 public class ServiceGroupDao implements IServiceGroupDao {
 
@@ -23,6 +25,33 @@ public class ServiceGroupDao implements IServiceGroupDao {
             dao = new ServiceGroupDao();
         }
         return dao;
+    }
+
+    @Override
+    public List<ServiceGroup> getServiceGroupsByServiceContract(final long serviceContractId) {
+        return getServiceGroupsByServiceContract(
+                ServiceContractDao.getInstance().getServiceContract(serviceContractId));
+    }
+
+    @Override
+    public List<ServiceGroup> getServiceGroupsByServiceContract(final ServiceContract serviceContract) {
+        final List<?> objs = em.createQuery("SELECT s FROM ServiceGroup s WHERE s.serviceContract=:service_contract")
+                .setParameter("service_contract", serviceContract).getResultList();
+        return objs.stream().filter(ServiceGroup.class::isInstance).map(ServiceGroup.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ServiceGroup> getServiceGroupsByUser(final long userId) {
+        return getServiceGroupsByUser(UserDao.getInstance().getUser(userId));
+    }
+
+    @Override
+    public List<ServiceGroup> getServiceGroupsByUser(final User user) {
+        final List<?> objs = em.createQuery("SELECT s FROM ServiceGroup s WHERE s.user=:user")
+                .setParameter("user", user).getResultList();
+        return objs.stream().filter(ServiceGroup.class::isInstance).map(ServiceGroup.class::cast)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -43,6 +72,11 @@ public class ServiceGroupDao implements IServiceGroupDao {
     }
 
     @Override
+    public void delete(final long serviceContractId, final long userId) {
+        delete(new ServiceGroupId(serviceContractId, userId));
+    }
+
+    @Override
     public void delete(final ServiceGroup serviceGroup) {
         em.getTransaction().begin();
         em.remove(serviceGroup);
@@ -50,7 +84,7 @@ public class ServiceGroupDao implements IServiceGroupDao {
     }
 
     @Override
-    public void delete(final long id) {
+    public void delete(final ServiceGroupId id) {
         final ServiceGroup serviceGroup = em.find(ServiceGroup.class, id);
         if (serviceGroup != null) {
             delete(serviceGroup);
