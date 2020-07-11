@@ -30,7 +30,8 @@ RUN apt-get update \
   maven \
   nodejs \
   npm \
-  openjdk-11-jdk
+  openjdk-11-jdk \
+  && npm install yarn -g
 
 RUN mkdir -p /usr/local/tomcat \
   && cd /usr/local/tomcat \

@@ -85,9 +85,9 @@ node {
     nodeModulesDir = file("${project.projectDir}/src/main/frontend")
 }
 
-task npmInstallDependencies(type: NpmTask) {
-    description = "Install npm packages in frontend app"
-    dependsOn 'npmSetup'
+task yarnInstall(type: YarnTask) {
+    description = "Install node packages from package.json."
+    dependsOn 'yarnSetup'
     execOverrides {
         it.ignoreExitValue = true
         it.workingDir = "${project.projectDir}/src/main/frontend"
@@ -95,18 +95,18 @@ task npmInstallDependencies(type: NpmTask) {
     args = ['install']
 }
 
-task npmBuild(type: NpmTask) {
-    description = "Build npm frontend app"
-    dependsOn 'npmInstallDependencies'
+task yarnBuild(type: YarnTask) {
+    description = "Build yarn frontend app"
+    // dependsOn 'yarnInstall'
     execOverrides {
         it.workingDir = "${project.projectDir}/src/main/frontend"
     }
-    args = ['run', 'build']
+    args = ['build']
 }
 
 task copyFrontendToInplaceWebapp(type: Copy) {
     description = "Copy compiled frontend app into inplace-webapp folder for use with gretty"
-    dependsOn 'npmBuild'
+    dependsOn 'yarnBuild'
     from "${project.projectDir}/src/main/frontend/build"
     into "${project.buildDir}/inplaceWebapp/web"
 }
