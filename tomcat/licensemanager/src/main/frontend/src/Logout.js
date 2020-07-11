@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { useAsync } from "react-async";
 import React from "react";
+import { url as loginUrl } from "./Login";
+
+export var url = "/auth/logout";
 
 const logout = async ({ signal }) => {
   return await fetch(
@@ -25,8 +28,8 @@ function Logout(onLogout) {
   if (error) return <p>Something went wrong: {error.message}</p>;
   return (
     <p>
-      You are logged out. Please <Link to="/login">login</Link> again to access
-      the service.
+      You are logged out. Please <Link to={loginUrl}>login</Link> again to
+      access the service.
     </p>
   );
 }

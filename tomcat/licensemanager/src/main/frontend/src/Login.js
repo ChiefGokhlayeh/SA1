@@ -2,6 +2,8 @@ import "./App.css";
 import { useAsync } from "react-async";
 import React, { useState } from "react";
 
+export var url = "/auth/login";
+
 const queryLoginStatus = async ({ onLogin, signal }) => {
   let resp = await fetch(
     `https://localhost:8443/licensemanager/rest/users/me`,

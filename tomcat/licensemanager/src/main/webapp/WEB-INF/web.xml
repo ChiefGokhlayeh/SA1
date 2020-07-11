@@ -20,11 +20,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>WebPage</servlet-name>
-        <url-pattern>/web/login</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>WebPage</servlet-name>
-        <url-pattern>/web/logout</url-pattern>
+        <url-pattern>/web/auth/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>WebPage</servlet-name>

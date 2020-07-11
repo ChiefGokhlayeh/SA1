@@ -2,8 +2,8 @@ import "./App.css";
 import { Link, Redirect, Route, Switch, withRouter } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Dashboard from "./Dashboard";
-import Login from "./Login";
-import Logout from "./Logout";
+import Login, { url as loginUrl } from "./Login";
+import Logout, { url as logoutUrl } from "./Logout";
 import React, { Component } from "react";
 import ServiceContract from "./ServiceContract";
 
@@ -74,9 +74,9 @@ class App extends Component {
               </li>
               <li>
                 {this.isLoggedIn() ? (
-                  <Link to="/logout">Logout</Link>
+                  <Link to={logoutUrl}>Logout</Link>
                 ) : (
-                  <Link to="/login">Login</Link>
+                  <Link to={loginUrl}>Login</Link>
                 )}
               </li>
             </ul>
@@ -85,7 +85,7 @@ class App extends Component {
         <div>
           <Switch>
             <Route
-              path="/login"
+              path={loginUrl}
               render={(props) => (
                 <Login
                   {...props}
@@ -106,7 +106,7 @@ class App extends Component {
               )}
             />
             <Route
-              path="/logout"
+              path={logoutUrl}
               render={(props) => (
                 <Logout
                   {...props}
@@ -206,7 +206,7 @@ class App extends Component {
                 ) : (
                   <Redirect
                     to={{
-                      pathname: "/login",
+                      pathname: loginUrl,
                       state: { referrer: this.props.location },
                     }}
                   />
