@@ -108,15 +108,22 @@ task copyFrontendToInplaceWebapp(type: Copy) {
     description = "Copy compiled frontend app into inplace-webapp folder for use with gretty"
     dependsOn 'npmBuild'
     from "${project.projectDir}/src/main/frontend/build"
-    into "${project.buildDir}/inplaceWebapp"
+    into "${project.buildDir}/inplaceWebapp/web"
+}
+
+task copyFrontendToBuildDirectory(type: Copy) {
+    description = "Copy compiled frontend app into subdirectory for deployment"
+    dependsOn 'copyFrontendToInplaceWebapp'
+    from "${project.projectDir}/src/main/frontend/build"
+    into "${project.buildDir}/frontend/web"
 }
 
 processResources {
-    dependsOn copyFrontendToInplaceWebapp
+    dependsOn copyFrontendToBuildDirectory
 }
 
 war {
-    from "${project.projectDir}/src/main/frontend/build"
+    from "${project.buildDir}/frontend"
 }
 
 clean.doFirst {

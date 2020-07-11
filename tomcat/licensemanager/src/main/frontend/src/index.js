@@ -7,7 +7,7 @@ import ReactDOM from "react-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router basename="/licensemanager">
+    <Router basename="/licensemanager/web">
       <App />
     </Router>
   </React.StrictMode>,
