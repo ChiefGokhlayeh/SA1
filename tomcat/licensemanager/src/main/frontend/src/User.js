@@ -11,9 +11,9 @@ import React, { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import validator from "validator";
 
-const fetchCompany = async ({ signal, userId }) => {
+const fetchCompany = async ({ signal, endpoint }) => {
   const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/companies/${userId}`,
+    `https://localhost:8443/licensemanager/rest/companies/${endpoint}`,
     { signal, credentials: "include", method: "GET" }
   );
 
@@ -37,14 +37,35 @@ const fetchGroupTypes = async ({ signal }) => {
   }
 };
 
-const fetchUser = async ({ signal, userId }) => {
+const fetchUser = async ({ signal, endpoint }) => {
   const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/${userId}`,
+    `https://localhost:8443/licensemanager/rest/users/${endpoint}`,
     { signal, credentials: "include", method: "GET" }
   );
 
   if (resp.ok) {
     return { success: true, user: await resp.json() };
+  } else {
+    return { success: false, status: resp.status };
+  }
+};
+
+const pushUser = async ({ signal, endpoint, modifiedUser }) => {
+  const resp = await fetch(
+    `https://localhost:8443/licensemanager/rest/users/${endpoint}`,
+    {
+      signal,
+      credentials: "include",
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(modifiedUser),
+    }
+  );
+
+  if (resp.ok) {
+    return { success: true };
   } else {
     return { success: false, status: resp.status };
   }
@@ -61,17 +82,34 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
 
   const { userId } = useParams();
 
+  const disableChangePassword = () =>
+    validator.isEmpty(oldPassword) ||
+    validator.isEmpty(newPassword) ||
+    !validator.equals(newPassword, repeatPassword);
+
+  const disableChangeUserDetails = () =>
+    validator.isEmpty(firstname) ||
+    validator.isEmpty(lastname) ||
+    !validator.isEmail(email) ||
+    ((user ? validator.equals(firstname, user.firstname) : true) &&
+      (user ? validator.equals(lastname, user.lastname) : true) &&
+      (user ? validator.equals(email, user.email) : true));
+
+  const toCompanyEndpoint = (userId) =>
+    userId ? `by-user/${Number(userId)}` : "mine";
+  const toUserEndpoint = (userId) => (userId ? Number(userId) : "me");
+
   const {
     data: companyData,
     isPending: isCompanyPending,
     error: companyError,
   } = useAsync({
     promiseFn: fetchCompany,
-    userId: userId ? `by-user/${userId}` : "mine",
+    endpoint: toCompanyEndpoint(userId),
   });
   const { data: userData } = useAsync({
     promiseFn: fetchUser,
-    userId: userId ? Number(userId) : "me",
+    endpoint: toUserEndpoint(userId),
   });
 
   useEffect(() => {
@@ -93,19 +131,6 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
       setEmail(user.email);
     }
   }, [user]);
-
-  const disableChangePassword = () =>
-    validator.isEmpty(oldPassword) ||
-    validator.isEmpty(newPassword) ||
-    !validator.equals(newPassword, repeatPassword);
-
-  const disableChangeUserDetails = () =>
-    validator.isEmpty(firstname) ||
-    validator.isEmpty(lastname) ||
-    !validator.isEmail(email) ||
-    ((user ? validator.equals(firstname, user.firstname) : true) &&
-      (user ? validator.equals(lastname, user.lastname) : true) &&
-      (user ? validator.equals(email, user.email) : true));
 
   return (
     <>
@@ -270,38 +295,21 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                 email: email,
                 active: user.active,
               };
+              let signal = new AbortController().signal;
 
-              let resp = await fetch(
-                "https://localhost:8443/licensemanager/rest/users/me",
-                {
-                  credentials: "include",
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(modUser),
-                }
-              );
-              if (resp.ok && onUserDetailsChanged) {
-                resp = await fetch(
-                  "https://localhost:8443/licensemanager/rest/users/me",
-                  {
-                    credentials: "include",
-                    method: "GET",
-                  }
-                );
-                if (resp.ok) {
-                  onUserDetailsChanged({
-                    success: true,
-                    user: await resp.json(),
-                  });
-                } else {
-                  onUserDetailsChanged({
-                    success: true,
-                    user: await resp.json(),
-                  });
-                }
-              } else {
+              let result = await pushUser({
+                signal,
+                endpoint: toUserEndpoint(userId),
+                modifiedUser: modUser,
+              });
+              if (result.success) {
+                result = await fetchUser({
+                  signal,
+                  endpoint: toUserEndpoint(userId),
+                });
+                if (result.success) setUser(result.user);
+                if (onUserDetailsChanged) onUserDetailsChanged(result);
+              } else if (onUserDetailsChanged) {
                 onUserDetailsChanged({ success: false });
               }
             }
