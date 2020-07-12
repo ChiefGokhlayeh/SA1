@@ -4,6 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Objects;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -151,5 +152,26 @@ public class Credentials {
         passwordHash = Credentials.generateSecret(passwordPlaintext, salt, iterations);
         passwordSalt = salt;
         passwordIterations = iterations;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, loginname, passwordHash, passwordSalt, passwordIterations);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other)
+            return true;
+
+        if (other == null || other.getClass() != this.getClass())
+            return false;
+
+        final Credentials otherCredentials = (Credentials) other;
+        return Objects.equals(this.id, otherCredentials.id)
+                && Objects.equals(this.loginname, otherCredentials.loginname)
+                && Objects.equals(this.passwordHash, otherCredentials.passwordHash)
+                && Objects.equals(this.passwordSalt, otherCredentials.passwordSalt)
+                && Objects.equals(this.passwordIterations, otherCredentials.passwordIterations);
     }
 }

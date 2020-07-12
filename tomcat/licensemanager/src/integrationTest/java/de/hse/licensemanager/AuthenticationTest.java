@@ -17,10 +17,11 @@ import org.junit.Test;
 import de.hse.licensemanager.model.PlainCredentials;
 import de.hse.licensemanager.model.User;
 
-public class LoginTest {
+public class AuthenticationTest {
 
     private Client client;
     private String restURI;
+    private String userRestURI;
 
     private static final String COUNT_ENDPOINT = "/count";
     private static final String LOGIN_ENDPOINT = "/login";
@@ -32,7 +33,8 @@ public class LoginTest {
         PrepareTests.initDatabase();
 
         client = ClientBuilder.newClient();
-        restURI = IntegrationTestSupport.getRestURI() + "/users";
+        restURI = IntegrationTestSupport.getRestURI() + "/auth";
+        userRestURI = IntegrationTestSupport.getRestURI() + "/users";
     }
 
     @Test
@@ -71,7 +73,8 @@ public class LoginTest {
 
     @Test
     public void testLoginAndReadResource() {
-        Response response = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN).buildGet().invoke();
+        Response response = client.target(userRestURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN).buildGet()
+                .invoke();
 
         assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
 
@@ -83,7 +86,7 @@ public class LoginTest {
         assertThat(response.getStatus(), is(HttpServletResponse.SC_OK));
         assertThat(response.getCookies().entrySet(), hasSize(greaterThanOrEqualTo(1)));
 
-        final Invocation.Builder b = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN);
+        final Invocation.Builder b = client.target(userRestURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN);
         response.getCookies().entrySet().forEach((c) -> b.cookie(c.getValue()));
 
         response = b.buildGet().invoke();
@@ -93,7 +96,8 @@ public class LoginTest {
 
     @Test
     public void testLoginAndReadMe() {
-        Response response = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN).buildGet().invoke();
+        Response response = client.target(userRestURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN).buildGet()
+                .invoke();
 
         assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
 
@@ -105,7 +109,7 @@ public class LoginTest {
         assertThat(response.getStatus(), is(HttpServletResponse.SC_OK));
         assertThat(response.getCookies().entrySet(), hasSize(greaterThanOrEqualTo(1)));
 
-        final Invocation.Builder b = client.target(restURI + ME_ENDPOINT).request(MediaType.APPLICATION_JSON);
+        final Invocation.Builder b = client.target(userRestURI + ME_ENDPOINT).request(MediaType.APPLICATION_JSON);
         response.getCookies().entrySet().forEach((c) -> b.cookie(c.getValue()));
 
         response = b.buildGet().invoke();
@@ -118,7 +122,8 @@ public class LoginTest {
 
     @Test
     public void testLoginAndLogout() {
-        Response response = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN).buildGet().invoke();
+        Response response = client.target(userRestURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN).buildGet()
+                .invoke();
 
         assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
 

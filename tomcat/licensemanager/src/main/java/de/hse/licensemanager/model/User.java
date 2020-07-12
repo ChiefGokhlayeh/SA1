@@ -1,6 +1,7 @@
 package de.hse.licensemanager.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -169,5 +170,24 @@ public class User {
 
     public void setCredentials(final Credentials credentials) {
         this.credentials = credentials;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstname, lastname, email, verified, active, credentials);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other)
+            return true;
+
+        if (other == null || other.getClass() != this.getClass())
+            return false;
+
+        final User otherUser = (User) other;
+        return Objects.equals(this.id, otherUser.id) && Objects.equals(this.firstname, otherUser.firstname)
+                && Objects.equals(this.lastname, otherUser.lastname) && Objects.equals(this.email, otherUser.email)
+                && Objects.equals(this.verified, otherUser.verified) && Objects.equals(this.active, otherUser.active);
     }
 }

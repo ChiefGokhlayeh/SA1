@@ -6,14 +6,11 @@ import { url as loginUrl } from "./Login";
 export var url = "/auth/logout";
 
 const logout = async ({ signal }) => {
-  return await fetch(
-    "https://localhost:8443/licensemanager/rest/users/logout",
-    {
-      credentials: "include",
-      method: "GET",
-      signal,
-    }
-  );
+  return await fetch("https://localhost:8443/licensemanager/rest/auth/logout", {
+    credentials: "include",
+    method: "GET",
+    signal,
+  });
 };
 
 function Logout(onLogout) {

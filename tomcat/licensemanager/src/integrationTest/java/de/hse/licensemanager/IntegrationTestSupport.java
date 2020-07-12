@@ -28,7 +28,7 @@ public class IntegrationTestSupport {
 
     public static Collection<NewCookie> login(final Client client, final String loginname, final String password) {
         final PlainCredentials credentials = new PlainCredentials(loginname, password);
-        final Response response = client.target(IntegrationTestSupport.getRestURI() + "/users/login")
+        final Response response = client.target(IntegrationTestSupport.getRestURI() + "/auth/login")
                 .request(MediaType.APPLICATION_JSON).buildPost(Entity.json(credentials)).invoke();
         return response.getCookies().values();
     }

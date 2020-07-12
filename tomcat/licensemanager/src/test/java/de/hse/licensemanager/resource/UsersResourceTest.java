@@ -1,34 +1,20 @@
 package de.hse.licensemanager.resource;
 
 import static org.hamcrest.core.Every.everyItem;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.HttpHeaders;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.PrepareTests;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
-import de.hse.licensemanager.dao.CredentialsDao;
 import de.hse.licensemanager.dao.SystemGroupDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Credentials;
-import de.hse.licensemanager.model.PlainCredentials;
 import de.hse.licensemanager.model.User;
 
 public class UsersResourceTest {
@@ -74,41 +60,5 @@ public class UsersResourceTest {
         usersResource.newUser(user, null);
 
         assertThat(user, is(in(UserDao.getInstance().getUsers())));
-    }
-
-    @Test
-    public void testLoginCorrect() throws IOException {
-        final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
-        final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
-        final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
-        final HttpSession httpSession = mock(HttpSession.class);
-
-        when(servletRequest.getSession(true)).thenReturn(httpSession);
-
-        final Map<String, Object> result = usersResource.login(credentials, servletRequest, servletResponse);
-
-        final Credentials expectedCredentials = CredentialsDao.getInstance()
-                .getCredentialsByLoginname(credentials.getLoginname());
-
-        assertThat(result.entrySet(), is(not(emptyIterable())));
-        assertThat(result, hasEntry("success", true));
-        assertThat(result, hasEntry("user", expectedCredentials.getUser()));
-        verify(servletRequest, atLeastOnce()).getSession(true);
-        verify(httpSession, times(1)).setAttribute(HttpHeaders.AUTHORIZATION, expectedCredentials.getUser());
-    }
-
-    @Test
-    public void testLoginIncorrect() throws IOException {
-        final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "I make this password wrong");
-        final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
-        final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
-
-        final Map<String, Object> result = usersResource.login(credentials, servletRequest, servletResponse);
-
-        assertThat(result.entrySet(), is(emptyIterable()));
-        verify(servletResponse, times(1)).sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        verify(servletRequest, never()).getSession(true);
     }
 }
