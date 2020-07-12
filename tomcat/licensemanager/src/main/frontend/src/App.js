@@ -37,28 +37,46 @@ function App() {
       setSelectedTab(0);
   }, [openTabs, selectedTab, setSelectedTab]);
 
+  const hideNavLicenses = loginUser ? false : true;
+  const hideNavProfile = loginUser ? false : true;
+  const hideNavMyCompany = loginUser ? false : true;
+  const hideNavCompanies =
+    loginUser && loginUser.group === "SYSTEM_ADMIN" ? false : true;
+  const hideNavUsers =
+    loginUser &&
+    (loginUser.group === "COMPANY_ADMIN" || loginUser.group === "SYSTEM_ADMIN")
+      ? false
+      : true;
+
   return (
     <div>
       <div>
         <nav>
           <ul>
-            <li>
-              <Link to="/">Licenses</Link>
-            </li>
-            <li>
-              <Link to="/users/myself">Profile</Link>
-            </li>
-            <li>
-              {loginUser ? (
-                <Link to={logoutUrl} replace>
-                  Logout
-                </Link>
-              ) : (
-                <Link to={loginUrl} replace>
-                  Login
-                </Link>
-              )}
-            </li>
+            <Link to="/" hidden={hideNavLicenses}>
+              <li>Licenses</li>
+            </Link>
+            <Link to="/users/myself" hidden={hideNavProfile}>
+              <li>Profile</li>
+            </Link>
+            <Link to="/companies/mine" hidden={hideNavMyCompany}>
+              <li>My Company</li>
+            </Link>
+            <Link to="/companies" hidden={hideNavCompanies}>
+              <li>Companies</li>
+            </Link>
+            <Link to="/users" hidden={hideNavUsers}>
+              <li>Users</li>
+            </Link>
+            {loginUser ? (
+              <Link to={logoutUrl} replace>
+                <li>Logout</li>
+              </Link>
+            ) : (
+              <Link to={loginUrl} replace>
+                <li>Login</li>
+              </Link>
+            )}
           </ul>
         </nav>
       </div>
