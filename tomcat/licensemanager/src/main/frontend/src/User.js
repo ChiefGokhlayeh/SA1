@@ -71,7 +71,7 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
   });
   const { data: userData } = useAsync({
     promiseFn: fetchUser,
-    userId: userId ? Number(userId) : "myself",
+    userId: userId ? Number(userId) : "me",
   });
 
   useEffect(() => {
