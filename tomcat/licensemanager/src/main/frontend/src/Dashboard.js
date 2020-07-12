@@ -66,7 +66,7 @@ class Dashboard extends Component {
                               new Date(license.expirationDate)
                             )}
                           </td>
-                          <td>{license.count}</td>
+                          <td className="text-center">{license.count}</td>
                           <td>
                             <ul>
                               {license.ipMappings.map((ipMapping) => (
@@ -76,7 +76,7 @@ class Dashboard extends Component {
                               ))}
                             </ul>
                           </td>
-                          <td className="row justify-content-center">
+                          <td className="text-center">
                             <Button
                               onClick={() => {
                                 if (this.props.onOpenServiceContract)
