@@ -93,7 +93,7 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
           id="username"
           type="text"
           readOnly
-          value={user.credentials.loginname}
+          value={user ? user.credentials.loginname : null}
         />
         <form
           onSubmit={(e) => {
