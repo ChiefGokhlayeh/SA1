@@ -3,23 +3,18 @@ package de.hse.licensemanager.filter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
 
-@Provider
-@Priority(Priorities.AUTHORIZATION)
 public class GroupFilter implements ContainerRequestFilter {
 
     protected final Group group;
