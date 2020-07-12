@@ -64,13 +64,19 @@ public class UserDao implements IUserDao {
 
             em.refresh(user);
             user.setActive(other.isActive());
-            user.setCompanyDepartment(other.getCompanyDepartment());
-            user.setCredentials(other.getCredentials());
-            user.setEmail(other.getEmail());
-            user.setFirstname(other.getFirstname());
-            user.setLastname(other.getLastname());
-            user.setSystemGroup(other.getSystemGroup());
             user.setVerified(other.isVerified());
+            if (other.getCompanyDepartment() != null)
+                user.setCompanyDepartment(other.getCompanyDepartment());
+            if (other.getCredentials() != null)
+                user.setCredentials(other.getCredentials());
+            if (other.getEmail() != null)
+                user.setEmail(other.getEmail());
+            if (other.getFirstname() != null)
+                user.setFirstname(other.getFirstname());
+            if (other.getLastname() != null)
+                user.setLastname(other.getLastname());
+            if (other.getSystemGroup() != null)
+                user.setSystemGroup(other.getSystemGroup());
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {

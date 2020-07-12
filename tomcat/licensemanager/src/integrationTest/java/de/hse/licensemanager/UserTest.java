@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -66,5 +67,21 @@ public class UserTest {
         final Response response = b.buildGet().invoke();
 
         assertThat(response.getStatus(), is(Response.Status.UNAUTHORIZED.getStatusCode()));
+    }
+
+    @Test
+    public void testPutMe() {
+        final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+
+        final User originalUser = UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE);
+        final User modifiedUser = new User(originalUser.getFirstname(), "Schweizer", "greta.schweizer@email.com", null,
+                null, null);
+
+        final Invocation.Builder b = client.target(restURI + ME_ENDPOINT).request(MediaType.APPLICATION_JSON);
+        cookies.forEach(b::cookie);
+        final Response response = b.buildPut(Entity.json(modifiedUser)).invoke();
+
+        assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
     }
 }

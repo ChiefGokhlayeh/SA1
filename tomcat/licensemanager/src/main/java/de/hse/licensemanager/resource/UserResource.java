@@ -46,7 +46,7 @@ public class UserResource {
 
         if ((loginUser.getId() == id || loginUser.getSystemGroup().getDisplayName().equals("admin"))
                 && loginUser.isActive()) {
-            UserDao.getInstance().save(modifiedUser);
+            UserDao.getInstance().modify(id, modifiedUser);
             return Response.created(uriInfo.getAbsolutePath()).build();
         } else {
             return Response.status(Response.Status.FORBIDDEN).build();

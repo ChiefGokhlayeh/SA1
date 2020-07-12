@@ -1,5 +1,5 @@
 import { useAsync } from "react-async";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const fetchCompany = async ({ signal }) => {
   const resp = await fetch(
@@ -28,19 +28,11 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
   const [newPassword, setNewPassword] = useState("123");
   const [repeatPassword, setRepeatPassword] = useState("123");
 
-  useEffect(() => {
-    const userDetails = {
-      firstname: firstname,
-      lastname: lastname,
-      email: email,
-    };
-
-    if (onUserDetailsChanged) onUserDetailsChanged(userDetails);
-  }, [firstname, lastname, email, onUserDetailsChanged]);
-
   return (
     <div>
       <div>
+        <label htmlFor="active">Active:</label>
+        <input id="active" type="checkbox" readOnly checked={user.active} />
         <h2>Credentials</h2>
         <label htmlFor="username">Username:</label>
         <input
@@ -115,42 +107,94 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
       </div>
       <div>
         <h2>User Details</h2>
-        <label htmlFor="firstname">Firstname:</label>
-        <input
-          id="firstname"
-          type="text"
-          value={firstname}
-          onChange={(e) => setFirstname(e.target.value)}
-        />
-        <label htmlFor="lastname">Lastname:</label>
-        <input
-          id="lastname"
-          type="text"
-          value={lastname}
-          onChange={(e) => setLastname(e.target.value)}
-        />
-        <label htmlFor="email">E-Mail:</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <label htmlFor="company">Company:</label>
-        <input
-          id="company"
-          type="text"
-          readOnly
-          value={
-            isCompanyPending
-              ? "Loading..."
-              : companyError
-              ? `Something went wrong: ${companyError.message}`
-              : companyData && companyData.success
-              ? companyData.company.name
-              : `Something went wrong: ${companyData.status}`
-          }
-        />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+
+            async function submit() {
+              let userDetails = {
+                firstname: firstname,
+                lastname: lastname,
+                email: email,
+                active: user.active,
+                verified: user.verified,
+              };
+
+              let resp = await fetch(
+                "https://localhost:8443/licensemanager/rest/users/me",
+                {
+                  credentials: "include",
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(userDetails),
+                }
+              );
+              if (resp.ok && onUserDetailsChanged) {
+                resp = await fetch(
+                  "https://localhost:8443/licensemanager/rest/users/me",
+                  {
+                    credentials: "include",
+                    method: "GET",
+                  }
+                );
+                if (resp.ok) {
+                  onUserDetailsChanged({
+                    success: true,
+                    user: await resp.json(),
+                  });
+                } else {
+                  onUserDetailsChanged({
+                    success: true,
+                    user: await resp.json(),
+                  });
+                }
+              } else {
+                onUserDetailsChanged({ success: false });
+              }
+            }
+            submit();
+          }}
+        >
+          <label htmlFor="firstname">Firstname:</label>
+          <input
+            id="firstname"
+            type="text"
+            value={firstname}
+            onChange={(e) => setFirstname(e.target.value)}
+          />
+          <label htmlFor="lastname">Lastname:</label>
+          <input
+            id="lastname"
+            type="text"
+            value={lastname}
+            onChange={(e) => setLastname(e.target.value)}
+          />
+          <label htmlFor="email">E-Mail:</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <label htmlFor="company">Company:</label>
+          <input
+            id="company"
+            type="text"
+            readOnly
+            value={
+              isCompanyPending
+                ? "Loading..."
+                : companyError
+                ? `Something went wrong: ${companyError.message}`
+                : companyData && companyData.success
+                ? companyData.company.name
+                : `Something went wrong: ${companyData.status}`
+            }
+          />
+          <button type="submit">Change</button>
+        </form>
       </div>
     </div>
   );
