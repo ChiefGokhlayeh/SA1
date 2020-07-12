@@ -2,38 +2,36 @@ package de.hse.licensemanager.resource;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.ServiceContractDao;
+import de.hse.licensemanager.filter.AdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceContract;
-import de.hse.licensemanager.model.User;
 
 @Path("/service-contracts")
 @Login
 public class ServiceContractsResource {
 
     @GET
+    @AdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContracts(@Context final HttpServletRequest httpRequest) {
-        return ServiceContractDao.getInstance().getServiceContractsOfUser(
-                (User) httpRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION));
+    public List<ServiceContract> getServiceContracts() {
+        return ServiceContractDao.getInstance().getServiceContracts();
     }
 
     @GET
-    @Path("of-company/{contractor}")
+    @Path("by-company/{contractor}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContracts(@PathParam("contractor") final long id) {
-        return ServiceContractDao.getInstance().getServiceContractsOfCompany(CompanyDao.getInstance().getCompany(id));
+    public List<ServiceContract> getServiceContractsByContractor(@PathParam("contractor") final long id) {
+        return ServiceContractDao.getInstance().getServiceContractsByCompany(CompanyDao.getInstance().getCompany(id));
     }
 
     @GET

@@ -7,7 +7,6 @@ import javax.persistence.EntityManager;
 
 import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.ServiceContract;
-import de.hse.licensemanager.model.User;
 
 public class ServiceContractDao implements IServiceContractDao {
 
@@ -34,17 +33,9 @@ public class ServiceContractDao implements IServiceContractDao {
     }
 
     @Override
-    public List<ServiceContract> getServiceContractsOfCompany(final Company company) {
+    public List<ServiceContract> getServiceContractsByCompany(final Company company) {
         final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s WHERE s.contractor=:contractor")
                 .setParameter("contractor", company).getResultList();
-        return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ServiceContract> getServiceContractsOfUser(final User user) {
-        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s, ServiceGroup sg WHERE sg.user=:user")
-                .setParameter("user", user).getResultList();
         return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
                 .collect(Collectors.toList());
     }

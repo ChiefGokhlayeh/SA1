@@ -4,7 +4,7 @@ import React, { Component } from "react";
 
 const loadServiceContracts = async ({ signal }) => {
   const res = await fetch(
-    "https://localhost:8443/licensemanager/rest/service-contracts",
+    `https://localhost:8443/licensemanager/rest/service-groups/mine/`,
     { signal, credentials: "include", method: "GET" }
   );
   if (!res.ok) throw new Error(res.statusText);
@@ -46,16 +46,18 @@ class Dashboard extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.map((serviceContract) =>
-                      serviceContract.licenses.map((license) => (
+                    {data.map((serviceGroup) =>
+                      serviceGroup.serviceContract.licenses.map((license) => (
                         <tr key={license.id}>
                           <td>{license.productVariant.product}</td>
                           <td>
-                            {new Date(serviceContract.start).toLocaleString()}
+                            {new Date(
+                              serviceGroup.serviceContract.start
+                            ).toLocaleString()}
                           </td>
                           <td>
                             {earlier(
-                              new Date(serviceContract.end),
+                              new Date(serviceGroup.serviceContract.end),
                               new Date(license.expirationDate)
                             )}
                           </td>
@@ -74,11 +76,11 @@ class Dashboard extends Component {
                               onClick={() => {
                                 if (this.props.onOpenServiceContract)
                                   this.props.onOpenServiceContract(
-                                    serviceContract
+                                    serviceGroup.serviceContract
                                   );
                               }}
                             >
-                              Edit #{serviceContract.id}
+                              Edit #{serviceGroup.serviceContract.id}
                             </button>
                           </td>
                         </tr>

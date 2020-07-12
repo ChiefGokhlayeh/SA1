@@ -4,15 +4,12 @@ import java.util.List;
 
 import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.ServiceContract;
-import de.hse.licensemanager.model.User;
 
 public interface IServiceContractDao {
 
     public List<ServiceContract> getServiceContracts();
 
-    public List<ServiceContract> getServiceContractsOfCompany(final Company company);
-
-    public List<ServiceContract> getServiceContractsOfUser(final User user);
+    public List<ServiceContract> getServiceContractsByCompany(final Company company);
 
     public ServiceContract getServiceContract(final long id);
 
