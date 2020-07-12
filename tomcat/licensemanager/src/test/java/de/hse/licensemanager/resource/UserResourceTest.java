@@ -88,8 +88,8 @@ public class UserResourceTest {
 
     @Test
     public void testPutSelf() {
-        final String expectedFirstname = "Foo";
-        user.setFirstname(expectedFirstname);
+        final String changedFirstname = "Foo";
+        final User modifiedUser = new User("Foo", user.getLastname(), user.getEmail(), null, null, null);
 
         final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
         final HttpSession fakeSession = mock(HttpSession.class);
@@ -98,11 +98,15 @@ public class UserResourceTest {
         when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
         when(uriInfo.getAbsolutePath()).thenReturn(URI.create("http://some-host/users/me"));
 
-        final Response response = userResource.put(user, uriInfo, fakeRequest);
+        final Response response = userResource.put(modifiedUser, uriInfo, fakeRequest);
 
         assertThat(response, notNullValue());
         assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
-        assertThat(UserDao.getInstance().getUser(user.getId()).getFirstname(), is(equalTo(expectedFirstname)));
+        assertThat(UserDao.getInstance().getUser(user.getId()).getFirstname(), is(equalTo(changedFirstname)));
+        assertThat(UserDao.getInstance().getUser(user.getId()).getLastname(), is(equalTo(user.getLastname())));
+        assertThat(UserDao.getInstance().getUser(user.getId()).getEmail(), is(equalTo(user.getEmail())));
+        assertThat(UserDao.getInstance().getUser(user.getId()).getCompanyDepartment(),
+                is(equalTo(user.getCompanyDepartment())));
     }
 
     @Test

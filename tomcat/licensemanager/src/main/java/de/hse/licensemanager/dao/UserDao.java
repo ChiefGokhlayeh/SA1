@@ -2,6 +2,7 @@ package de.hse.licensemanager.dao;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
@@ -31,7 +32,12 @@ public class UserDao implements IUserDao {
     @Override
     public List<User> getUsers() {
         final List<?> objs = em.createQuery("SELECT u FROM User u").getResultList();
-        return objs.stream().filter(User.class::isInstance).map(User.class::cast).collect(Collectors.toList());
+        Stream<User> stream = objs.stream().filter(User.class::isInstance).map(User.class::cast);
+        stream = stream.map((c) -> {
+            this.refresh(c);/* this is only needed when running integration tests */
+            return c;
+        });
+        return stream.collect(Collectors.toList());
     }
 
     @Override
