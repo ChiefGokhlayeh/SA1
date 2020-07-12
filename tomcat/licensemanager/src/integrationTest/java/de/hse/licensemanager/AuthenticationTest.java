@@ -23,6 +23,7 @@ public class AuthenticationTest {
     private String restURI;
     private String userRestURI;
 
+    private static final String CHANGE_ENDPOINT = "/change";
     private static final String COUNT_ENDPOINT = "/count";
     private static final String LOGIN_ENDPOINT = "/login";
     private static final String LOGOUT_ENDPOINT = "/logout";
@@ -142,5 +143,17 @@ public class AuthenticationTest {
 
         assertThat(response.getStatus(), is(HttpServletResponse.SC_NO_CONTENT));
         assertThat(response.getCookies().entrySet(), is(empty()));
+    }
+
+    @Test
+    public void testChangeCredentials() {
+        final String newPassword = PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
+        final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN, newPassword);
+
+        final Response response = client.target(restURI + CHANGE_ENDPOINT).request().buildPut(Entity.json(credentials))
+                .invoke();
+
+        assertThat(response.getStatus(), is(HttpServletResponse.SC_CREATED));
     }
 }

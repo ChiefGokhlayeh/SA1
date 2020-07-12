@@ -21,20 +21,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CredentialsDao;
-import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.PlainCredentials;
-import de.hse.licensemanager.model.User;
 
 @Path("/auth")
 public class AuthenticationResource {
     @PUT
-    @Login
     @Path("change")
     public Response change(final PlainCredentials plainCredentials, @Context final HttpServletRequest servletRequest,
             @Context UriInfo uriInfo) {
-        final Credentials originalCredentials = ((User) servletRequest.getSession(false)
-                .getAttribute(HttpHeaders.AUTHORIZATION)).getCredentials();
+        final Credentials originalCredentials = CredentialsDao.getInstance()
+                .getCredentialsByLoginname(plainCredentials.getLoginname());
         if (plainCredentials.verify(originalCredentials)) {
             final Credentials modifiedCredentials = new Credentials(plainCredentials.getLoginname(),
                     plainCredentials.getNewPassword());
