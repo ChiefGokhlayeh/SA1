@@ -179,13 +179,13 @@ function ServiceContract({ id }) {
                     <td>
                       <ul>
                         {license.ipMappings.map((ipMapping) => (
-                          <li key={ipMapping.id} class="text-monospace">
+                          <li key={ipMapping.id} className="text-monospace">
                             {ipMapping.ipAddress}
                           </li>
                         ))}
                       </ul>
                     </td>
-                    <td class="text-monospace">{license.key}</td>
+                    <td className="text-monospace">{license.key}</td>
                   </tr>
                 ))}
               </tbody>
