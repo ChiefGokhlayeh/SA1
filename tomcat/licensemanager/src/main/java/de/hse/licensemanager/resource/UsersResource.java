@@ -10,7 +10,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -55,16 +54,20 @@ public class UsersResource {
 
     @Path("{user}")
     @Login
-    public UserResource getUser(@Context final UriInfo uriInfo, @PathParam("user") final Long id) {
-        return new UserResource(uriInfo, id);
+    public UserResource getUser(@PathParam("user") final Long id) {
+        return new UserResource(id);
     }
 
-    @GET
     @Path("me")
     @Login
-    @Produces(MediaType.APPLICATION_JSON)
-    public User me(@Context final HttpServletRequest servletRequest) {
+    public UserResource me(@Context final HttpServletRequest servletRequest,
+            @Context final HttpServletResponse servletResponse) throws IOException {
         final HttpSession session = servletRequest.getSession(false);
-        return session == null ? null : (User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
+        if (session == null) {
+            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        } else {
+            return new UserResource((User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION));
+        }
     }
 }

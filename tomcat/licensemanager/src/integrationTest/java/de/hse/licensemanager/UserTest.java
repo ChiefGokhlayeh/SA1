@@ -59,4 +59,12 @@ public class UserTest {
         assertThat(response.readEntity(User.class),
                 is(equalTo(UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE))));
     }
+
+    @Test
+    public void testGetMeNotLoggedIn() {
+        final Invocation.Builder b = client.target(restURI + ME_ENDPOINT).request(MediaType.APPLICATION_JSON);
+        final Response response = b.buildGet().invoke();
+
+        assertThat(response.getStatus(), is(Response.Status.UNAUTHORIZED.getStatusCode()));
+    }
 }

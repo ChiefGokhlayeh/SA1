@@ -19,13 +19,13 @@ import de.hse.licensemanager.model.User;
 
 @Login
 public class UserResource {
-    @Context
-    private final UriInfo uriInfo;
-
     private final long id;
 
-    public UserResource(final UriInfo uriInfo, final long id) {
-        this.uriInfo = uriInfo;
+    public UserResource(final User user) {
+        this(user.getId());
+    }
+
+    public UserResource(final long id) {
         this.id = id;
     }
 
@@ -40,7 +40,8 @@ public class UserResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final User modifiedUser, @Context final HttpServletRequest httpServletRequest) {
+    public Response put(final User modifiedUser, @Context final UriInfo uriInfo,
+            @Context final HttpServletRequest httpServletRequest) {
         final User loginUser = (User) httpServletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
 
         if ((loginUser.getId() == id || loginUser.getSystemGroup().getDisplayName().equals("admin"))

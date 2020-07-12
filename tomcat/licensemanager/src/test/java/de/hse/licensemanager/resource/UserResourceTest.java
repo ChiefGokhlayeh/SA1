@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.net.URI;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.HttpHeaders;
@@ -27,7 +29,6 @@ public class UserResourceTest {
     private Credentials someoneElsesCredentials;
     private User someoneElse;
     private UserResource userResource;
-    private UriInfo uriInfo;
 
     @Before
     public void setUp() {
@@ -64,9 +65,7 @@ public class UserResourceTest {
         UserDao.getInstance().save(user);
         UserDao.getInstance().save(someoneElse);
 
-        uriInfo = mock(UriInfo.class);
-
-        userResource = new UserResource(uriInfo, user.getId());
+        userResource = new UserResource(user.getId());
     }
 
     @Test
@@ -94,10 +93,12 @@ public class UserResourceTest {
 
         final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
         final HttpSession fakeSession = mock(HttpSession.class);
+        final UriInfo uriInfo = mock(UriInfo.class);
         when(fakeSession.getAttribute(HttpHeaders.AUTHORIZATION)).thenReturn(user);
         when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
+        when(uriInfo.getAbsolutePath()).thenReturn(URI.create("http://some-host/users/me"));
 
-        final Response response = userResource.put(user, fakeRequest);
+        final Response response = userResource.put(user, uriInfo, fakeRequest);
 
         assertThat(response, notNullValue());
         assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
@@ -111,10 +112,12 @@ public class UserResourceTest {
 
         final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
         final HttpSession fakeSession = mock(HttpSession.class);
+        final UriInfo uriInfo = mock(UriInfo.class);
         when(fakeSession.getAttribute(HttpHeaders.AUTHORIZATION)).thenReturn(someoneElse);
         when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
+        when(uriInfo.getAbsolutePath()).thenReturn(URI.create("http://some-host/users/1"));
 
-        final Response response = userResource.put(user, fakeRequest);
+        final Response response = userResource.put(user, uriInfo, fakeRequest);
 
         assertThat(response, notNullValue());
         assertThat(response.getStatus(), is(Response.Status.FORBIDDEN.getStatusCode()));
