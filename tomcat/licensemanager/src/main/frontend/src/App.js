@@ -94,6 +94,7 @@ function App() {
         <Switch>
           <Route
             path={loginUrl}
+            exact={true}
             render={() => (
               <Login
                 oldUser={loginUser}
@@ -112,6 +113,7 @@ function App() {
           />
           <Route
             path={logoutUrl}
+            exact={true}
             render={(props) => (
               <Logout
                 {...props}
@@ -149,7 +151,30 @@ function App() {
             )}
           />
           <Route
+            path={"/users/:userId"}
+            exact={true}
+            render={(props) => (
+              <User
+                {...props}
+                onUserCredentialsChanged={({ success }) =>
+                  success
+                    ? alert("Password changed!")
+                    : alert(
+                        "Changing password failed! Make sure your old password is correct."
+                      )
+                }
+                onUserDetailsChanged={({ success, user }) => {
+                  if (success) {
+                    setLoginUser(user);
+                    alert("User details changed!");
+                  } else alert("Failed to update user data!");
+                }}
+              />
+            )}
+          />
+          <Route
             path={"/users"}
+            exact={true}
             render={(props) => (
               <Users
                 {...props}

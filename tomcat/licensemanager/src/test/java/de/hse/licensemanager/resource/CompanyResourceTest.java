@@ -20,7 +20,6 @@ public class CompanyResourceTest {
     private Company company;
     private CompanyDepartment department;
     private CompanyResource companyResource;
-    private UriInfo uriInfo;
 
     @Before
     public void setUp() {
@@ -32,9 +31,7 @@ public class CompanyResourceTest {
 
         CompanyDao.getInstance().save(company);
 
-        uriInfo = mock(UriInfo.class);
-
-        companyResource = new CompanyResource(uriInfo, company.getId());
+        companyResource = new CompanyResource(company.getId());
     }
 
     @Test
@@ -59,6 +56,8 @@ public class CompanyResourceTest {
 
     @Test
     public void testPut() {
+        final UriInfo uriInfo = mock(UriInfo.class);
+
         final String expectedAddress = "Some Other address";
 
         final Company modifiedCompany = new Company();
@@ -66,7 +65,7 @@ public class CompanyResourceTest {
         modifiedCompany.setName(company.getName());
         modifiedCompany.setAddress(expectedAddress);
 
-        companyResource.put(modifiedCompany);
+        companyResource.put(modifiedCompany, uriInfo);
 
         assertThat(CompanyDao.getInstance().getCompany(company.getId()).getAddress(), is(equalTo(expectedAddress)));
     }

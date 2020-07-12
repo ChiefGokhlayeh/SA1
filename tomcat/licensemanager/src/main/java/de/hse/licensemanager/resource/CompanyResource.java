@@ -5,6 +5,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -17,11 +18,13 @@ import de.hse.licensemanager.model.Company;
 @Login
 public class CompanyResource {
 
-    private final UriInfo uriInfo;
     private final long id;
 
-    public CompanyResource(final UriInfo uriInfo, final Long id) {
-        this.uriInfo = uriInfo;
+    public CompanyResource(final Company company) {
+        this(company.getId());
+    }
+
+    public CompanyResource(final long id) {
         this.id = id;
     }
 
@@ -37,7 +40,7 @@ public class CompanyResource {
     @PUT
     @SystemAdminOnly
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final Company modifiedCompany) {
+    public Response put(final Company modifiedCompany, @Context UriInfo uriInfo) {
         try {
             CompanyDao.getInstance().modify(id, modifiedCompany);
         } catch (final IllegalArgumentException ex) {

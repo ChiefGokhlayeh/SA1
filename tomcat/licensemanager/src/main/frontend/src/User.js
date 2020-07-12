@@ -1,18 +1,19 @@
 import { FaEnvelope, FaBriefcase, FaUser, FaUsers } from "react-icons/fa";
 import { useAsync, Async } from "react-async";
+import { useParams } from "react-router";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import validator from "validator";
 
-const fetchCompany = async ({ signal }) => {
+const fetchCompany = async ({ signal, userId }) => {
   const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/companies/mine`,
+    `https://localhost:8443/licensemanager/rest/companies/${userId}`,
     { signal, credentials: "include", method: "GET" }
   );
 
@@ -25,7 +26,7 @@ const fetchCompany = async ({ signal }) => {
 
 const fetchGroupTypes = async ({ signal }) => {
   const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/group-types`,
+    "https://localhost:8443/licensemanager/rest/users/group-types",
     { signal, credentials: "include", method: "GET" }
   );
 
@@ -36,19 +37,62 @@ const fetchGroupTypes = async ({ signal }) => {
   }
 };
 
-function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
-  const {
-    data: companyData,
-    isPending: isCompanyPending,
-    error: companyError,
-  } = useAsync({ promiseFn: fetchCompany });
+const fetchUser = async ({ signal, userId }) => {
+  const resp = await fetch(
+    `https://localhost:8443/licensemanager/rest/users/${userId}`,
+    { signal, credentials: "include", method: "GET" }
+  );
 
+  if (resp.ok) {
+    return { success: true, user: await resp.json() };
+  } else {
+    return { success: false, status: resp.status };
+  }
+};
+
+function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
+  const [user, setUser] = useState(null);
   const [firstname, setFirstname] = useState(user ? user.firstname : "");
   const [lastname, setLastname] = useState(user ? user.lastname : "");
   const [email, setEmail] = useState(user ? user.email : "");
   const [oldPassword, setOldPassword] = useState("test password 123");
   const [newPassword, setNewPassword] = useState("123");
   const [repeatPassword, setRepeatPassword] = useState("123");
+
+  const { userId } = useParams();
+
+  const {
+    data: companyData,
+    isPending: isCompanyPending,
+    error: companyError,
+  } = useAsync({
+    promiseFn: fetchCompany,
+    userId: userId ? `by-user/${userId}` : "mine",
+  });
+  const { data: userData } = useAsync({
+    promiseFn: fetchUser,
+    userId: userId ? Number(userId) : "myself",
+  });
+
+  useEffect(() => {
+    if (userData && userData.success) {
+      setUser(userData.user);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      setFirstname(user.firstname);
+      setLastname(user.lastname);
+      setEmail(user.email);
+    }
+  }, [user]);
 
   const disableChangePassword = () =>
     validator.isEmpty(oldPassword) ||
@@ -59,9 +103,9 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
     validator.isEmpty(firstname) ||
     validator.isEmpty(lastname) ||
     !validator.isEmail(email) ||
-    (validator.equals(firstname, user.firstname) &&
-      validator.equals(lastname, user.lastname) &&
-      validator.equals(email, user.email));
+    ((user ? validator.equals(firstname, user.firstname) : true) &&
+      (user ? validator.equals(lastname, user.lastname) : true) &&
+      (user ? validator.equals(email, user.email) : true));
 
   return (
     <>
@@ -72,8 +116,8 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
               <Col></Col>
               <Col>Credentials</Col>
               <Col>
-                <Badge variant={user.active ? "primary" : "secondary"}>
-                  {user.active ? "Active" : "Inactive"}
+                <Badge variant={user && user.active ? "primary" : "secondary"}>
+                  {user && user.active ? "Active" : "Inactive"}
                 </Badge>
               </Col>
             </Row>
@@ -132,7 +176,7 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
                   type="text"
                   placeholder="enter username"
                   readOnly
-                  value={user ? user.credentials.loginname : null}
+                  value={user ? user.credentials.loginname : ""}
                 ></Form.Control>
               </InputGroup>
             </Form.Group>
@@ -154,9 +198,9 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
                           <>
                             <Form.Control
                               as="select"
-                              name="group"
+                              placeholder="select group"
                               disabled
-                              value={user ? user.group : null}
+                              value={user ? user.group : ""}
                             >
                               {data.groupTypes.map((groupType) => (
                                 <option key={groupType}>{groupType}</option>
@@ -217,7 +261,7 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
             e.preventDefault();
 
             async function submit() {
-              let userDetails = {
+              let modUser = {
                 firstname: firstname,
                 lastname: lastname,
                 email: email,
@@ -232,7 +276,7 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify(userDetails),
+                  body: JSON.stringify(modUser),
                 }
               );
               if (resp.ok && onUserDetailsChanged) {

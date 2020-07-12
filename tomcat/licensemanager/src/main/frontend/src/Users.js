@@ -1,12 +1,14 @@
 import { Async } from "react-async";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaEdit } from "react-icons/fa";
 import { useHistory } from "react-router";
 import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Fuse from "fuse.js";
 import InputGroup from "react-bootstrap/InputGroup";
 import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
+import { LinkContainer } from "react-router-bootstrap";
 
 const fetchUsers = async ({ signal }) => {
   const resp = await fetch(
@@ -76,6 +78,7 @@ function Users() {
                         <th>Lastname</th>
                         <th>Company</th>
                         <th>Active</th>
+                        <th>Edit</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -86,17 +89,26 @@ function Users() {
                             .sort((a, b) => a.score - b.score)
                             .map((result) => result.item)
                       ).map((user) => (
-                        <tr key={user.id}>
+                        <tr key={user.id} className="cursor: pointer">
                           <td>{user.credentials.loginname}</td>
                           <td>{user.firstname}</td>
                           <td>{user.lastname}</td>
                           <td></td>
-                          <td>
-                            <Badge
-                              variant={user.active ? "primary" : "secondary"}
-                            >
-                              {user.active ? "Active" : "Inactive"}
-                            </Badge>
+                          <td className="text-center align-middle">
+                            <h4>
+                              <Badge
+                                variant={user.active ? "primary" : "secondary"}
+                              >
+                                {user.active ? "Active" : "Inactive"}
+                              </Badge>
+                            </h4>
+                          </td>
+                          <td className="text-center">
+                            <LinkContainer to={`/users/${user.id}`}>
+                              <Button size="sm">
+                                <FaEdit />
+                              </Button>
+                            </LinkContainer>
                           </td>
                         </tr>
                       ))}

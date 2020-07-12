@@ -23,7 +23,9 @@ import org.junit.Test;
 
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.CredentialsDao;
+import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Company;
+import de.hse.licensemanager.model.User;
 
 public class CompanyTest {
 
@@ -31,6 +33,7 @@ public class CompanyTest {
     private String restURI;
 
     private static final ReadWriteLock RW_LOCK = new ReentrantReadWriteLock();
+    private static final String BY_USER_ENDPOINT = "/by-user";
     private static final String COUNT_ENDPOINT = "/count";
     private static final String MINE_ENDPOINT = "/mine";
 
@@ -108,7 +111,7 @@ public class CompanyTest {
     }
 
     @Test
-    public void testGetSpecificCompany() {
+    public void testGetCompanyById() {
         final Lock l = RW_LOCK.readLock();
         l.lock();
         try {
@@ -125,6 +128,30 @@ public class CompanyTest {
 
             assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
             assertThat(response.readEntity(Company.class).getId(), is(equalTo(company.getId())));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testGetCompanyByUser() {
+        final Lock l = RW_LOCK.readLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final User testUser = UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE);
+
+            final Invocation.Builder b = client
+                    .target(restURI + String.format("%s/%d", BY_USER_ENDPOINT, testUser.getCompany().getId()))
+                    .request(MediaType.APPLICATION_JSON);
+            cookies.forEach(b::cookie);
+            final Response response = b.buildGet().invoke();
+
+            assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+            assertThat(response.readEntity(Company.class).getId(), is(equalTo(testUser.getCompany().getId())));
         } finally {
             l.unlock();
         }

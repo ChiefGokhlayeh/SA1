@@ -6,6 +6,7 @@ import static org.hamcrest.core.Every.everyItem;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,7 @@ public class CompaniesResourceTest {
     }
 
     @Test
-    public void testMine() {
+    public void testMine() throws IOException {
         final User testUser = UserDao.getInstance().getUser(UnitTestSupport.USER_ID_MUSTERMANN);
 
         final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
@@ -54,9 +55,9 @@ public class CompaniesResourceTest {
         when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
         when(fakeSession.getAttribute(HttpHeaders.AUTHORIZATION)).thenReturn(testUser);
 
-        final Company company = companiesResource.mine(fakeRequest);
+        final CompanyResource companyResource = companiesResource.mine(fakeRequest);
 
-        assertThat(company, is(equalTo(testUser.getCompany())));
+        assertThat(companyResource, notNullValue());
         verify(fakeRequest, atLeastOnce()).getSession(anyBoolean());
         verify(fakeSession, atLeastOnce()).getAttribute(HttpHeaders.AUTHORIZATION);
     }
