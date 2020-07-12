@@ -100,7 +100,19 @@ function App() {
           <Route
             path={`/users/myself`}
             exact={true}
-            render={(props) => <User {...props} user={loginUser} />}
+            render={(props) => (
+              <User
+                {...props}
+                user={loginUser}
+                onUserCredentialsChanged={({ success }) =>
+                  success
+                    ? alert("Password changed!")
+                    : alert(
+                        "Changing password failed! Make sure your old password is correct."
+                      )
+                }
+              />
+            )}
           />
           <Route
             path="/"

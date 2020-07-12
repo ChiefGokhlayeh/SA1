@@ -74,8 +74,16 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
                     }),
                   }
                 );
-                console.log(resp.status);
-                if (onUserCredentialsChanged) onUserCredentialsChanged();
+                if (resp.ok) {
+                  setOldPassword("");
+                  setNewPassword("");
+                  setRepeatPassword("");
+                  if (onUserCredentialsChanged)
+                    onUserCredentialsChanged({ success: true });
+                } else {
+                  if (onUserCredentialsChanged)
+                    onUserCredentialsChanged({ success: false });
+                }
               }
             }
             submit();
