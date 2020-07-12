@@ -7,6 +7,7 @@ import Logout, { url as logoutUrl } from "./Logout";
 import React, { useState, useEffect } from "react";
 import ServiceContract from "./ServiceContract";
 import User from "./User";
+import Users from "./Users";
 
 const useStateWithLocalStorage = (sessionStorageKey, initialValue = null) => {
   let storageValue = sessionStorage.getItem(sessionStorageKey);
@@ -116,7 +117,7 @@ function App() {
             )}
           />
           <Route
-            path={`/users/myself`}
+            path={"/users/myself"}
             exact={true}
             render={(props) => (
               <User
@@ -134,6 +135,18 @@ function App() {
                     setLoginUser(user);
                     alert("User details changed!");
                   } else alert("Failed to update user data!");
+                }}
+              />
+            )}
+          />
+          <Route
+            path={"/users"}
+            render={(props) => (
+              <Users
+                {...props}
+                onUserCreated={({ success, user }) => {
+                  if (success) alert("User created!");
+                  else alert("Failed to create user!");
                 }}
               />
             )}
