@@ -62,7 +62,7 @@ public class AuthenticationResourceTest {
 
         final Map<String, Object> result = authenticationResource.login(credentials, servletRequest, servletResponse);
 
-        assertThat(result.entrySet(), is(emptyIterable()));
+        assertThat(result, hasEntry("success", false));
         verify(servletResponse, times(1)).sendError(HttpServletResponse.SC_UNAUTHORIZED);
         verify(servletRequest, never()).getSession(true);
     }

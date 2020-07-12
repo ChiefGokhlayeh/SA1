@@ -29,17 +29,19 @@ public class AuthenticationResource {
     @PUT
     @Path("change")
     public Response change(final PlainCredentials plainCredentials, @Context final HttpServletRequest servletRequest,
-            @Context UriInfo uriInfo) {
+            @Context final UriInfo uriInfo) {
         final Credentials originalCredentials = CredentialsDao.getInstance()
                 .getCredentialsByLoginname(plainCredentials.getLoginname());
-        if (plainCredentials.verify(originalCredentials)) {
-            final Credentials modifiedCredentials = new Credentials(plainCredentials.getLoginname(),
-                    plainCredentials.getNewPassword());
-            CredentialsDao.getInstance().modify(originalCredentials.getId(), modifiedCredentials);
-            return Response.created(uriInfo.getAbsolutePath()).build();
-        } else {
-            return Response.status(Response.Status.FORBIDDEN).build();
+        if (originalCredentials != null) {
+            CredentialsDao.getInstance().refresh(originalCredentials);
+            if (plainCredentials.verify(originalCredentials)) {
+                final Credentials modifiedCredentials = new Credentials(plainCredentials.getLoginname(),
+                        plainCredentials.getNewPassword());
+                CredentialsDao.getInstance().modify(originalCredentials.getId(), modifiedCredentials);
+                return Response.created(uriInfo.getAbsolutePath()).build();
+            }
         }
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 
     @POST
@@ -52,14 +54,18 @@ public class AuthenticationResource {
         final Credentials checkCredentials = CredentialsDao.getInstance()
                 .getCredentialsByLoginname(credentials.getLoginname());
         final Map<String, Object> response = new HashMap<>();
-        if (checkCredentials != null && credentials.verify(checkCredentials)) {
-            response.put("success", true);
-            response.put("user", checkCredentials.getUser());
-            servletRequest.getSession(true).setAttribute(HttpHeaders.AUTHORIZATION, checkCredentials.getUser());
-            addSameSiteCookieAttribute(servletResponse);
-        } else {
-            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        if (checkCredentials != null) {
+            CredentialsDao.getInstance().refresh(checkCredentials);
+            if (credentials.verify(checkCredentials)) {
+                response.put("success", true);
+                response.put("user", checkCredentials.getUser());
+                servletRequest.getSession(true).setAttribute(HttpHeaders.AUTHORIZATION, checkCredentials.getUser());
+                addSameSiteCookieAttribute(servletResponse);
+                return response;
+            }
         }
+        response.put("success", false);
+        servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         return response;
     }
 

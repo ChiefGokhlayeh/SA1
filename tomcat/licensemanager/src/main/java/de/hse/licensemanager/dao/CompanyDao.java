@@ -2,6 +2,7 @@ package de.hse.licensemanager.dao;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
@@ -32,7 +33,12 @@ public class CompanyDao implements ICompanyDao {
     @Override
     public List<Company> getCompanies() {
         final List<?> objs = em.createQuery("SELECT c FROM Company c").getResultList();
-        return objs.stream().filter(Company.class::isInstance).map(Company.class::cast).collect(Collectors.toList());
+        Stream<Company> stream = objs.stream().filter(Company.class::isInstance).map(Company.class::cast);
+        stream = stream.map((c) -> {
+            this.refresh(c);/* this is only needed when running integration tests */
+            return c;
+        });
+        return stream.collect(Collectors.toList());
     }
 
     @Override
