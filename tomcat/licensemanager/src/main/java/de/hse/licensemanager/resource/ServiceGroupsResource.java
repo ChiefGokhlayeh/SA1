@@ -12,7 +12,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import de.hse.licensemanager.dao.ServiceGroupDao;
-import de.hse.licensemanager.filter.AdminOnly;
+import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceGroup;
 import de.hse.licensemanager.model.ServiceGroupId;
@@ -23,7 +23,7 @@ public class ServiceGroupsResource {
 
     @GET
     @Login
-    @AdminOnly
+    @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
     public List<ServiceGroup> getServiceGroups() {
         return ServiceGroupDao.getInstance().getServiceGroups();
@@ -57,7 +57,7 @@ public class ServiceGroupsResource {
 
     @GET
     @Login
-    @AdminOnly
+    @SystemAdminOnly
     @Path("by-user/{user}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ServiceGroup> getContractorByUser(@PathParam("user") final Long id) {
@@ -66,7 +66,7 @@ public class ServiceGroupsResource {
 
     @GET
     @Login
-    @AdminOnly
+    @SystemAdminOnly
     @Path("by-contractor-and-user/{contractor}:{user}")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceGroupResource getServiceGroupsByContractorAndUser(

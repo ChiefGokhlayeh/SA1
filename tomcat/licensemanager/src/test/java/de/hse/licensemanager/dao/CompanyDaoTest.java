@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.CompanyDepartment;
 
@@ -17,7 +17,7 @@ public class CompanyDaoTest {
 
     @Before
     public void setupBeforeTest() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
     }
 
     @Test
@@ -34,26 +34,26 @@ public class CompanyDaoTest {
 
     @Test
     public void testFindCompanyById() {
-        final Company licensemanager = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+        final Company licensemanager = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER);
         assertThat(licensemanager, notNullValue());
     }
 
     @Test
     public void testFoundCompanyDataPopulated() {
-        final Company notABrothel = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_NOTABROTHEL);
+        final Company notABrothel = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_NOTABROTHEL);
 
-        assertThat(notABrothel.getName(), equalTo(PrepareTests.COMPANY_NAME_NOTABROTHEL));
-        assertThat(notABrothel.getAddress(), equalTo(PrepareTests.COMPANY_ADDRESS_NOTABROTHEL));
+        assertThat(notABrothel.getName(), equalTo(UnitTestSupport.COMPANY_NAME_NOTABROTHEL));
+        assertThat(notABrothel.getAddress(), equalTo(UnitTestSupport.COMPANY_ADDRESS_NOTABROTHEL));
     }
 
     @Test
     public void testFoundCompanyNestedDataPopulated() {
-        final Company notABrothel = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_NOTABROTHEL);
+        final Company notABrothel = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_NOTABROTHEL);
 
-        assertThat(PrepareTests.COMPANY_DEPARTMENT_NAME_ACCOUNTING,
+        assertThat(UnitTestSupport.COMPANY_DEPARTMENT_NAME_ACCOUNTING,
                 equalTo(notABrothel.getDepartments().get(0).getName()));
         assertThat(notABrothel.getDepartments().stream().map((d) -> d.getName()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.COMPANY_DEPARTMENT_NAME_ACCOUNTING));
+                containsInAnyOrder(UnitTestSupport.COMPANY_DEPARTMENT_NAME_ACCOUNTING));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class CompanyDaoTest {
         assertThat(companies, not(empty()));
         assertThat(companies, hasSize(2));
         assertThat(companies.stream().map((c) -> c.getId()).collect(Collectors.toList()), containsInAnyOrder(
-                (long) PrepareTests.COMPANY_ID_LICENSEMANAGER, (long) PrepareTests.COMPANY_ID_NOTABROTHEL));
+                (long) UnitTestSupport.COMPANY_ID_LICENSEMANAGER, (long) UnitTestSupport.COMPANY_ID_NOTABROTHEL));
     }
 
     @Test
@@ -99,12 +99,12 @@ public class CompanyDaoTest {
 
     @Test
     public void testSaveNameChange() {
-        final Company company = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+        final Company company = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER);
 
         company.setName("LicenseManager 2 GmbH");
 
         assertThat(company.getName(),
-                is(equalTo(CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER).getName())));
+                is(equalTo(CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER).getName())));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class CompanyDaoTest {
 
     @Test
     public void testDeleteCascadeRemoval() {
-        final Company company = CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+        final Company company = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER);
         assertThat(company.getDepartments(),
                 containsInAnyOrder(is(in(CompanyDepartmentDao.getInstance().getCompanyDepartments()))));
 

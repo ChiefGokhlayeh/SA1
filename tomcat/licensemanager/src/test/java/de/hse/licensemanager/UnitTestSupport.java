@@ -11,12 +11,9 @@ import org.junit.Test;
 
 import de.hse.licensemanager.dao.DaoManager;
 import de.hse.licensemanager.model.Credentials;
+import de.hse.licensemanager.model.User;
 
-public class PrepareTests {
-
-    public static final long SYSTEM_GROUP_ID_ADMIN;
-    public static final long SYSTEM_GROUP_ID_USER;
-    public static final String SYSTEM_GROUP_DISPLAYNAME_ADMIN = "admin";
+public class UnitTestSupport {
 
     public static final long COMPANY_ID_LICENSEMANAGER;
     public static final long COMPANY_ID_NOTABROTHEL;
@@ -116,10 +113,6 @@ public class PrepareTests {
 
     static {
         int id = 1;
-        SYSTEM_GROUP_ID_ADMIN = id++;
-        SYSTEM_GROUP_ID_USER = id++;
-
-        id = 1;
         COMPANY_ID_LICENSEMANAGER = id++;
         COMPANY_ID_NOTABROTHEL = id++;
 
@@ -236,19 +229,9 @@ public class PrepareTests {
         em.createNativeQuery("DELETE FROM t_user").executeUpdate();
         em.createNativeQuery("DELETE FROM t_company_department").executeUpdate();
         em.createNativeQuery("DELETE FROM t_company").executeUpdate();
-        em.createNativeQuery("DELETE FROM t_system_group").executeUpdate();
         em.createNativeQuery("DELETE FROM t_credentials").executeUpdate();
 
         int param = 1;
-        em.createNativeQuery("INSERT INTO t_system_group (id, displayname) VALUES (?1, ?2)")
-                .setParameter(param++, SYSTEM_GROUP_ID_ADMIN).setParameter(param++, SYSTEM_GROUP_DISPLAYNAME_ADMIN)
-                .executeUpdate();
-
-        param = 1;
-        em.createNativeQuery("INSERT INTO t_system_group (id, displayname) VALUES (?1, ?2)")
-                .setParameter(param++, SYSTEM_GROUP_ID_USER).setParameter(param++, "user").executeUpdate();
-
-        param = 1;
         em.createNativeQuery("INSERT INTO t_company (id, name, address) VALUES (?1, ?2, ?3)")
                 .setParameter(param++, COMPANY_ID_LICENSEMANAGER).setParameter(param++, COMPANY_NAME_LICENSEMANAGER)
                 .setParameter(param++, COMPANY_ADDRESS_LICENSEMANAGER).executeUpdate();
@@ -295,30 +278,29 @@ public class PrepareTests {
 
         param = 1;
         em.createNativeQuery(
-                "INSERT INTO t_user (id, firstname, lastname, email, verified, active, system_group, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)")
+                "INSERT INTO t_user (id, firstname, lastname, email, active, `group`, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)")
                 .setParameter(param++, USER_ID_MUSTERMANN).setParameter(param++, "Max")
                 .setParameter(param++, "Mustermann").setParameter(param++, "mustermann@example.com")
-                .setParameter(param++, true).setParameter(param++, true).setParameter(param++, SYSTEM_GROUP_ID_ADMIN)
+                .setParameter(param++, true).setParameter(param++, User.Group.SYSTEM_ADMIN.name())
                 .setParameter(param++, COMPANY_DEPARTMENT_ID_IT).setParameter(param++, CREDENTIALS_ID_MUSTERMANN)
                 .executeUpdate();
 
         param = 1;
         em.createNativeQuery(
-                "INSERT INTO t_user (id, firstname, lastname, email, verified, active, system_group, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)")
+                "INSERT INTO t_user (id, firstname, lastname, email, active, `group`, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)")
                 .setParameter(param++, USER_ID_HANNELORE).setParameter(param++, "Greta")
                 .setParameter(param++, "Hannelore").setParameter(param++, "hanni@notabrothel.com")
-                .setParameter(param++, true).setParameter(param++, true).setParameter(param++, SYSTEM_GROUP_ID_USER)
+                .setParameter(param++, true).setParameter(param++, User.Group.USER.name())
                 .setParameter(param++, COMPANY_DEPARTMENT_ID_ACCOUNTING).setParameter(param++, CREDENTIALS_ID_HANNELORE)
                 .executeUpdate();
 
         param = 1;
         em.createNativeQuery(
-                "INSERT INTO t_user (id, firstname, lastname, email, verified, active, system_group, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)")
+                "INSERT INTO t_user (id, firstname, lastname, email, active, `group`, company_department, credentials) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)")
                 .setParameter(param++, USER_ID_DELETEME).setParameter(param++, "Hans").setParameter(param++, "Deleteme")
                 .setParameter(param++, "hans@licensemanager.com").setParameter(param++, true)
-                .setParameter(param++, true).setParameter(param++, SYSTEM_GROUP_ID_USER)
-                .setParameter(param++, COMPANY_DEPARTMENT_ID_IT).setParameter(param++, CREDENTIALS_ID_DELETEME)
-                .executeUpdate();
+                .setParameter(param++, User.Group.COMPANY_ADMIN.name()).setParameter(param++, COMPANY_DEPARTMENT_ID_IT)
+                .setParameter(param++, CREDENTIALS_ID_DELETEME).executeUpdate();
 
         param = 1;
         em.createNativeQuery("INSERT INTO t_service_contract (id, contractor, start, end) VALUES (?1, ?2, ?3, ?4)")

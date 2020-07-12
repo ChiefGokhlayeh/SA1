@@ -7,7 +7,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import de.hse.licensemanager.dao.ServiceGroupDao;
-import de.hse.licensemanager.filter.AdminOnly;
+import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceGroup;
 import de.hse.licensemanager.model.ServiceGroupId;
@@ -35,7 +35,7 @@ public class ServiceGroupResource {
     }
 
     @DELETE
-    @AdminOnly
+    @SystemAdminOnly
     public void delete() {
         ServiceGroupDao.getInstance().delete(id);
     }

@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import de.hse.licensemanager.dao.ServiceContractDao;
 import de.hse.licensemanager.model.ServiceContract;
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 
 public class ServiceContractsResourceTest {
 
@@ -22,7 +22,7 @@ public class ServiceContractsResourceTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         serviceContractsResource = new ServiceContractsResource();
     }
@@ -44,7 +44,7 @@ public class ServiceContractsResourceTest {
     @Test
     public void testGetSingleServiceContract() {
         final UriInfo uriInfo = mock(UriInfo.class);
-        final long id = PrepareTests.SERVICE_CONTRACT_ID_A;
+        final long id = UnitTestSupport.SERVICE_CONTRACT_ID_A;
         final ServiceContractResource serviceContractResource = serviceContractsResource.getServiceContract(uriInfo,
                 id);
 

@@ -28,7 +28,7 @@ public class UserTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         client = ClientBuilder.newClient();
         restURI = IntegrationTestSupport.getRestURI() + "/users";
@@ -37,7 +37,7 @@ public class UserTest {
     @Test
     public void testGetCount() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
         final Invocation.Builder b = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN);
         cookies.forEach(b::cookie);
@@ -50,7 +50,7 @@ public class UserTest {
     @Test
     public void testGetMe() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
         final Invocation.Builder b = client.target(restURI + ME_ENDPOINT).request(MediaType.APPLICATION_JSON);
         cookies.forEach(b::cookie);
@@ -58,7 +58,7 @@ public class UserTest {
 
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
         assertThat(response.readEntity(User.class),
-                is(equalTo(UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE))));
+                is(equalTo(UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE))));
     }
 
     @Test
@@ -72,9 +72,9 @@ public class UserTest {
     @Test
     public void testPutMe() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
-        final User originalUser = UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE);
+        final User originalUser = UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE);
         final User modifiedUser = new User(originalUser.getFirstname(), "Schweizer", "greta.schweizer@email.com", null,
                 null, null);
 

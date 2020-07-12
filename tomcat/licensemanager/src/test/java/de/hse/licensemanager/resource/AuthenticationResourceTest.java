@@ -15,7 +15,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.dao.CredentialsDao;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.PlainCredentials;
@@ -26,15 +26,15 @@ public class AuthenticationResourceTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         authenticationResource = new AuthenticationResource();
     }
 
     @Test
     public void testLoginCorrect() throws IOException {
-        final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+        final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
         final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
         final HttpSession httpSession = mock(HttpSession.class);
@@ -55,8 +55,8 @@ public class AuthenticationResourceTest {
 
     @Test
     public void testLoginIncorrect() throws IOException {
-        final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "I make this password wrong");
+        final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "I make this password wrong");
         final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
 

@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.model.IpMapping;
 
 public class IpMappingDaoTest {
 
     @Before
     public void setupBeforeTest() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
     }
 
     @Test
@@ -38,13 +38,13 @@ public class IpMappingDaoTest {
         assertThat(ipMappings, not(empty()));
         assertThat(ipMappings, hasSize(2));
         assertThat(ipMappings.stream().map((u) -> u.getId()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.IP_MAPPING_ID_HOST1, PrepareTests.IP_MAPPING_ID_HOST2));
+                containsInAnyOrder(UnitTestSupport.IP_MAPPING_ID_HOST1, UnitTestSupport.IP_MAPPING_ID_HOST2));
     }
 
     @Test
     public void testFindIpMappingById() {
-        final IpMapping host1 = IpMappingDao.getInstance().getIpMapping(PrepareTests.IP_MAPPING_ID_HOST1);
+        final IpMapping host1 = IpMappingDao.getInstance().getIpMapping(UnitTestSupport.IP_MAPPING_ID_HOST1);
         assertThat(host1, notNullValue());
-        assertThat(host1.getIpAddress(), equalTo(PrepareTests.IP_MAPPING_IP_ADDRESS_HOST1));
+        assertThat(host1.getIpAddress(), equalTo(UnitTestSupport.IP_MAPPING_IP_ADDRESS_HOST1));
     }
 }

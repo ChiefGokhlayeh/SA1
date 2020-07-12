@@ -10,19 +10,19 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
-import de.hse.licensemanager.dao.SystemGroupDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 public class UsersResourceTest {
     private UsersResource usersResource;
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         usersResource = new UsersResource();
     }
@@ -51,10 +51,9 @@ public class UsersResourceTest {
         user.setLastname("User");
         user.setEmail("some.email@test.org");
         user.setActive(true);
-        user.setVerified(false);
-        user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
+        user.setGroup(Group.USER);
         user.setCompanyDepartment(
-                CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_IT));
+                CompanyDepartmentDao.getInstance().getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_IT));
         user.setCredentials(credentials);
 
         usersResource.newUser(user, null);

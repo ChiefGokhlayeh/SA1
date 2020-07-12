@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.model.ServiceContract;
 
 public class ServiceContractDaoTest {
 
     @Before
     public void setupBeforeTest() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
     }
 
     @Test
@@ -34,28 +34,28 @@ public class ServiceContractDaoTest {
     @Test
     public void testFindServiceContractById() {
         final ServiceContract a = ServiceContractDao.getInstance()
-                .getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A);
+                .getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_A);
         assertThat(a, notNullValue());
     }
 
     @Test
     public void testFoundServiceContractDataPopulated() {
         final ServiceContract contractA = ServiceContractDao.getInstance()
-                .getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A);
+                .getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_A);
 
-        assertThat(contractA.getId(), equalTo(PrepareTests.SERVICE_CONTRACT_ID_A));
-        assertThat(contractA.getStart(), equalTo(PrepareTests.SERVICE_CONTRACT_START_A));
-        assertThat(contractA.getEnd(), equalTo(PrepareTests.SERVICE_CONTRACT_END_A));
+        assertThat(contractA.getId(), equalTo(UnitTestSupport.SERVICE_CONTRACT_ID_A));
+        assertThat(contractA.getStart(), equalTo(UnitTestSupport.SERVICE_CONTRACT_START_A));
+        assertThat(contractA.getEnd(), equalTo(UnitTestSupport.SERVICE_CONTRACT_END_A));
     }
 
     @Test
     public void testFoundServiceContractNestedDataPopulated() {
         final ServiceContract contract = ServiceContractDao.getInstance()
-                .getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_B);
+                .getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_B);
 
-        assertThat(contract.getContractor().getAddress(), equalTo(PrepareTests.COMPANY_ADDRESS_NOTABROTHEL));
+        assertThat(contract.getContractor().getAddress(), equalTo(UnitTestSupport.COMPANY_ADDRESS_NOTABROTHEL));
         assertThat(contract.getLicenses().stream().map((l) -> l.getKey()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.LICENSE_KEY_WINDOWS, PrepareTests.LICENSE_KEY_QUARTUS_OLD));
+                containsInAnyOrder(UnitTestSupport.LICENSE_KEY_WINDOWS, UnitTestSupport.LICENSE_KEY_QUARTUS_OLD));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ServiceContractDaoTest {
         assertThat(contracts, not(empty()));
         assertThat(contracts, hasSize(4));
         assertThat(contracts.stream().map((c) -> c.getId()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.SERVICE_CONTRACT_ID_A, PrepareTests.SERVICE_CONTRACT_ID_B,
-                        PrepareTests.SERVICE_CONTRACT_ID_C, PrepareTests.SERVICE_CONTRACT_ID_D));
+                containsInAnyOrder(UnitTestSupport.SERVICE_CONTRACT_ID_A, UnitTestSupport.SERVICE_CONTRACT_ID_B,
+                        UnitTestSupport.SERVICE_CONTRACT_ID_C, UnitTestSupport.SERVICE_CONTRACT_ID_D));
     }
 }

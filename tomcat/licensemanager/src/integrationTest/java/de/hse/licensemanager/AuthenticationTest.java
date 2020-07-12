@@ -36,7 +36,7 @@ public class AuthenticationTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         client = ClientBuilder.newClient();
         restURI = IntegrationTestSupport.getRestURI() + "/auth";
@@ -48,8 +48,8 @@ public class AuthenticationTest {
         final Lock l = RW_LOCK.readLock();
         l.lock();
         try {
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Response response = client.target(restURI + LOGIN_ENDPOINT).request(MediaType.APPLICATION_JSON)
                     .buildPost(Entity.json(credentials)).invoke();
@@ -66,8 +66,8 @@ public class AuthenticationTest {
         final Lock l = RW_LOCK.readLock();
         l.lock();
         try {
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "123");
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "123");
 
             final Response response = client.target(restURI + LOGIN_ENDPOINT).request(MediaType.APPLICATION_JSON)
                     .buildPost(Entity.json(credentials)).invoke();
@@ -84,8 +84,8 @@ public class AuthenticationTest {
         l.lock();
         try {
             final PlainCredentials credentials = new PlainCredentials(
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN + "123",
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN + "123",
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Response response = client.target(restURI + LOGIN_ENDPOINT).request(MediaType.APPLICATION_JSON)
                     .buildPost(Entity.json(credentials)).invoke();
@@ -106,8 +106,8 @@ public class AuthenticationTest {
 
             assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
 
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
             response = client.target(restURI + LOGIN_ENDPOINT).request(MediaType.APPLICATION_JSON)
                     .buildPost(Entity.json(credentials)).invoke();
 
@@ -135,8 +135,8 @@ public class AuthenticationTest {
 
             assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
 
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
             response = client.target(restURI + LOGIN_ENDPOINT).request(MediaType.APPLICATION_JSON)
                     .buildPost(Entity.json(credentials)).invoke();
 
@@ -167,8 +167,8 @@ public class AuthenticationTest {
 
             assertThat(response.getStatus(), is(HttpServletResponse.SC_UNAUTHORIZED));
 
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
             response = client.target(restURI + LOGIN_ENDPOINT).request(MediaType.APPLICATION_JSON)
                     .buildPost(Entity.json(credentials)).invoke();
 
@@ -192,9 +192,9 @@ public class AuthenticationTest {
         final Lock l = RW_LOCK.writeLock();
         l.lock();
         try {
-            final String newPassword = PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN, newPassword);
+            final String newPassword = UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN, newPassword);
 
             final Response response = client.target(restURI + CHANGE_ENDPOINT).request()
                     .buildPut(Entity.json(credentials)).invoke();
@@ -210,10 +210,10 @@ public class AuthenticationTest {
         final Lock l = RW_LOCK.writeLock();
         l.lock();
         try {
-            final String newPassword = PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
+            final String newPassword = UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
             final PlainCredentials credentials = new PlainCredentials(
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN + "123",
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN, newPassword);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN + "123",
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN, newPassword);
 
             final Response response = client.target(restURI + CHANGE_ENDPOINT).request()
                     .buildPut(Entity.json(credentials)).invoke();
@@ -229,9 +229,9 @@ public class AuthenticationTest {
         final Lock l = RW_LOCK.writeLock();
         l.lock();
         try {
-            final String newPassword = PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
-            final PlainCredentials credentials = new PlainCredentials(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "123123", newPassword);
+            final String newPassword = UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + " changed!!";
+            final PlainCredentials credentials = new PlainCredentials(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN + "123123", newPassword);
 
             final Response response = client.target(restURI + CHANGE_ENDPOINT).request()
                     .buildPut(Entity.json(credentials)).invoke();

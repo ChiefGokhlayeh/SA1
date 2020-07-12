@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CompanyDao;
-import de.hse.licensemanager.filter.AdminOnly;
+import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.User;
@@ -52,7 +52,7 @@ public class CompaniesResource {
 
     @POST
     @Login
-    @AdminOnly
+    @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
     public Response newCompany(final Company company, @Context final UriInfo uriInfo) {
         CompanyDao.getInstance().save(company);

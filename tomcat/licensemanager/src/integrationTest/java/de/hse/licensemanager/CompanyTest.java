@@ -36,7 +36,7 @@ public class CompanyTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         client = ClientBuilder.newClient();
         restURI = IntegrationTestSupport.getRestURI() + "/companies";
@@ -48,7 +48,8 @@ public class CompanyTest {
         l.lock();
         try {
             final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Invocation.Builder b = client.target(restURI + MINE_ENDPOINT).request(MediaType.APPLICATION_JSON);
             cookies.forEach(b::cookie);
@@ -57,7 +58,7 @@ public class CompanyTest {
             assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
             assertThat(response.readEntity(Company.class).getName(),
                     is(equalTo(CredentialsDao.getInstance()
-                            .getCredentialsByLoginname(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN).getUser()
+                            .getCredentialsByLoginname(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN).getUser()
                             .getCompany().getName())));
         } finally {
             l.unlock();
@@ -70,7 +71,8 @@ public class CompanyTest {
         l.lock();
         try {
             final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Invocation.Builder b = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN);
             cookies.forEach(b::cookie);
@@ -90,7 +92,8 @@ public class CompanyTest {
         l.lock();
         try {
             final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
             cookies.forEach(b::cookie);
@@ -110,7 +113,8 @@ public class CompanyTest {
         l.lock();
         try {
             final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Company company = CompanyDao.getInstance().getCompanies().stream().findFirst().get();
 
@@ -132,7 +136,8 @@ public class CompanyTest {
         l.lock();
         try {
             final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                    PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
             final Company originalCompany = CompanyDao.getInstance().getCompanies().stream().findFirst().get();
             final Company modifiedCompany = new Company(originalCompany.getId(), originalCompany.getName(),

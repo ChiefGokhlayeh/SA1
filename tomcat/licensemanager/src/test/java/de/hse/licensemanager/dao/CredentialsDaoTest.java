@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.model.Credentials;
 
 public class CredentialsDaoTest {
 
     @Before
     public void setupBeforeTest() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
     }
 
     @Test
@@ -34,34 +34,34 @@ public class CredentialsDaoTest {
     @Test
     public void testFindCredentialsById() {
         final Credentials mustermann = CredentialsDao.getInstance()
-                .getCredentials(PrepareTests.CREDENTIALS_ID_MUSTERMANN);
+                .getCredentials(UnitTestSupport.CREDENTIALS_ID_MUSTERMANN);
         assertThat(mustermann, notNullValue());
     }
 
     @Test
     public void testFindCredentialsByLoginname() {
         final Credentials mustermann = CredentialsDao.getInstance()
-                .getCredentialsByLoginname(PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN);
+                .getCredentialsByLoginname(UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN);
         assertThat(mustermann, notNullValue());
     }
 
     @Test
     public void testFoundCredentialsDataPopulated() {
         final Credentials hannelore = CredentialsDao.getInstance()
-                .getCredentials(PrepareTests.CREDENTIALS_ID_HANNELORE);
+                .getCredentials(UnitTestSupport.CREDENTIALS_ID_HANNELORE);
 
-        assertThat(hannelore.getLoginname(), equalTo(PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE));
+        assertThat(hannelore.getLoginname(), equalTo(UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE));
         assertThat(hannelore.getPasswordHash(), not(nullValue()));
     }
 
     @Test
     public void testFoundCredentialsNestedDataPopulated() {
         final Credentials hannelore = CredentialsDao.getInstance()
-                .getCredentials(PrepareTests.CREDENTIALS_ID_HANNELORE);
+                .getCredentials(UnitTestSupport.CREDENTIALS_ID_HANNELORE);
 
-        assertThat(hannelore.getUser().getCompany().getAddress(), equalTo(PrepareTests.COMPANY_ADDRESS_NOTABROTHEL));
+        assertThat(hannelore.getUser().getCompany().getAddress(), equalTo(UnitTestSupport.COMPANY_ADDRESS_NOTABROTHEL));
         assertThat(hannelore.getUser().getCompanyDepartment().getName(),
-                equalTo(PrepareTests.COMPANY_DEPARTMENT_NAME_ACCOUNTING));
+                equalTo(UnitTestSupport.COMPANY_DEPARTMENT_NAME_ACCOUNTING));
     }
 
     @Test
@@ -71,8 +71,8 @@ public class CredentialsDaoTest {
         assertThat(credentials, not(empty()));
         assertThat(credentials, hasSize(3));
         assertThat(credentials.stream().map((u) -> u.getId()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.CREDENTIALS_ID_HANNELORE, PrepareTests.CREDENTIALS_ID_MUSTERMANN,
-                        PrepareTests.CREDENTIALS_ID_DELETEME));
+                containsInAnyOrder(UnitTestSupport.CREDENTIALS_ID_HANNELORE, UnitTestSupport.CREDENTIALS_ID_MUSTERMANN,
+                        UnitTestSupport.CREDENTIALS_ID_DELETEME));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class CredentialsDaoTest {
     @Test
     public void testDelete() {
         final Credentials credentials = CredentialsDao.getInstance()
-                .getCredentials(PrepareTests.CREDENTIALS_ID_DELETEME);
+                .getCredentials(UnitTestSupport.CREDENTIALS_ID_DELETEME);
 
         assertThat(credentials, notNullValue());
         assertThat(credentials, in(CredentialsDao.getInstance().getCredentials()));

@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,6 +27,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Table(name = "t_user")
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@query_id")
 public class User {
+    public enum Group {
+        USER, COMPANY_ADMIN, SYSTEM_ADMIN;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -39,15 +45,12 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "verified", nullable = false)
-    private boolean verified;
-
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
-    @JoinColumn(name = "system_group", nullable = false)
-    private SystemGroup systemGroup;
+    @Column(name = "`group`", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Group group;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "company_department", nullable = false)
@@ -68,26 +71,25 @@ public class User {
     }
 
     public User(final String firstname, final String lastname, final String email,
-            final CompanyDepartment companyDepartment, final SystemGroup systemGroup, final Credentials credentials) {
-        this(0, firstname, lastname, email, companyDepartment, systemGroup, credentials);
+            final CompanyDepartment companyDepartment, final Group group, final Credentials credentials) {
+        this(0, firstname, lastname, email, companyDepartment, group, credentials);
     }
 
     public User(final long id, final String firstname, final String lastname, final String email,
-            final CompanyDepartment companyDepartment, final SystemGroup systemGroup, final Credentials credentials) {
-        this(id, firstname, lastname, email, companyDepartment, true, false, systemGroup, credentials);
+            final CompanyDepartment companyDepartment, final Group group, final Credentials credentials) {
+        this(id, firstname, lastname, email, companyDepartment, true, group, credentials);
     }
 
     public User(final long id, final String firstname, final String lastname, final String email,
-            final CompanyDepartment companyDepartment, final boolean active, boolean verified,
-            final SystemGroup systemGroup, final Credentials credentials) {
+            final CompanyDepartment companyDepartment, final boolean active, final Group group,
+            final Credentials credentials) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.companyDepartment = companyDepartment;
         this.active = active;
-        this.verified = verified;
-        this.systemGroup = systemGroup;
+        this.group = group;
         this.credentials = credentials;
     }
 
@@ -107,16 +109,12 @@ public class User {
         return email;
     }
 
-    public boolean isVerified() {
-        return verified;
-    }
-
     public boolean isActive() {
         return active;
     }
 
-    public SystemGroup getSystemGroup() {
-        return systemGroup;
+    public Group getGroup() {
+        return group;
     }
 
     public CompanyDepartment getCompanyDepartment() {
@@ -152,16 +150,12 @@ public class User {
         this.email = email;
     }
 
-    public void setVerified(final boolean verified) {
-        this.verified = verified;
-    }
-
     public void setActive(final boolean active) {
         this.active = active;
     }
 
-    public void setSystemGroup(final SystemGroup systemGroup) {
-        this.systemGroup = systemGroup;
+    public void setGroup(final Group group) {
+        this.group = group;
     }
 
     public void setCompanyDepartment(final CompanyDepartment companyDepartment) {
@@ -174,7 +168,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstname, lastname, email, verified, active, credentials);
+        return Objects.hash(id, firstname, lastname, email, active, credentials);
     }
 
     @Override
@@ -188,6 +182,6 @@ public class User {
         final User otherUser = (User) other;
         return Objects.equals(this.id, otherUser.id) && Objects.equals(this.firstname, otherUser.firstname)
                 && Objects.equals(this.lastname, otherUser.lastname) && Objects.equals(this.email, otherUser.email)
-                && Objects.equals(this.verified, otherUser.verified) && Objects.equals(this.active, otherUser.active);
+                && Objects.equals(this.active, otherUser.active);
     }
 }

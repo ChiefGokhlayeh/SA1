@@ -135,7 +135,6 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
                 lastname: lastname,
                 email: email,
                 active: user.active,
-                verified: user.verified,
               };
 
               let resp = await fetch(

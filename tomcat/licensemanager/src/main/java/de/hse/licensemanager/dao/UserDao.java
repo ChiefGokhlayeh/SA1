@@ -70,7 +70,6 @@ public class UserDao implements IUserDao {
 
             em.refresh(user);
             user.setActive(other.isActive());
-            user.setVerified(other.isVerified());
             if (other.getCompanyDepartment() != null)
                 user.setCompanyDepartment(other.getCompanyDepartment());
             if (other.getCredentials() != null)
@@ -81,8 +80,8 @@ public class UserDao implements IUserDao {
                 user.setFirstname(other.getFirstname());
             if (other.getLastname() != null)
                 user.setLastname(other.getLastname());
-            if (other.getSystemGroup() != null)
-                user.setSystemGroup(other.getSystemGroup());
+            if (other.getGroup() != null)
+                user.setGroup(other.getGroup());
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {

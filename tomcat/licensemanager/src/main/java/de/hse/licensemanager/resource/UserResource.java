@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.UserDao;
-import de.hse.licensemanager.filter.AdminOnly;
+import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.User;
 
@@ -44,8 +44,7 @@ public class UserResource {
             @Context final HttpServletRequest httpServletRequest) {
         final User loginUser = (User) httpServletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
 
-        if ((loginUser.getId() == id || loginUser.getSystemGroup().getDisplayName().equals("admin"))
-                && loginUser.isActive()) {
+        if ((loginUser.getId() == id || loginUser.getGroup().equals(User.Group.SYSTEM_ADMIN)) && loginUser.isActive()) {
             UserDao.getInstance().modify(id, modifiedUser);
             return Response.created(uriInfo.getAbsolutePath()).build();
         } else {
@@ -54,7 +53,7 @@ public class UserResource {
     }
 
     @DELETE
-    @AdminOnly
+    @SystemAdminOnly
     public void delete() {
         UserDao.getInstance().delete(id);
     }

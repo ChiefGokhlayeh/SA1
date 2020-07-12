@@ -15,12 +15,12 @@ import javax.ws.rs.core.UriInfo;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
-import de.hse.licensemanager.dao.SystemGroupDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 public class UserResourceTest {
 
@@ -32,7 +32,7 @@ public class UserResourceTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         credentials = new Credentials();
         credentials.setLoginname("testuser");
@@ -41,11 +41,10 @@ public class UserResourceTest {
         user.setFirstname("Test");
         user.setLastname("User");
         user.setEmail("test@user.com");
-        user.setCompanyDepartment(
-                CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_ACCOUNTING));
+        user.setCompanyDepartment(CompanyDepartmentDao.getInstance()
+                .getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_ACCOUNTING));
         user.setActive(true);
-        user.setVerified(true);
-        user.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
+        user.setGroup(Group.USER);
         user.setCredentials(credentials);
 
         someoneElsesCredentials = new Credentials();
@@ -55,11 +54,10 @@ public class UserResourceTest {
         someoneElse.setFirstname("Somebody");
         someoneElse.setLastname("Else");
         someoneElse.setEmail("test2@admin.com");
-        someoneElse.setCompanyDepartment(
-                CompanyDepartmentDao.getInstance().getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_ACCOUNTING));
+        someoneElse.setCompanyDepartment(CompanyDepartmentDao.getInstance()
+                .getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_ACCOUNTING));
         someoneElse.setActive(true);
-        someoneElse.setVerified(true);
-        someoneElse.setSystemGroup(SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_USER));
+        someoneElse.setGroup(Group.USER);
         someoneElse.setCredentials(someoneElsesCredentials);
 
         UserDao.getInstance().save(user);

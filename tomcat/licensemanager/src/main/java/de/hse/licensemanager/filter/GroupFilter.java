@@ -16,22 +16,26 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 @Provider
 @Priority(Priorities.AUTHORIZATION)
-public class AdminOnlyFilter implements ContainerRequestFilter {
+public class GroupFilter implements ContainerRequestFilter {
+
+    protected final Group group;
 
     @Context
-    private ResourceInfo resourceInfo;
+    protected ResourceInfo resourceInfo;
 
     @Context
-    private HttpServletRequest httpRequest;
+    protected HttpServletRequest httpRequest;
 
-    public AdminOnlyFilter() {
-        this(null, null);
+    public GroupFilter(final Group group) {
+        this(group, null, null);
     }
 
-    public AdminOnlyFilter(final ResourceInfo resourceInfo, final HttpServletRequest httpRequest) {
+    public GroupFilter(final Group group, final ResourceInfo resourceInfo, final HttpServletRequest httpRequest) {
+        this.group = group;
         this.resourceInfo = resourceInfo;
         this.httpRequest = httpRequest;
     }
@@ -45,7 +49,8 @@ public class AdminOnlyFilter implements ContainerRequestFilter {
          * Here we check if either the JAX-RS endpoint method itself or the surrounding
          * resource class are marked as AdminOnly-protected.
          */
-        if (resourceMethod.isAnnotationPresent(AdminOnly.class) || resourceClass.isAnnotationPresent(AdminOnly.class)) {
+        if (resourceMethod.isAnnotationPresent(SystemAdminOnly.class)
+                || resourceClass.isAnnotationPresent(SystemAdminOnly.class)) {
             /* Resource was marked as AdminOnly-protected. */
             final HttpSession httpSession = httpRequest.getSession(false);
             final boolean loggedIn = httpSession != null && httpSession.getAttribute(HttpHeaders.AUTHORIZATION) != null;
@@ -60,7 +65,7 @@ public class AdminOnlyFilter implements ContainerRequestFilter {
             }
 
             final User user = (User) httpSession.getAttribute(HttpHeaders.AUTHORIZATION);
-            if (!user.isActive() || !user.getSystemGroup().getDisplayName().equals("admin")) {
+            if (!user.isActive() || !user.getGroup().equals(group)) {
                 requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());
                 return;
             }

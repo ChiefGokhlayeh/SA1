@@ -8,17 +8,18 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.ServiceGroup;
 import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 public class ServiceGroupDaoTest {
 
     @Before
     public void setupBeforeTest() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
     }
 
     @Test
@@ -36,7 +37,7 @@ public class ServiceGroupDaoTest {
     @Test
     public void testFindServiceGroupByUser() {
         final List<ServiceGroup> groups = ServiceGroupDao.getInstance()
-                .getServiceGroupsByUser(UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE));
+                .getServiceGroupsByUser(UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE));
         assertThat(groups, notNullValue());
         assertThat(groups.size(), greaterThan(0));
     }
@@ -44,17 +45,17 @@ public class ServiceGroupDaoTest {
     @Test
     public void testFindServiceGroupByUserId() {
         final List<ServiceGroup> groups = ServiceGroupDao.getInstance()
-                .getServiceGroupsByUser(PrepareTests.USER_ID_HANNELORE);
+                .getServiceGroupsByUser(UnitTestSupport.USER_ID_HANNELORE);
         assertThat(groups, notNullValue());
         assertThat(groups.size(), greaterThan(0));
         assertThat(groups.size(), equalTo(ServiceGroupDao.getInstance()
-                .getServiceGroupsByUser(UserDao.getInstance().getUser(PrepareTests.USER_ID_HANNELORE)).size()));
+                .getServiceGroupsByUser(UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE)).size()));
     }
 
     @Test
     public void testFindServiceGroupByServiceContract() {
         final List<ServiceGroup> groups = ServiceGroupDao.getInstance().getServiceGroupsByServiceContract(
-                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A));
+                ServiceContractDao.getInstance().getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_A));
         assertThat(groups, notNullValue());
         assertThat(groups.size(), greaterThan(0));
     }
@@ -62,37 +63,36 @@ public class ServiceGroupDaoTest {
     @Test
     public void testFindServiceGroupByServiceContractId() {
         final List<ServiceGroup> groups = ServiceGroupDao.getInstance()
-                .getServiceGroupsByServiceContract(PrepareTests.COMPANY_ID_LICENSEMANAGER);
+                .getServiceGroupsByServiceContract(UnitTestSupport.COMPANY_ID_LICENSEMANAGER);
         assertThat(groups, notNullValue());
         assertThat(groups.size(), greaterThan(0));
         assertThat(groups.size(),
-                equalTo(ServiceGroupDao.getInstance()
-                        .getServiceGroupsByServiceContract(
-                                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A))
+                equalTo(ServiceGroupDao.getInstance().getServiceGroupsByServiceContract(
+                        ServiceContractDao.getInstance().getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_A))
                         .size()));
     }
 
     @Test
     public void testFindServiceGroupById() {
-        final ServiceGroup groupA = ServiceGroupDao.getInstance().getServiceGroup(PrepareTests.SERVICE_CONTRACT_ID_A,
-                PrepareTests.USER_ID_HANNELORE);
+        final ServiceGroup groupA = ServiceGroupDao.getInstance().getServiceGroup(UnitTestSupport.SERVICE_CONTRACT_ID_A,
+                UnitTestSupport.USER_ID_HANNELORE);
         assertThat(groupA, notNullValue());
     }
 
     @Test
     public void testFoundServiceGroupDataPopulated() {
-        final ServiceGroup groupA = ServiceGroupDao.getInstance().getServiceGroup(PrepareTests.SERVICE_CONTRACT_ID_A,
-                PrepareTests.USER_ID_HANNELORE);
+        final ServiceGroup groupA = ServiceGroupDao.getInstance().getServiceGroup(UnitTestSupport.SERVICE_CONTRACT_ID_A,
+                UnitTestSupport.USER_ID_HANNELORE);
 
-        assertThat(groupA.getServiceContract().getId(), equalTo(PrepareTests.SERVICE_CONTRACT_ID_A));
-        assertThat(groupA.getUser().getId(), equalTo(PrepareTests.USER_ID_HANNELORE));
+        assertThat(groupA.getServiceContract().getId(), equalTo(UnitTestSupport.SERVICE_CONTRACT_ID_A));
+        assertThat(groupA.getUser().getId(), equalTo(UnitTestSupport.USER_ID_HANNELORE));
     }
 
     @Test
     public void testSaveSimple() {
         final ServiceGroup serviceGroup = new ServiceGroup(
-                ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_B),
-                UserDao.getInstance().getUser(PrepareTests.USER_ID_MUSTERMANN));
+                ServiceContractDao.getInstance().getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_B),
+                UserDao.getInstance().getUser(UnitTestSupport.USER_ID_MUSTERMANN));
 
         ServiceGroupDao.getInstance().save(serviceGroup);
 
@@ -104,12 +104,11 @@ public class ServiceGroupDaoTest {
     @Test
     public void testSaveCascadePersistence() {
         final ServiceGroup serviceGroup = new ServiceGroup(
-                new ServiceContract(CompanyDao.getInstance().getCompany(PrepareTests.COMPANY_ID_LICENSEMANAGER)),
+                new ServiceContract(CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER)),
                 new User("Homer", "Simpson", "homer.simpson@email.com",
                         CompanyDepartmentDao.getInstance()
-                                .getCompanyDepartment(PrepareTests.COMPANY_DEPARTMENT_ID_ACCOUNTING),
-                        SystemGroupDao.getInstance().getSystemGroup(PrepareTests.SYSTEM_GROUP_ID_ADMIN),
-                        new Credentials("homi", "1234")));
+                                .getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_ACCOUNTING),
+                        Group.COMPANY_ADMIN, new Credentials("homi", "1234")));
 
         ServiceGroupDao.getInstance().save(serviceGroup);
 

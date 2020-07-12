@@ -10,7 +10,7 @@ import javax.ws.rs.core.UriInfo;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
 import de.hse.licensemanager.model.Company;
@@ -24,7 +24,7 @@ public class CompanyResourceTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         company = new Company("Test Company", "Some Address");
         department = new CompanyDepartment("Some New Department", company);

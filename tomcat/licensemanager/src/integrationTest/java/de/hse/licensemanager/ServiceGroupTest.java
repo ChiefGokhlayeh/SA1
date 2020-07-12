@@ -32,7 +32,7 @@ public class ServiceGroupTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         client = ClientBuilder.newClient();
         restURI = IntegrationTestSupport.getRestURI() + "/service-groups";
@@ -41,7 +41,7 @@ public class ServiceGroupTest {
     @Test
     public void testGetOwnServiceGroups() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
         final Invocation.Builder b = client.target(restURI + MINE_ENDPOINT).request(MediaType.APPLICATION_JSON);
         cookies.forEach(b::cookie);
@@ -49,13 +49,13 @@ public class ServiceGroupTest {
 
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
         assertThat(response.readEntity(new GenericType<List<ServiceGroup>>() {
-        }), everyItem(in(ServiceGroupDao.getInstance().getServiceGroupsByUser(PrepareTests.USER_ID_HANNELORE))));
+        }), everyItem(in(ServiceGroupDao.getInstance().getServiceGroupsByUser(UnitTestSupport.USER_ID_HANNELORE))));
     }
 
     @Test
     public void testGetCount() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
         final Invocation.Builder b = client.target(restURI + COUNT_ENDPOINT).request(MediaType.TEXT_PLAIN);
         cookies.forEach(b::cookie);
@@ -69,7 +69,8 @@ public class ServiceGroupTest {
     @Test
     public void testGetAllServiceGroups() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
         final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
         cookies.forEach(b::cookie);
@@ -83,7 +84,7 @@ public class ServiceGroupTest {
     @Test
     public void testGetServiceGroupsByContrator() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_HANNELORE, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
         final ServiceGroup serviceGroup = ServiceGroupDao.getInstance().getServiceGroups().stream().findFirst().get();
 
@@ -103,7 +104,8 @@ public class ServiceGroupTest {
     @Test
     public void testGetServiceGroupsByUser() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                PrepareTests.CREDENTIALS_LOGINNAME_MUSTERMANN, PrepareTests.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+                UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
 
         final ServiceGroup serviceGroup = ServiceGroupDao.getInstance().getServiceGroups().stream().findFirst().get();
 

@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CompanyDao;
-import de.hse.licensemanager.filter.AdminOnly;
+import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.Company;
 
@@ -35,7 +35,7 @@ public class CompanyResource {
     }
 
     @PUT
-    @AdminOnly
+    @SystemAdminOnly
     @Consumes(MediaType.APPLICATION_JSON)
     public Response put(final Company modifiedCompany) {
         try {
@@ -47,7 +47,7 @@ public class CompanyResource {
     }
 
     @DELETE
-    @AdminOnly
+    @SystemAdminOnly
     public void delete() {
         CompanyDao.getInstance().delete(id);
     }

@@ -15,7 +15,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Company;
@@ -26,7 +26,7 @@ public class CompaniesResourceTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
         companiesResource = new CompaniesResource();
     }
@@ -47,7 +47,7 @@ public class CompaniesResourceTest {
 
     @Test
     public void testMine() {
-        final User testUser = UserDao.getInstance().getUser(PrepareTests.USER_ID_MUSTERMANN);
+        final User testUser = UserDao.getInstance().getUser(UnitTestSupport.USER_ID_MUSTERMANN);
 
         final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
         final HttpSession fakeSession = mock(HttpSession.class);

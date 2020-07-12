@@ -10,7 +10,7 @@ import javax.ws.rs.core.UriInfo;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.PrepareTests;
+import de.hse.licensemanager.UnitTestSupport;
 import de.hse.licensemanager.dao.ServiceContractDao;
 import de.hse.licensemanager.model.ServiceContract;
 
@@ -22,9 +22,9 @@ public class ServiceContractResourceTest {
 
     @Before
     public void setUp() {
-        PrepareTests.initDatabase();
+        UnitTestSupport.initDatabase();
 
-        serviceContract = ServiceContractDao.getInstance().getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_A);
+        serviceContract = ServiceContractDao.getInstance().getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_A);
 
         uriInfo = mock(UriInfo.class);
 

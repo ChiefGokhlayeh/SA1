@@ -12,7 +12,7 @@ import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.ServiceContractDao;
-import de.hse.licensemanager.filter.AdminOnly;
+import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceContract;
 
@@ -21,7 +21,7 @@ import de.hse.licensemanager.model.ServiceContract;
 public class ServiceContractsResource {
 
     @GET
-    @AdminOnly
+    @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
     public List<ServiceContract> getServiceContracts() {
         return ServiceContractDao.getInstance().getServiceContracts();

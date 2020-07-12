@@ -14,17 +14,16 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.hse.licensemanager.model.SystemGroup;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.resource.UsersResource;
 
-public class AdminOnlyFilterTest {
-    private AdminOnlyFilter filter;
+public class SystemAdminOnlyFilterTest {
+    private SystemAdminOnlyFilter filter;
     private HttpServletRequest httpRequest;
     private ResourceInfo resourceInfo;
     private ContainerRequestContext requestContext;
 
-    private SystemGroup adminGroup, userGroup;
+    private User.Group adminGroup, userGroup;
 
     private User admin, disabledAdmin, user;
 
@@ -33,22 +32,20 @@ public class AdminOnlyFilterTest {
         httpRequest = mock(HttpServletRequest.class);
         resourceInfo = mock(ResourceInfo.class);
         requestContext = mock(ContainerRequestContext.class);
-        filter = new AdminOnlyFilter(resourceInfo, httpRequest);
+        filter = new SystemAdminOnlyFilter(resourceInfo, httpRequest);
 
-        adminGroup = new SystemGroup();
-        adminGroup.setDisplayName("admin");
-        userGroup = new SystemGroup();
-        userGroup.setDisplayName("user");
+        adminGroup = User.Group.SYSTEM_ADMIN;
+        userGroup = User.Group.USER;
 
         admin = new User();
         admin.setActive(true);
-        admin.setSystemGroup(adminGroup);
+        admin.setGroup(adminGroup);
         disabledAdmin = new User();
         disabledAdmin.setActive(false);
-        disabledAdmin.setSystemGroup(adminGroup);
+        disabledAdmin.setGroup(adminGroup);
         user = new User();
         user.setActive(true);
-        user.setSystemGroup(userGroup);
+        user.setGroup(userGroup);
     }
 
     @Test
