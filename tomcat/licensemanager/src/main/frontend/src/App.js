@@ -6,6 +6,7 @@ import Login, { url as loginUrl } from "./Login";
 import Logout, { url as logoutUrl } from "./Logout";
 import React, { useState, useEffect } from "react";
 import ServiceContract from "./ServiceContract";
+import User from "./User";
 
 const useStateWithLocalStorage = (sessionStorageKey, initialValue = null) => {
   let storageValue = sessionStorage.getItem(sessionStorageKey);
@@ -95,6 +96,11 @@ function App() {
                 }}
               />
             )}
+          />
+          <Route
+            path={`/users/myself`}
+            exact={true}
+            render={(props) => <User {...props} user={loginUser} />}
           />
           <Route
             path="/"
