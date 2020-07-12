@@ -97,6 +97,7 @@ function Users() {
                           <td className="text-center align-middle">
                             <h4>
                               <Badge
+                                pill
                                 variant={user.active ? "primary" : "secondary"}
                               >
                                 {user.active ? "Active" : "Inactive"}

@@ -116,7 +116,10 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
               <Col></Col>
               <Col>Credentials</Col>
               <Col>
-                <Badge variant={user && user.active ? "primary" : "secondary"}>
+                <Badge
+                  pill
+                  variant={user && user.active ? "primary" : "secondary"}
+                >
                   {user && user.active ? "Active" : "Inactive"}
                 </Badge>
               </Col>
