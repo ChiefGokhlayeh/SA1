@@ -93,10 +93,17 @@ function Login({ oldUser, oldLocation, onLogin }) {
         }),
       }
     );
-    let data = await resp.json();
+    if (resp.ok) {
+      let data = await resp.json();
 
-    console.debug("Logged in as: " + JSON.stringify(data.user, null, 2));
-    onLogin(data.user, oldLocation);
+      if (data.success) {
+        console.debug("Logged in as: " + JSON.stringify(data.user, null, 2));
+        onLogin(data.user, oldLocation);
+        return;
+      }
+    }
+    console.debug("Login failed!", resp);
+    alert("Incorrect user or password!");
   }
 }
 
