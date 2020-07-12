@@ -49,7 +49,10 @@ class Dashboard extends Component {
                     {data.map((serviceGroup) =>
                       serviceGroup.serviceContract.licenses.map((license) => (
                         <tr key={license.id}>
-                          <td>{license.productVariant.product}</td>
+                          <td>
+                            {license.productVariant.product}{" "}
+                            {license.productVariant.version}
+                          </td>
                           <td>
                             {new Date(
                               serviceGroup.serviceContract.start
