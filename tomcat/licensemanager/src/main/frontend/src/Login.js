@@ -1,6 +1,7 @@
 import "./App.css";
 import { useAsync } from "react-async";
 import React, { useState } from "react";
+import validator from "validator";
 
 export var url = "/auth/login";
 
@@ -38,6 +39,9 @@ function Login({ oldUser, oldLocation, onLogin }) {
     },
   });
 
+  const disableLogin = () =>
+    validator.isEmpty(loginName) || validator.isEmpty(loginPassword);
+
   if (isPending) return "Checking...";
   if (error) return `Something went wrong: ${error.message}`;
   if (loginStatus) {
@@ -69,6 +73,7 @@ function Login({ oldUser, oldLocation, onLogin }) {
             id="login_submit"
             name="login_submit"
             value="Login"
+            disabled={disableLogin()}
           />
         </form>
       );

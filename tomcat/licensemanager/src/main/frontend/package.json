@@ -18,7 +18,8 @@
     "react-scripts": "^3.4.1",
     "react-tabs": "^3.1.1",
     "sass": "^1.26.10",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.6",
+    "validator": "^13.1.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,5 +1,6 @@
 import { useAsync } from "react-async";
 import React, { useState } from "react";
+import validator from "validator";
 
 const fetchCompany = async ({ signal }) => {
   const resp = await fetch(
@@ -27,6 +28,19 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
   const [oldPassword, setOldPassword] = useState("test password 123");
   const [newPassword, setNewPassword] = useState("123");
   const [repeatPassword, setRepeatPassword] = useState("123");
+
+  const disableChangePassword = () =>
+    validator.isEmpty(oldPassword) ||
+    validator.isEmpty(newPassword) ||
+    !validator.equals(newPassword, repeatPassword);
+
+  const disableChangeUserDetails = () =>
+    validator.isEmpty(firstname) ||
+    validator.isEmpty(lastname) ||
+    !validator.isEmail(email) ||
+    (validator.equals(firstname, user.firstname) &&
+      validator.equals(lastname, user.lastname) &&
+      validator.equals(email, user.email));
 
   return (
     <div>
@@ -102,7 +116,11 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
             value={repeatPassword}
             onChange={(e) => setRepeatPassword(e.target.value)}
           />
-          <input type="submit" value="Change Password" />
+          <input
+            type="submit"
+            value="Change Password"
+            disabled={disableChangePassword()}
+          />
         </form>
       </div>
       <div>
@@ -193,7 +211,11 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
                 : `Something went wrong: ${companyData.status}`
             }
           />
-          <button type="submit">Change</button>
+          <input
+            type="submit"
+            value="Change User"
+            disabled={disableChangeUserDetails()}
+          />
         </form>
       </div>
     </div>
