@@ -1,4 +1,4 @@
-import { useAsync } from "react-async";
+import { useAsync, Async } from "react-async";
 import React, { useState } from "react";
 import validator from "validator";
 
@@ -10,6 +10,19 @@ const fetchCompany = async ({ signal }) => {
 
   if (resp.ok) {
     return { success: true, company: await resp.json() };
+  } else {
+    return { success: false, status: resp.status };
+  }
+};
+
+const fetchGroupTypes = async ({ signal }) => {
+  const resp = await fetch(
+    `https://localhost:8443/licensemanager/rest/users/group-types`,
+    { signal, credentials: "include", method: "GET" }
+  );
+
+  if (resp.ok) {
+    return { success: true, groupTypes: await resp.json() };
   } else {
     return { success: false, status: resp.status };
   }
@@ -46,7 +59,34 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
     <div>
       <div>
         <label htmlFor="active">Active:</label>
-        <input id="active" type="checkbox" readOnly checked={user.active} />
+        <input
+          id="active"
+          type="checkbox"
+          readOnly
+          checked={user ? user.active : false}
+        />
+        <label htmlFor="group">Group:</label>
+        <Async promiseFn={fetchGroupTypes}>
+          {({ data, isPending, error }) => {
+            if (isPending) return "Loading...";
+            if (error) return `Something went wrong: ${error.message}`;
+            if (data) {
+              if (data.success)
+                return (
+                  <select
+                    name="group"
+                    disabled
+                    value={user ? user.group : null}
+                  >
+                    {data.groupTypes.map((groupType) => (
+                      <option key={groupType}>{groupType}</option>
+                    ))}
+                  </select>
+                );
+              else return <p>Something went wrong: {data.status}</p>;
+            }
+          }}
+        </Async>
         <h2>Credentials</h2>
         <label htmlFor="username">Username:</label>
         <input

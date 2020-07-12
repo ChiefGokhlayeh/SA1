@@ -4,11 +4,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -18,12 +20,14 @@ import org.junit.Test;
 
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 public class UserTest {
     private Client client;
     private String restURI;
 
     private static final String COUNT_ENDPOINT = "/count";
+    private static final String GROUP_TYPES_ENDPOINT = "/group-types";
     private static final String ME_ENDPOINT = "/me";
 
     @Before
@@ -45,6 +49,20 @@ public class UserTest {
 
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
         assertThat(Integer.parseInt(response.readEntity(String.class)), is(UserDao.getInstance().getUsers().size()));
+    }
+
+    @Test
+    public void testGetGroupTypes() {
+        final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
+
+        final Invocation.Builder b = client.target(restURI + GROUP_TYPES_ENDPOINT).request(MediaType.APPLICATION_JSON);
+        cookies.forEach(b::cookie);
+        final Response response = b.buildGet().invoke();
+
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertThat(response.readEntity(new GenericType<List<Group>>() {
+        }), everyItem(in(Group.values())));
     }
 
     @Test

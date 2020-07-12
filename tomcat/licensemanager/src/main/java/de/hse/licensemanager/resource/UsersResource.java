@@ -21,6 +21,7 @@ import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 @Path("/users")
 public class UsersResource {
@@ -40,6 +41,14 @@ public class UsersResource {
     public String getCount() {
         final int count = UserDao.getInstance().getUsers().size();
         return String.valueOf(count);
+    }
+
+    @GET
+    @Path("group-types")
+    @Login
+    @Produces(MediaType.APPLICATION_JSON)
+    public Group[] getGroupTypes() {
+        return Group.values();
     }
 
     @POST
