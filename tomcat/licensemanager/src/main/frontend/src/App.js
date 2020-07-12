@@ -165,7 +165,6 @@ function App() {
                 }
                 onUserDetailsChanged={({ success, user }) => {
                   if (success) {
-                    setLoginUser(user);
                     alert("User details changed!");
                   } else alert("Failed to update user data!");
                 }}
