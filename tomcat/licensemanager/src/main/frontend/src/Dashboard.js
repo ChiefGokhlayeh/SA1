@@ -1,6 +1,8 @@
 import { withRouter } from "react-router-dom";
 import Async from "react-async";
 import React, { Component } from "react";
+import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
 
 const loadServiceContracts = async ({ signal }) => {
   const res = await fetch(
@@ -23,9 +25,9 @@ class Dashboard extends Component {
     const earlier = (a, b) => (a < b ? a.toLocaleString() : b.toLocaleString());
 
     return (
-      <div>
-        <h1>Dashboard</h1>
-        <h2>
+      <>
+        <h1 className="header">Dashboard</h1>
+        <h2 className="header">
           Welcome {this.state.loginUser.firstname}, here are your licenses:
         </h2>
         <Async promiseFn={loadServiceContracts}>
@@ -34,15 +36,15 @@ class Dashboard extends Component {
             if (err) return `Something went wrong: ${err.message}`;
             if (data) {
               return (
-                <table>
+                <Table hover={true}>
                   <thead>
                     <tr>
-                      <th>Product</th>
-                      <th>Valid From</th>
-                      <th>Valid To</th>
-                      <th>Count</th>
-                      <th>Mapping</th>
-                      <th>Service Contract</th>
+                      <th scope="col">Product</th>
+                      <th scope="col">Valid From</th>
+                      <th scope="col">Valid To</th>
+                      <th scope="col">Count</th>
+                      <th scope="col">Mapping</th>
+                      <th scope="col">Service Contract</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -74,8 +76,8 @@ class Dashboard extends Component {
                               ))}
                             </ul>
                           </td>
-                          <td>
-                            <button
+                          <td className="row justify-content-center">
+                            <Button
                               onClick={() => {
                                 if (this.props.onOpenServiceContract)
                                   this.props.onOpenServiceContract(
@@ -83,19 +85,24 @@ class Dashboard extends Component {
                                   );
                               }}
                             >
-                              Edit #{serviceGroup.serviceContract.id}
-                            </button>
+                              {this.state.loginUser &&
+                              (this.state.loginUser.group === "SYSTEM_ADMIN" ||
+                                this.state.loginUser.group === "COMPANY_ADMIN")
+                                ? "Edit"
+                                : "View"}{" "}
+                              #{serviceGroup.serviceContract.id}
+                            </Button>
                           </td>
                         </tr>
                       ))
                     )}
                   </tbody>
-                </table>
+                </Table>
               );
             }
           }}
         </Async>
-      </div>
+      </>
     );
   }
 }

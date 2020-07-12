@@ -1,5 +1,13 @@
+import { FaEnvelope, FaBriefcase, FaUser, FaUsers } from "react-icons/fa";
 import { useAsync, Async } from "react-async";
+import Badge from "react-bootstrap/Badge";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import React, { useState } from "react";
+import Row from "react-bootstrap/Row";
 import validator from "validator";
 
 const fetchCompany = async ({ signal }) => {
@@ -56,46 +64,22 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
       validator.equals(email, user.email));
 
   return (
-    <div>
+    <>
       <div>
-        <label htmlFor="active">Active:</label>
-        <input
-          id="active"
-          type="checkbox"
-          readOnly
-          checked={user ? user.active : false}
-        />
-        <label htmlFor="group">Group:</label>
-        <Async promiseFn={fetchGroupTypes}>
-          {({ data, isPending, error }) => {
-            if (isPending) return "Loading...";
-            if (error) return `Something went wrong: ${error.message}`;
-            if (data) {
-              if (data.success)
-                return (
-                  <select
-                    name="group"
-                    disabled
-                    value={user ? user.group : null}
-                  >
-                    {data.groupTypes.map((groupType) => (
-                      <option key={groupType}>{groupType}</option>
-                    ))}
-                  </select>
-                );
-              else return <p>Something went wrong: {data.status}</p>;
-            }
-          }}
-        </Async>
-        <h2>Credentials</h2>
-        <label htmlFor="username">Username:</label>
-        <input
-          id="username"
-          type="text"
-          readOnly
-          value={user ? user.credentials.loginname : null}
-        />
-        <form
+        <h2 className="header">
+          <Container>
+            <Row>
+              <Col></Col>
+              <Col>Credentials</Col>
+              <Col>
+                <Badge variant={user.active ? "primary" : "secondary"}>
+                  {user.active ? "Active" : "Inactive"}
+                </Badge>
+              </Col>
+            </Row>
+          </Container>
+        </h2>
+        <Form
           onSubmit={(e) => {
             e.preventDefault();
             async function submit() {
@@ -135,37 +119,100 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
             submit();
           }}
         >
-          <label htmlFor="old_password">Old Password:</label>
-          <input
-            id="old_password"
-            type="password"
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-          />
-          <label htmlFor="new_password">New Password:</label>
-          <input
-            id="new_password"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <label htmlFor="repeat_password">Repeat Password:</label>
-          <input
-            id="repeat_password"
-            type="password"
-            value={repeatPassword}
-            onChange={(e) => setRepeatPassword(e.target.value)}
-          />
-          <input
+          <Form.Row>
+            <Form.Group as={Col}>
+              <Form.Label>Username</Form.Label>
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FaUser />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control
+                  type="text"
+                  placeholder="enter username"
+                  readOnly
+                  value={user ? user.credentials.loginname : null}
+                ></Form.Control>
+              </InputGroup>
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>Group:</Form.Label>
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FaUsers />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Async promiseFn={fetchGroupTypes}>
+                  {({ data, isPending, error }) => {
+                    if (isPending) return "Loading...";
+                    if (error) return `Something went wrong: ${error.message}`;
+                    if (data) {
+                      if (data.success)
+                        return (
+                          <>
+                            <Form.Control
+                              as="select"
+                              name="group"
+                              disabled
+                              value={user ? user.group : null}
+                            >
+                              {data.groupTypes.map((groupType) => (
+                                <option key={groupType}>{groupType}</option>
+                              ))}
+                            </Form.Control>
+                          </>
+                        );
+                      else return <p>Something went wrong: {data.status}</p>;
+                    }
+                  }}
+                </Async>
+              </InputGroup>
+            </Form.Group>
+          </Form.Row>
+          <Form.Row>
+            <Form.Group as={Col}>
+              <Form.Label>Old Password:</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="enter old password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>New Password:</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>Repeat Password:</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="retype password"
+                value={repeatPassword}
+                onChange={(e) => setRepeatPassword(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+          </Form.Row>
+          <Button
+            variant="primary"
             type="submit"
             value="Change Password"
             disabled={disableChangePassword()}
-          />
-        </form>
+          >
+            Login
+          </Button>
+        </Form>
       </div>
       <div>
-        <h2>User Details</h2>
-        <form
+        <h2 className="header">User Details</h2>
+        <Form
           onSubmit={(e) => {
             e.preventDefault();
 
@@ -214,50 +261,73 @@ function User({ user, onUserCredentialsChanged, onUserDetailsChanged }) {
             submit();
           }}
         >
-          <label htmlFor="firstname">Firstname:</label>
-          <input
-            id="firstname"
-            type="text"
-            value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
-          />
-          <label htmlFor="lastname">Lastname:</label>
-          <input
-            id="lastname"
-            type="text"
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-          />
-          <label htmlFor="email">E-Mail:</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label htmlFor="company">Company:</label>
-          <input
-            id="company"
-            type="text"
-            readOnly
-            value={
-              isCompanyPending
-                ? "Loading..."
-                : companyError
-                ? `Something went wrong: ${companyError.message}`
-                : companyData && companyData.success
-                ? companyData.company.name
-                : `Something went wrong: ${companyData.status}`
-            }
-          />
-          <input
-            type="submit"
-            value="Change User"
-            disabled={disableChangeUserDetails()}
-          />
-        </form>
+          <Form.Row>
+            <Form.Group as={Col}>
+              <Form.Label>Firstname:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="enter firstname"
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>Lastname:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="enter lastname"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+              />
+            </Form.Group>
+          </Form.Row>
+          <Form.Row>
+            <Form.Group as={Col}>
+              <Form.Label>E-Mail:</Form.Label>
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FaEnvelope />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control
+                  type="email"
+                  placeholder="enter e-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </InputGroup>
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>Company:</Form.Label>
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FaBriefcase />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control
+                  type="text"
+                  readOnly
+                  value={
+                    isCompanyPending
+                      ? "Loading..."
+                      : companyError
+                      ? `Something went wrong: ${companyError.message}`
+                      : companyData && companyData.success
+                      ? companyData.company.name
+                      : `Something went wrong: ${companyData.status}`
+                  }
+                />
+              </InputGroup>
+            </Form.Group>
+          </Form.Row>
+          <Button type="submit" disabled={disableChangeUserDetails()}>
+            Change User
+          </Button>
+        </Form>
       </div>
-    </div>
+    </>
   );
 }
 

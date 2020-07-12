@@ -1,5 +1,8 @@
 import "./App.css";
 import { useAsync } from "react-async";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import React, { useState } from "react";
 import validator from "validator";
 
@@ -49,33 +52,37 @@ function Login({ oldUser, oldLocation, onLogin }) {
       return "Already logged in. Redirecting...";
     } else {
       return (
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <label htmlFor="login_name">Username:</label>
-          <input
-            type="text"
-            id="login_name"
-            name="login_name"
-            value={loginName}
-            onChange={(e) => setLoginName(e.target.value)}
-          />
-
-          <label htmlFor="login_password">Password:</label>
-          <input
-            type="password"
-            id="login_password"
-            name="login_password"
-            value={loginPassword}
-            onChange={(e) => setLoginPassword(e.target.value)}
-          />
-
-          <input
-            type="submit"
-            id="login_submit"
-            name="login_submit"
-            value="Login"
-            disabled={disableLogin()}
-          />
-        </form>
+        <Container className="pt-5 w-50">
+          <Form onSubmit={(e) => handleSubmit(e)}>
+            <Form.Group>
+              <Form.Label>Username:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter username"
+                value={loginName}
+                onChange={(e) => setLoginName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Password:</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Enter password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+              />
+            </Form.Group>
+            <Button
+              variant="primary"
+              type="submit"
+              id="login_submit"
+              name="login_submit"
+              disabled={disableLogin()}
+            >
+              Login
+            </Button>
+          </Form>
+        </Container>
       );
     }
   }

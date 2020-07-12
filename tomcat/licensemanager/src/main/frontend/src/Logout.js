@@ -24,13 +24,16 @@ function Logout(onLogout) {
   if (isPending) return <p>Logging out...</p>;
   if (error) return <p>Something went wrong: {error.message}</p>;
   return (
-    <p>
-      You are logged out. Please{" "}
-      <Link to={loginUrl} replace>
-        login
-      </Link>{" "}
-      again to access the service.
-    </p>
+    <>
+      <h2 className="header pt-5">Logout</h2>
+      <p className="text-center">
+        You are logged out. Please{" "}
+        <Link to={loginUrl} replace>
+          login
+        </Link>{" "}
+        again to access the service.
+      </p>
+    </>
   );
 }
 

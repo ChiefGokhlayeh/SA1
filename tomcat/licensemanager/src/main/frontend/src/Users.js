@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from "react";
 import { Async } from "react-async";
-import Fuse from "fuse.js";
+import { FaSearch } from "react-icons/fa";
 import { useHistory } from "react-router";
+import Badge from "react-bootstrap/Badge";
+import Form from "react-bootstrap/Form";
+import Fuse from "fuse.js";
+import InputGroup from "react-bootstrap/InputGroup";
+import React, { useState, useEffect } from "react";
+import Table from "react-bootstrap/Table";
 
 const fetchUsers = async ({ signal }) => {
   const resp = await fetch(
@@ -36,7 +41,7 @@ function Users() {
   }, [searchPattern, history]);
 
   return (
-    <div>
+    <>
       <Async promiseFn={fetchUsers}>
         {({ data, isPending, error }) => {
           if (isPending) return "Loading...";
@@ -45,15 +50,25 @@ function Users() {
             if (data.success) {
               const fuse = new Fuse(data.users, fuseOptions);
               return (
-                <div>
-                  <label htmlFor="search">Search:</label>
-                  <input
-                    id="search"
-                    type="search"
-                    value={searchPattern}
-                    onChange={(e) => setSearchPattern(e.target.value)}
-                  />
-                  <table>
+                <>
+                  <Form>
+                    <Form.Group>
+                      <InputGroup className="mb-3">
+                        <InputGroup.Prepend>
+                          <InputGroup.Text id="basic-addon1">
+                            <FaSearch />
+                          </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <Form.Control
+                          type="search"
+                          placeholder="search for specific user"
+                          value={searchPattern}
+                          onChange={(e) => setSearchPattern(e.target.value)}
+                        />
+                      </InputGroup>
+                    </Form.Group>
+                  </Form>
+                  <Table hover="true">
                     <thead>
                       <tr>
                         <th>Username</th>
@@ -77,23 +92,23 @@ function Users() {
                           <td>{user.lastname}</td>
                           <td></td>
                           <td>
-                            <input
-                              type="checkbox"
-                              checked={user.active}
-                              onChange={(e) => null}
-                            />
+                            <Badge
+                              variant={user.active ? "primary" : "secondary"}
+                            >
+                              {user.active ? "Active" : "Inactive"}
+                            </Badge>
                           </td>
                         </tr>
                       ))}
                     </tbody>
-                  </table>
-                </div>
+                  </Table>
+                </>
               );
             } else return <p>Something went wrong: {data.status}</p>;
           }
         }}
       </Async>
-    </div>
+    </>
   );
 }
 

@@ -1,9 +1,14 @@
 import "./App.css";
-import { Link, Redirect, Route, Switch, useHistory } from "react-router-dom";
+import "react-tabs/style/react-tabs.css";
+import { LinkContainer } from "react-router-bootstrap";
+import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import Container from "react-bootstrap/Container";
 import Dashboard from "./Dashboard";
 import Login, { url as loginUrl } from "./Login";
 import Logout, { url as logoutUrl } from "./Logout";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 import React, { useState, useEffect } from "react";
 import ServiceContract from "./ServiceContract";
 import User from "./User";
@@ -50,38 +55,42 @@ function App() {
       : true;
 
   return (
-    <div>
-      <div>
-        <nav>
-          <ul>
-            <Link to="/" hidden={hideNavLicenses}>
-              <li>Licenses</li>
-            </Link>
-            <Link to="/users/myself" hidden={hideNavProfile}>
-              <li>Profile</li>
-            </Link>
-            <Link to="/companies/mine" hidden={hideNavMyCompany}>
-              <li>My Company</li>
-            </Link>
-            <Link to="/companies" hidden={hideNavCompanies}>
-              <li>Companies</li>
-            </Link>
-            <Link to="/users" hidden={hideNavUsers}>
-              <li>Users</li>
-            </Link>
-            {loginUser ? (
-              <Link to={logoutUrl} replace>
-                <li>Logout</li>
-              </Link>
-            ) : (
-              <Link to={loginUrl} replace>
-                <li>Login</li>
-              </Link>
-            )}
-          </ul>
-        </nav>
-      </div>
-      <div>
+    <Container className="p-3">
+      <Container fluid>
+        <Navbar className="shadow p-3 mb-5 bg-white rounded">
+          <LinkContainer to="/">
+            <Navbar.Brand>License Manager</Navbar.Brand>
+          </LinkContainer>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <LinkContainer to="/" hidden={hideNavLicenses}>
+                <Nav.Link>Licenses</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/users/myself" hidden={hideNavProfile}>
+                <Nav.Link>Profile</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/companies/mine" hidden={hideNavMyCompany}>
+                <Nav.Link>Company</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/companies" hidden={hideNavCompanies}>
+                <Nav.Link>Companies</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/users" hidden={hideNavUsers}>
+                <Nav.Link>Users</Nav.Link>
+              </LinkContainer>
+              {loginUser ? (
+                <LinkContainer to={logoutUrl} replace>
+                  <Nav.Link>Logout</Nav.Link>
+                </LinkContainer>
+              ) : (
+                <LinkContainer to={loginUrl} replace>
+                  <Nav.Link>Login</Nav.Link>
+                </LinkContainer>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
         <Switch>
           <Route
             path={loginUrl}
@@ -172,8 +181,11 @@ function App() {
                     {openTabs.map((tab) => {
                       return (
                         <Tab index={tab.index} key={tab.id}>
-                          Service Contract #{tab.id}
-                          <button
+                          <span className="align-middle">
+                            Service Contract #{tab.id}
+                          </span>
+                          <span
+                            className="pl-2 close"
                             onClick={() => {
                               let newOpenTabs = openTabs.filter(
                                 (t) => tab !== t
@@ -182,8 +194,8 @@ function App() {
                               setSelectedTab(0);
                             }}
                           >
-                            x
-                          </button>
+                            <span>&times;</span>
+                          </span>
                         </Tab>
                       );
                     })}
@@ -234,8 +246,8 @@ function App() {
             <h1>Nobody here but us chickens</h1>
           </Route>
         </Switch>
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 }
 
