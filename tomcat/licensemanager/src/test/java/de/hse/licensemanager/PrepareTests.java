@@ -35,29 +35,65 @@ public class PrepareTests {
 
     public static final long SERVICE_CONTRACT_ID_A;
     public static final long SERVICE_CONTRACT_ID_B;
+    public static final long SERVICE_CONTRACT_ID_C;
+    public static final long SERVICE_CONTRACT_ID_D;
 
     public static final Date SERVICE_CONTRACT_START_A;
-    public static final Date SERVICE_CONTRACT_END_A;
-
     public static final Date SERVICE_CONTRACT_START_B;
+    public static final Date SERVICE_CONTRACT_START_C;
+    public static final Date SERVICE_CONTRACT_START_D;
+
+    public static final Date SERVICE_CONTRACT_END_A;
     public static final Date SERVICE_CONTRACT_END_B;
+    public static final Date SERVICE_CONTRACT_END_C;
+    public static final Date SERVICE_CONTRACT_END_D;
 
     public static final long PRODUCT_VARIANT_ID_MATLAB;
     public static final long PRODUCT_VARIANT_ID_WINDOWS;
+    public static final long PRODUCT_VARIANT_ID_QUARTUS_OLD;
+    public static final long PRODUCT_VARIANT_ID_QUARTUS_NEW;
+    public static final long PRODUCT_VARIANT_ID_PHOTOSHOP;
+    public static final long PRODUCT_VARIANT_ID_CANOE_OLD;
+    public static final long PRODUCT_VARIANT_ID_CANOE_NEW;
     public static final String PRODUCT_VARIANT_PRODUCT_MATLAB = "Matlab";
     public static final String PRODUCT_VARIANT_PRODUCT_WINDOWS = "Windows";
+    public static final String PRODUCT_VARIANT_PRODUCT_QUARTUS = "Altera Quartus";
+    public static final String PRODUCT_VARIANT_PRODUCT_PHOTOSHOP = "Adobe Photoshop";
+    public static final String PRODUCT_VARIANT_PRODUCT_CANOE = "Vector CANoe";
     public static final String PRODUCT_VARIANT_VERSION_MATLAB = "r2020";
     public static final String PRODUCT_VARIANT_VERSION_WINDOWS = "10";
+    public static final String PRODUCT_VARIANT_VERSION_QUARTUS_OLD = "13.1.1";
+    public static final String PRODUCT_VARIANT_VERSION_QUARTUS_NEW = "15.0.5";
+    public static final String PRODUCT_VARIANT_VERSION_PHOTOSHOP = "CC 2018";
+    public static final String PRODUCT_VARIANT_VERSION_CANOE_OLD = "22.0.0 SP5";
+    public static final String PRODUCT_VARIANT_VERSION_CANOE_NEW = "24.1.2 SP3";
 
     public static final long LICENSE_ID_MATLAB;
     public static final long LICENSE_ID_WINDOWS;
+    public static final long LICENSE_ID_QUARTUS_OLD;
+    public static final long LICENSE_ID_QUARTUS_NEW;
+    public static final long LICENSE_ID_PHOTOSHOP;
+    public static final long LICENSE_ID_CANOE_OLD;
+    public static final long LICENSE_ID_CANOE_NEW;
     public static final String LICENSE_KEY_MATLAB;
     public static final String LICENSE_KEY_WINDOWS;
+    public static final String LICENSE_KEY_QUARTUS_OLD;
+    public static final String LICENSE_KEY_QUARTUS_NEW;
+    public static final String LICENSE_KEY_PHOTOSHOP;
+    public static final String LICENSE_KEY_CANOE_OLD;
+    public static final String LICENSE_KEY_CANOE_NEW;
     public static final Date LICENSE_EXPIRATION_DATE_MATLAB;
     public static final Date LICENSE_EXPIRATION_DATE_WINDOWS;
+    public static final Date LICENSE_EXPIRATION_DATE_QUARTUS_OLD;
+    public static final Date LICENSE_EXPIRATION_DATE_QUARTUS_NEW;
+    public static final Date LICENSE_EXPIRATION_DATE_PHOTOSHOP;
+    public static final Date LICENSE_EXPIRATION_DATE_CANOE_OLD;
+    public static final Date LICENSE_EXPIRATION_DATE_CANOE_NEW;
 
     public static final long IP_MAPPING_ID_HOST1;
-    public static final String IP_MAPPING_IP_ADDRESS_HOST1 = "123";
+    public static final long IP_MAPPING_ID_HOST2;
+    public static final String IP_MAPPING_IP_ADDRESS_HOST1 = "123.0.0.1";
+    public static final String IP_MAPPING_IP_ADDRESS_HOST2 = "220.0.10.1";
 
     public static final long CREDENTIALS_ID_MUSTERMANN;
     public static final long CREDENTIALS_ID_HANNELORE;
@@ -99,9 +135,12 @@ public class PrepareTests {
         id = 1;
         SERVICE_CONTRACT_ID_A = id++;
         SERVICE_CONTRACT_ID_B = id++;
+        SERVICE_CONTRACT_ID_C = id++;
+        SERVICE_CONTRACT_ID_D = id++;
 
         id = 1;
         IP_MAPPING_ID_HOST1 = id++;
+        IP_MAPPING_ID_HOST2 = id++;
 
         final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
@@ -116,20 +155,56 @@ public class PrepareTests {
         cal.add(Calendar.MONTH, 3);
         SERVICE_CONTRACT_END_B = cal.getTime();
 
+        cal.set(2017, 12, 01, 19, 30, 00);
+        SERVICE_CONTRACT_START_C = cal.getTime();
+        cal.add(Calendar.YEAR, 1);
+        cal.add(Calendar.MONTH, 5);
+        SERVICE_CONTRACT_END_C = cal.getTime();
+
+        cal.set(2022, 12, 01, 19, 30, 00);
+        SERVICE_CONTRACT_START_D = cal.getTime();
+        cal.add(Calendar.YEAR, 2);
+        SERVICE_CONTRACT_END_D = cal.getTime();
+
         id = 1;
         LICENSE_ID_MATLAB = id++;
         LICENSE_ID_WINDOWS = id++;
+        LICENSE_ID_QUARTUS_OLD = id++;
+        LICENSE_ID_QUARTUS_NEW = id++;
+        LICENSE_ID_PHOTOSHOP = id++;
+        LICENSE_ID_CANOE_OLD = id++;
+        LICENSE_ID_CANOE_NEW = id++;
 
         cal.set(2022, 01, 01);
         LICENSE_EXPIRATION_DATE_MATLAB = cal.getTime();
         cal.add(Calendar.YEAR, 3);
         LICENSE_EXPIRATION_DATE_WINDOWS = cal.getTime();
+        cal.set(2020, 07, 01);
+        LICENSE_EXPIRATION_DATE_QUARTUS_OLD = cal.getTime();
+        cal.add(Calendar.YEAR, 3);
+        LICENSE_EXPIRATION_DATE_QUARTUS_NEW = cal.getTime();
+        cal.set(2023, 01, 01);
+        LICENSE_EXPIRATION_DATE_PHOTOSHOP = cal.getTime();
+        cal.set(2020, 12, 01);
+        LICENSE_EXPIRATION_DATE_CANOE_OLD = cal.getTime();
+        cal.add(Calendar.YEAR, 2);
+        LICENSE_EXPIRATION_DATE_CANOE_NEW = cal.getTime();
         LICENSE_KEY_MATLAB = UUID.randomUUID().toString();
         LICENSE_KEY_WINDOWS = UUID.randomUUID().toString();
+        LICENSE_KEY_QUARTUS_OLD = UUID.randomUUID().toString();
+        LICENSE_KEY_QUARTUS_NEW = UUID.randomUUID().toString();
+        LICENSE_KEY_PHOTOSHOP = UUID.randomUUID().toString();
+        LICENSE_KEY_CANOE_OLD = UUID.randomUUID().toString();
+        LICENSE_KEY_CANOE_NEW = UUID.randomUUID().toString();
 
         id = 1;
         PRODUCT_VARIANT_ID_MATLAB = id++;
         PRODUCT_VARIANT_ID_WINDOWS = id++;
+        PRODUCT_VARIANT_ID_QUARTUS_OLD = id++;
+        PRODUCT_VARIANT_ID_QUARTUS_NEW = id++;
+        PRODUCT_VARIANT_ID_PHOTOSHOP = id++;
+        PRODUCT_VARIANT_ID_CANOE_OLD = id++;
+        PRODUCT_VARIANT_ID_CANOE_NEW = id++;
 
         id = 1;
         CREDENTIALS_ID_MUSTERMANN = id++;
@@ -258,6 +333,18 @@ public class PrepareTests {
                 .executeUpdate();
 
         param = 1;
+        em.createNativeQuery("INSERT INTO t_service_contract (id, contractor, start, end) VALUES (?1, ?2, ?3, ?4)")
+                .setParameter(param++, SERVICE_CONTRACT_ID_C).setParameter(param++, COMPANY_ID_NOTABROTHEL)
+                .setParameter(param++, SERVICE_CONTRACT_START_C).setParameter(param++, SERVICE_CONTRACT_END_D)
+                .executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_service_contract (id, contractor, start, end) VALUES (?1, ?2, ?3, ?4)")
+                .setParameter(param++, SERVICE_CONTRACT_ID_D).setParameter(param++, COMPANY_ID_LICENSEMANAGER)
+                .setParameter(param++, SERVICE_CONTRACT_START_D).setParameter(param++, SERVICE_CONTRACT_END_D)
+                .executeUpdate();
+
+        param = 1;
         em.createNativeQuery("INSERT INTO t_product_variant (id, product, version) VALUES (?1, ?2, ?3)")
                 .setParameter(param++, PRODUCT_VARIANT_ID_MATLAB).setParameter(param++, PRODUCT_VARIANT_PRODUCT_MATLAB)
                 .setParameter(param++, PRODUCT_VARIANT_VERSION_MATLAB).executeUpdate();
@@ -267,6 +354,36 @@ public class PrepareTests {
                 .setParameter(param++, PRODUCT_VARIANT_ID_WINDOWS)
                 .setParameter(param++, PRODUCT_VARIANT_PRODUCT_WINDOWS)
                 .setParameter(param++, PRODUCT_VARIANT_VERSION_WINDOWS).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_product_variant (id, product, version) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, PRODUCT_VARIANT_ID_QUARTUS_OLD)
+                .setParameter(param++, PRODUCT_VARIANT_PRODUCT_QUARTUS)
+                .setParameter(param++, PRODUCT_VARIANT_VERSION_QUARTUS_OLD).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_product_variant (id, product, version) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, PRODUCT_VARIANT_ID_QUARTUS_NEW)
+                .setParameter(param++, PRODUCT_VARIANT_PRODUCT_QUARTUS)
+                .setParameter(param++, PRODUCT_VARIANT_VERSION_QUARTUS_NEW).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_product_variant (id, product, version) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, PRODUCT_VARIANT_ID_PHOTOSHOP)
+                .setParameter(param++, PRODUCT_VARIANT_PRODUCT_PHOTOSHOP)
+                .setParameter(param++, PRODUCT_VARIANT_VERSION_PHOTOSHOP).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_product_variant (id, product, version) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, PRODUCT_VARIANT_ID_CANOE_OLD)
+                .setParameter(param++, PRODUCT_VARIANT_PRODUCT_CANOE)
+                .setParameter(param++, PRODUCT_VARIANT_VERSION_CANOE_OLD).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_product_variant (id, product, version) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, PRODUCT_VARIANT_ID_CANOE_NEW)
+                .setParameter(param++, PRODUCT_VARIANT_PRODUCT_CANOE)
+                .setParameter(param++, PRODUCT_VARIANT_VERSION_CANOE_NEW).executeUpdate();
 
         param = 1;
         em.createNativeQuery(
@@ -283,13 +400,63 @@ public class PrepareTests {
                 .setParameter(param++, 5).setParameter(param++, PRODUCT_VARIANT_ID_WINDOWS).executeUpdate();
 
         param = 1;
+        em.createNativeQuery(
+                "INSERT INTO t_license (id, service_contract, expiration_date, `key`, count, product_variant) VALUES (?1, ?2, ?3, ?4, ?5, ?6)")
+                .setParameter(param++, LICENSE_ID_QUARTUS_OLD).setParameter(param++, SERVICE_CONTRACT_ID_B)
+                .setParameter(param++, LICENSE_EXPIRATION_DATE_QUARTUS_OLD)
+                .setParameter(param++, LICENSE_KEY_QUARTUS_OLD).setParameter(param++, 5)
+                .setParameter(param++, PRODUCT_VARIANT_ID_QUARTUS_OLD).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery(
+                "INSERT INTO t_license (id, service_contract, expiration_date, `key`, count, product_variant) VALUES (?1, ?2, ?3, ?4, ?5, ?6)")
+                .setParameter(param++, LICENSE_ID_QUARTUS_NEW).setParameter(param++, SERVICE_CONTRACT_ID_C)
+                .setParameter(param++, LICENSE_EXPIRATION_DATE_QUARTUS_NEW)
+                .setParameter(param++, LICENSE_KEY_QUARTUS_NEW).setParameter(param++, 5)
+                .setParameter(param++, PRODUCT_VARIANT_ID_QUARTUS_NEW).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery(
+                "INSERT INTO t_license (id, service_contract, expiration_date, `key`, count, product_variant) VALUES (?1, ?2, ?3, ?4, ?5, ?6)")
+                .setParameter(param++, LICENSE_ID_PHOTOSHOP).setParameter(param++, SERVICE_CONTRACT_ID_D)
+                .setParameter(param++, LICENSE_EXPIRATION_DATE_PHOTOSHOP).setParameter(param++, LICENSE_KEY_PHOTOSHOP)
+                .setParameter(param++, 5).setParameter(param++, PRODUCT_VARIANT_ID_PHOTOSHOP).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery(
+                "INSERT INTO t_license (id, service_contract, expiration_date, `key`, count, product_variant) VALUES (?1, ?2, ?3, ?4, ?5, ?6)")
+                .setParameter(param++, LICENSE_ID_CANOE_OLD).setParameter(param++, SERVICE_CONTRACT_ID_A)
+                .setParameter(param++, LICENSE_EXPIRATION_DATE_CANOE_OLD).setParameter(param++, LICENSE_KEY_CANOE_OLD)
+                .setParameter(param++, 5).setParameter(param++, PRODUCT_VARIANT_ID_CANOE_OLD).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery(
+                "INSERT INTO t_license (id, service_contract, expiration_date, `key`, count, product_variant) VALUES (?1, ?2, ?3, ?4, ?5, ?6)")
+                .setParameter(param++, LICENSE_ID_CANOE_NEW).setParameter(param++, SERVICE_CONTRACT_ID_A)
+                .setParameter(param++, LICENSE_EXPIRATION_DATE_CANOE_NEW).setParameter(param++, LICENSE_KEY_CANOE_NEW)
+                .setParameter(param++, 5).setParameter(param++, PRODUCT_VARIANT_ID_CANOE_NEW).executeUpdate();
+
+        param = 1;
         em.createNativeQuery("INSERT INTO t_ip_mapping (id, license, ip_address) VALUES (?1, ?2, ?3)")
                 .setParameter(param++, IP_MAPPING_ID_HOST1).setParameter(param++, LICENSE_ID_MATLAB)
                 .setParameter(param++, IP_MAPPING_IP_ADDRESS_HOST1).executeUpdate();
 
         param = 1;
+        em.createNativeQuery("INSERT INTO t_ip_mapping (id, license, ip_address) VALUES (?1, ?2, ?3)")
+                .setParameter(param++, IP_MAPPING_ID_HOST2).setParameter(param++, LICENSE_ID_CANOE_NEW)
+                .setParameter(param++, IP_MAPPING_IP_ADDRESS_HOST2).executeUpdate();
+
+        param = 1;
         em.createNativeQuery("INSERT INTO t_service_group (service_contract, `user`) VALUES (?1, ?2)")
                 .setParameter(param++, SERVICE_CONTRACT_ID_A).setParameter(param++, USER_ID_HANNELORE).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_service_group (service_contract, `user`) VALUES (?1, ?2)")
+                .setParameter(param++, SERVICE_CONTRACT_ID_C).setParameter(param++, USER_ID_HANNELORE).executeUpdate();
+
+        param = 1;
+        em.createNativeQuery("INSERT INTO t_service_group (service_contract, `user`) VALUES (?1, ?2)")
+                .setParameter(param++, SERVICE_CONTRACT_ID_A).setParameter(param++, USER_ID_MUSTERMANN).executeUpdate();
 
         et.commit();
     }

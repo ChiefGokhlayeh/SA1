@@ -36,9 +36,12 @@ public class LicenseDaoTest {
         final List<License> license = LicenseDao.getInstance().getLicenses();
 
         assertThat(license, not(empty()));
-        assertThat(license, hasSize(2));
+        assertThat(license, hasSize(7));
         assertThat(license.stream().map((u) -> u.getId()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.LICENSE_ID_WINDOWS, PrepareTests.LICENSE_ID_MATLAB));
+                containsInAnyOrder(PrepareTests.LICENSE_ID_WINDOWS, PrepareTests.LICENSE_ID_MATLAB,
+                        PrepareTests.LICENSE_ID_QUARTUS_OLD, PrepareTests.LICENSE_ID_QUARTUS_NEW,
+                        PrepareTests.LICENSE_ID_PHOTOSHOP, PrepareTests.LICENSE_ID_CANOE_OLD,
+                        PrepareTests.LICENSE_ID_CANOE_NEW));
     }
 
     @Test

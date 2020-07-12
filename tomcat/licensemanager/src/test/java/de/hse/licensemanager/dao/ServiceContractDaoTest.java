@@ -50,12 +50,12 @@ public class ServiceContractDaoTest {
 
     @Test
     public void testFoundServiceContractNestedDataPopulated() {
-        final ServiceContract contractA = ServiceContractDao.getInstance()
+        final ServiceContract contract = ServiceContractDao.getInstance()
                 .getServiceContract(PrepareTests.SERVICE_CONTRACT_ID_B);
 
-        assertThat(contractA.getContractor().getAddress(), equalTo(PrepareTests.COMPANY_ADDRESS_NOTABROTHEL));
-        assertThat(contractA.getLicenses().stream().map((l) -> l.getKey()).collect(Collectors.toList()),
-                containsInAnyOrder(PrepareTests.LICENSE_KEY_WINDOWS));
+        assertThat(contract.getContractor().getAddress(), equalTo(PrepareTests.COMPANY_ADDRESS_NOTABROTHEL));
+        assertThat(contract.getLicenses().stream().map((l) -> l.getKey()).collect(Collectors.toList()),
+                containsInAnyOrder(PrepareTests.LICENSE_KEY_WINDOWS, PrepareTests.LICENSE_KEY_QUARTUS_OLD));
     }
 
     @Test
@@ -63,8 +63,9 @@ public class ServiceContractDaoTest {
         final List<ServiceContract> contracts = ServiceContractDao.getInstance().getServiceContracts();
 
         assertThat(contracts, not(empty()));
-        assertThat(contracts, hasSize(2));
-        assertThat(contracts.stream().map((c) -> c.getId()).collect(Collectors.toList()), containsInAnyOrder(
-                (long) PrepareTests.SERVICE_CONTRACT_ID_A, (long) PrepareTests.SERVICE_CONTRACT_ID_B));
+        assertThat(contracts, hasSize(4));
+        assertThat(contracts.stream().map((c) -> c.getId()).collect(Collectors.toList()),
+                containsInAnyOrder(PrepareTests.SERVICE_CONTRACT_ID_A, PrepareTests.SERVICE_CONTRACT_ID_B,
+                        PrepareTests.SERVICE_CONTRACT_ID_C, PrepareTests.SERVICE_CONTRACT_ID_D));
     }
 }

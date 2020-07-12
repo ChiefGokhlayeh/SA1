@@ -36,9 +36,9 @@ public class IpMappingDaoTest {
         final List<IpMapping> ipMappings = IpMappingDao.getInstance().getIpMappings();
 
         assertThat(ipMappings, not(empty()));
-        assertThat(ipMappings, hasSize(1));
+        assertThat(ipMappings, hasSize(2));
         assertThat(ipMappings.stream().map((u) -> u.getId()).collect(Collectors.toList()),
-                containsInAnyOrder((long) PrepareTests.IP_MAPPING_ID_HOST1));
+                containsInAnyOrder(PrepareTests.IP_MAPPING_ID_HOST1, PrepareTests.IP_MAPPING_ID_HOST2));
     }
 
     @Test
