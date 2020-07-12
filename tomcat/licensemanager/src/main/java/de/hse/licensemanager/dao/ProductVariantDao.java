@@ -39,8 +39,13 @@ public class ProductVariantDao implements IProductVariantDao {
     @Override
     public void delete(final ProductVariant productVariant) {
         em.getTransaction().begin();
-        em.remove(productVariant);
-        em.getTransaction().commit();
+        try {
+            em.remove(productVariant);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -54,28 +59,43 @@ public class ProductVariantDao implements IProductVariantDao {
     @Override
     public void modify(final long idToModify, final ProductVariant other) {
         em.getTransaction().begin();
-        final ProductVariant productVariant = getProductVariant(idToModify);
-        if (productVariant == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final ProductVariant productVariant = getProductVariant(idToModify);
+            if (productVariant == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(productVariant);
-        productVariant.setProduct(other.getProduct());
-        productVariant.setVersion(other.getVersion());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(productVariant);
+            productVariant.setProduct(other.getProduct());
+            productVariant.setVersion(other.getVersion());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final ProductVariant productVariant) {
         em.getTransaction().begin();
-        em.refresh(productVariant);
-        em.getTransaction().commit();
+        try {
+            em.refresh(productVariant);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final ProductVariant productVariant) {
         em.getTransaction().begin();
-        em.persist(productVariant);
-        em.getTransaction().commit();
+        try {
+            em.persist(productVariant);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

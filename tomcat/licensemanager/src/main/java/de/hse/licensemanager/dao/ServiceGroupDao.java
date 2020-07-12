@@ -79,8 +79,13 @@ public class ServiceGroupDao implements IServiceGroupDao {
     @Override
     public void delete(final ServiceGroup serviceGroup) {
         em.getTransaction().begin();
-        em.remove(serviceGroup);
-        em.getTransaction().commit();
+        try {
+            em.remove(serviceGroup);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -99,28 +104,43 @@ public class ServiceGroupDao implements IServiceGroupDao {
     @Override
     public void modify(final ServiceGroupId idToModify, final ServiceGroup other) {
         em.getTransaction().begin();
-        final ServiceGroup serviceGroup = getServiceGroup(idToModify);
-        if (serviceGroup == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final ServiceGroup serviceGroup = getServiceGroup(idToModify);
+            if (serviceGroup == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(serviceGroup);
-        serviceGroup.setServiceContract(other.getServiceContract());
-        serviceGroup.setUser(other.getUser());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(serviceGroup);
+            serviceGroup.setServiceContract(other.getServiceContract());
+            serviceGroup.setUser(other.getUser());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final ServiceGroup serviceGroup) {
         em.getTransaction().begin();
-        em.refresh(serviceGroup);
-        em.getTransaction().commit();
+        try {
+            em.refresh(serviceGroup);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final ServiceGroup serviceGroup) {
         em.getTransaction().begin();
-        em.persist(serviceGroup);
-        em.getTransaction().commit();
+        try {
+            em.persist(serviceGroup);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

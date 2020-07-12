@@ -53,36 +53,56 @@ public class ServiceContractDao implements IServiceContractDao {
     @Override
     public void delete(final ServiceContract serviceContract) {
         em.getTransaction().begin();
-        em.remove(serviceContract);
-        em.getTransaction().commit();
+        try {
+            em.remove(serviceContract);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void modify(final long idToModify, final ServiceContract other) {
         em.getTransaction().begin();
-        final ServiceContract serviceContract = getServiceContract(idToModify);
-        if (serviceContract == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final ServiceContract serviceContract = getServiceContract(idToModify);
+            if (serviceContract == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(serviceContract);
-        serviceContract.setContractor(other.getContractor());
-        serviceContract.setEnd(other.getEnd());
-        serviceContract.setStart(other.getStart());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(serviceContract);
+            serviceContract.setContractor(other.getContractor());
+            serviceContract.setEnd(other.getEnd());
+            serviceContract.setStart(other.getStart());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final ServiceContract serviceContract) {
         em.getTransaction().begin();
-        em.refresh(serviceContract);
-        em.getTransaction().commit();
+        try {
+            em.refresh(serviceContract);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final ServiceContract serviceContract) {
         em.getTransaction().begin();
-        em.persist(serviceContract);
-        em.getTransaction().commit();
+        try {
+            em.persist(serviceContract);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

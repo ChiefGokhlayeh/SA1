@@ -37,8 +37,13 @@ public class UserDao implements IUserDao {
     @Override
     public void delete(final User user) {
         em.getTransaction().begin();
-        em.remove(user);
-        em.getTransaction().commit();
+        try {
+            em.remove(user);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -52,34 +57,49 @@ public class UserDao implements IUserDao {
     @Override
     public void modify(final long idToModify, final User other) {
         em.getTransaction().begin();
-        final User user = getUser(idToModify);
-        if (user == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final User user = getUser(idToModify);
+            if (user == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(user);
-        user.setActive(other.isActive());
-        user.setCompanyDepartment(other.getCompanyDepartment());
-        user.setCredentials(other.getCredentials());
-        user.setEmail(other.getEmail());
-        user.setFirstname(other.getFirstname());
-        user.setLastname(other.getLastname());
-        user.setSystemGroup(other.getSystemGroup());
-        user.setVerified(other.isVerified());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(user);
+            user.setActive(other.isActive());
+            user.setCompanyDepartment(other.getCompanyDepartment());
+            user.setCredentials(other.getCredentials());
+            user.setEmail(other.getEmail());
+            user.setFirstname(other.getFirstname());
+            user.setLastname(other.getLastname());
+            user.setSystemGroup(other.getSystemGroup());
+            user.setVerified(other.isVerified());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final User user) {
         em.getTransaction().begin();
-        em.refresh(user);
-        em.getTransaction().commit();
+        try {
+            em.refresh(user);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final User user) {
         em.getTransaction().begin();
-        em.persist(user);
-        em.getTransaction().commit();
+        try {
+            em.persist(user);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

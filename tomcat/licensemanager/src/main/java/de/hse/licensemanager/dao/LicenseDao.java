@@ -38,8 +38,13 @@ public class LicenseDao implements ILicenseDao {
     @Override
     public void delete(final License license) {
         em.getTransaction().begin();
-        em.remove(license);
-        em.getTransaction().commit();
+        try {
+            em.remove(license);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -53,31 +58,46 @@ public class LicenseDao implements ILicenseDao {
     @Override
     public void modify(final long idToModify, final License other) {
         em.getTransaction().begin();
-        final License license = getLicense(idToModify);
-        if (license == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final License license = getLicense(idToModify);
+            if (license == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(license);
-        license.setCount(other.getCount());
-        license.setExpirationDate(other.getExpirationDate());
-        license.setKey(other.getKey());
-        license.setProductVariant(other.getProductVariant());
-        license.setServiceContract(other.getServiceContract());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(license);
+            license.setCount(other.getCount());
+            license.setExpirationDate(other.getExpirationDate());
+            license.setKey(other.getKey());
+            license.setProductVariant(other.getProductVariant());
+            license.setServiceContract(other.getServiceContract());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final License license) {
         em.getTransaction().begin();
-        em.refresh(license);
-        em.getTransaction().commit();
+        try {
+            em.refresh(license);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final License license) {
         em.getTransaction().begin();
-        em.persist(license);
-        em.getTransaction().commit();
+        try {
+            em.persist(license);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

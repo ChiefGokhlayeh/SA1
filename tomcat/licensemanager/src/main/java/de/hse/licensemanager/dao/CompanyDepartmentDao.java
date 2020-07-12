@@ -39,8 +39,13 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
     @Override
     public void delete(final CompanyDepartment department) {
         em.getTransaction().begin();
-        em.remove(department);
-        em.getTransaction().commit();
+        try {
+            em.remove(department);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -54,28 +59,43 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
     @Override
     public void modify(final long idToModify, final CompanyDepartment other) {
         em.getTransaction().begin();
-        final CompanyDepartment department = getCompanyDepartment(idToModify);
-        if (department == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final CompanyDepartment department = getCompanyDepartment(idToModify);
+            if (department == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(department);
-        department.setName(other.getName());
-        department.setCompany(other.getCompany());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(department);
+            department.setName(other.getName());
+            department.setCompany(other.getCompany());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final CompanyDepartment department) {
         em.getTransaction().begin();
-        em.refresh(department);
-        em.getTransaction().commit();
+        try {
+            em.refresh(department);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final CompanyDepartment department) {
         em.getTransaction().begin();
-        em.persist(department);
-        em.getTransaction().commit();
+        try {
+            em.persist(department);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

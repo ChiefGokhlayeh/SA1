@@ -37,8 +37,13 @@ public class SystemGroupDao implements ISystemGroupDao {
     @Override
     public void delete(final SystemGroup systemGroup) {
         em.getTransaction().begin();
-        em.remove(systemGroup);
-        em.getTransaction().commit();
+        try {
+            em.remove(systemGroup);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -52,26 +57,41 @@ public class SystemGroupDao implements ISystemGroupDao {
     @Override
     public void modify(final long idToModify, final SystemGroup other) {
         em.getTransaction().begin();
-        final SystemGroup systemGroup = getSystemGroup(idToModify);
-        if (systemGroup == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final SystemGroup systemGroup = getSystemGroup(idToModify);
+            if (systemGroup == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(systemGroup);
-        systemGroup.setDisplayName(other.getDisplayName());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(systemGroup);
+            systemGroup.setDisplayName(other.getDisplayName());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final SystemGroup systemGroup) {
         em.getTransaction().begin();
-        em.refresh(systemGroup);
-        em.getTransaction().commit();
+        try {
+            em.refresh(systemGroup);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     public void save(final SystemGroup systemGroup) {
         em.getTransaction().begin();
-        em.persist(systemGroup);
-        em.getTransaction().commit();
+        try {
+            em.persist(systemGroup);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

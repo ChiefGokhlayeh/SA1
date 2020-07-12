@@ -39,8 +39,13 @@ public class IpMappingDao implements IIpMappingDao {
     @Override
     public void delete(final IpMapping ipMapping) {
         em.getTransaction().begin();
-        em.remove(ipMapping);
-        em.getTransaction().commit();
+        try {
+            em.remove(ipMapping);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -54,28 +59,43 @@ public class IpMappingDao implements IIpMappingDao {
     @Override
     public void modify(final long idToModify, final IpMapping other) {
         em.getTransaction().begin();
-        final IpMapping ipMapping = getIpMapping(idToModify);
-        if (ipMapping == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final IpMapping ipMapping = getIpMapping(idToModify);
+            if (ipMapping == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(ipMapping);
-        ipMapping.setIpAddress(other.getIpAddress());
-        ipMapping.setLicense(other.getLicense());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(ipMapping);
+            ipMapping.setIpAddress(other.getIpAddress());
+            ipMapping.setLicense(other.getLicense());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final IpMapping ipMapping) {
         em.getTransaction().begin();
-        em.refresh(ipMapping);
-        em.getTransaction().commit();
+        try {
+            em.refresh(ipMapping);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final IpMapping ipMapping) {
         em.getTransaction().begin();
-        em.persist(ipMapping);
-        em.getTransaction().commit();
+        try {
+            em.persist(ipMapping);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

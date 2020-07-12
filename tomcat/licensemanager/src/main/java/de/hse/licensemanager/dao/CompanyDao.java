@@ -44,9 +44,14 @@ public class CompanyDao implements ICompanyDao {
     @Override
     public void delete(final Company company) {
         em.getTransaction().begin();
-        company.getDepartments().forEach(em::remove);
-        em.remove(company);
-        em.getTransaction().commit();
+        try {
+            company.getDepartments().forEach(em::remove);
+            em.remove(company);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -60,28 +65,43 @@ public class CompanyDao implements ICompanyDao {
     @Override
     public void modify(final long idToModify, final Company other) {
         em.getTransaction().begin();
-        final Company company = getCompany(idToModify);
-        if (company == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final Company company = getCompany(idToModify);
+            if (company == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(company);
-        company.setName(other.getName());
-        company.setAddress(other.getAddress());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(company);
+            company.setName(other.getName());
+            company.setAddress(other.getAddress());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final Company company) {
         em.getTransaction().begin();
-        em.refresh(company);
-        em.getTransaction().commit();
+        try {
+            em.refresh(company);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final Company company) {
         em.getTransaction().begin();
-        em.persist(company);
-        em.getTransaction().commit();
+        try {
+            em.persist(company);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }

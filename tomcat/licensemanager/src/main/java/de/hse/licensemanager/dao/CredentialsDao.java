@@ -50,8 +50,13 @@ public class CredentialsDao implements ICredentialsDao {
     @Override
     public void delete(final Credentials credentials) {
         em.getTransaction().begin();
-        em.remove(credentials);
-        em.getTransaction().commit();
+        try {
+            em.remove(credentials);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
@@ -65,30 +70,45 @@ public class CredentialsDao implements ICredentialsDao {
     @Override
     public void modify(final long idToModify, final Credentials other) {
         em.getTransaction().begin();
-        final Credentials credentials = getCredentials(idToModify);
-        if (credentials == null)
-            throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
+        try {
+            final Credentials credentials = getCredentials(idToModify);
+            if (credentials == null)
+                throw new IllegalArgumentException("Unable to find object to modify with id: " + idToModify);
 
-        em.refresh(credentials);
-        credentials.setLoginname(other.getLoginname());
-        credentials.setPasswordHash(other.getPasswordHash());
-        credentials.setPasswordSalt(other.getPasswordSalt());
-        credentials.setPasswordIterations(other.getPasswordIterations());
-        em.flush();
-        em.getTransaction().commit();
+            em.refresh(credentials);
+            credentials.setLoginname(other.getLoginname());
+            credentials.setPasswordHash(other.getPasswordHash());
+            credentials.setPasswordSalt(other.getPasswordSalt());
+            credentials.setPasswordIterations(other.getPasswordIterations());
+            em.flush();
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void refresh(final Credentials credentials) {
         em.getTransaction().begin();
-        em.refresh(credentials);
-        em.getTransaction().commit();
+        try {
+            em.refresh(credentials);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
     @Override
     public void save(final Credentials credentials) {
         em.getTransaction().begin();
-        em.persist(credentials);
-        em.getTransaction().commit();
+        try {
+            em.persist(credentials);
+            em.getTransaction().commit();
+        } catch (final Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 }
