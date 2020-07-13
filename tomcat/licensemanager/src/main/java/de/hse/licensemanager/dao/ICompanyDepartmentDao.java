@@ -6,6 +6,8 @@ import de.hse.licensemanager.model.CompanyDepartment;
 
 public interface ICompanyDepartmentDao {
 
+    public List<CompanyDepartment> getCompanyDepartmentsByCompany(final long id);
+
     public CompanyDepartment getCompanyDepartment(final long id);
 
     public List<CompanyDepartment> getCompanyDepartments();

@@ -51,7 +51,6 @@ public class User {
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "company_department", nullable = false)
-    @JsonIgnore
     private CompanyDepartment companyDepartment;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })

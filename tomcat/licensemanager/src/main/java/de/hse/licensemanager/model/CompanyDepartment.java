@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "t_company_department")
 public class CompanyDepartment {
@@ -32,6 +34,7 @@ public class CompanyDepartment {
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
     @JoinColumn(name = "company_department", insertable = false, updatable = false)
+    @JsonIgnore
     private final List<User> users = new ArrayList<>();
 
     public CompanyDepartment() {

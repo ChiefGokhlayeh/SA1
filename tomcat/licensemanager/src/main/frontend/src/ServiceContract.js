@@ -78,8 +78,8 @@ function ServiceContract({ id }) {
                   <td>{group.user.credentials.loginname}</td>
                   <td>{group.user.firstname}</td>
                   <td>{group.user.lastname}</td>
-                  <td>coming soon</td>
-                  <td>coming soon</td>
+                  <td>{group.user.companyDepartment.company.name}</td>
+                  <td>{group.user.companyDepartment.name}</td>
                 </tr>
               );
             })}

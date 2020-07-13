@@ -74,7 +74,13 @@ public class ServiceContractsResource {
             throws IOException {
 
         final User loginUser = checker.getLoginUser(servletRequest);
-        if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0 || loginUser.getCompany().getId() == id) {
+        final ServiceContract serviceContract = ServiceContractDao.getInstance().getServiceContract(id);
+
+        if (serviceContract == null) {
+            servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0
+                || loginUser.getServiceContracts().stream().anyMatch((sc) -> sc.equals(serviceContract))) {
             return new ServiceContractResource(id);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);

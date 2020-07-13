@@ -1,4 +1,10 @@
-import { FaEnvelope, FaBriefcase, FaUser, FaUsers } from "react-icons/fa";
+import {
+  FaBriefcase,
+  FaBuilding,
+  FaEnvelope,
+  FaUser,
+  FaUsers,
+} from "react-icons/fa";
 import { useAsync, Async } from "react-async";
 import { useParams } from "react-router";
 import Badge from "react-bootstrap/Badge";
@@ -10,19 +16,6 @@ import InputGroup from "react-bootstrap/InputGroup";
 import React, { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import validator from "validator";
-
-const fetchCompany = async ({ signal, endpoint }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/companies/${endpoint}`,
-    { signal, credentials: "include", method: "GET" }
-  );
-
-  if (resp.ok) {
-    return { success: true, company: await resp.json() };
-  } else {
-    return { success: false, status: resp.status };
-  }
-};
 
 const fetchGroupTypes = async ({ signal }) => {
   const resp = await fetch(
@@ -99,14 +92,6 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
     userId ? `by-user/${Number(userId)}` : "mine";
   const toUserEndpoint = (userId) => (userId ? Number(userId) : "me");
 
-  const {
-    data: companyData,
-    isPending: isCompanyPending,
-    error: companyError,
-  } = useAsync({
-    promiseFn: fetchCompany,
-    endpoint: toCompanyEndpoint(userId),
-  });
   const { data: userData } = useAsync({
     promiseFn: fetchUser,
     endpoint: toUserEndpoint(userId),
@@ -335,8 +320,6 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                 onChange={(e) => setLastname(e.target.value)}
               />
             </Form.Group>
-          </Form.Row>
-          <Form.Row>
             <Form.Group as={Col}>
               <Form.Label>E-Mail:</Form.Label>
               <InputGroup>
@@ -353,6 +336,8 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                 />
               </InputGroup>
             </Form.Group>
+          </Form.Row>
+          <Form.Row>
             <Form.Group as={Col}>
               <Form.Label>Company:</Form.Label>
               <InputGroup>
@@ -364,15 +349,22 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                 <Form.Control
                   type="text"
                   readOnly
-                  value={
-                    isCompanyPending
-                      ? "Loading..."
-                      : companyError
-                      ? `Something went wrong: ${companyError.message}`
-                      : companyData && companyData.success
-                      ? companyData.company.name
-                      : `Something went wrong: ${companyData.status}`
-                  }
+                  value={user ? user.companyDepartment.company.name : ""}
+                />
+              </InputGroup>
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>Department:</Form.Label>
+              <InputGroup>
+                <InputGroup.Prepend>
+                  <InputGroup.Text>
+                    <FaBuilding />
+                  </InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control
+                  type="text"
+                  readOnly
+                  value={user ? user.companyDepartment.name : ""}
                 />
               </InputGroup>
             </Form.Group>

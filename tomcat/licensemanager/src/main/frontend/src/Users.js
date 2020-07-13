@@ -77,6 +77,7 @@ function Users() {
                         <th>Firstname</th>
                         <th>Lastname</th>
                         <th>Company</th>
+                        <th>Department</th>
                         <th>Active</th>
                         <th>Edit</th>
                       </tr>
@@ -93,7 +94,8 @@ function Users() {
                           <td>{user.credentials.loginname}</td>
                           <td>{user.firstname}</td>
                           <td>{user.lastname}</td>
-                          <td></td>
+                          <td>{user.companyDepartment.company.name}</td>
+                          <td>{user.companyDepartment.name}</td>
                           <td className="text-center align-middle">
                             <h4>
                               <Badge

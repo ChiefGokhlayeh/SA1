@@ -25,6 +25,14 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
     }
 
     @Override
+    public List<CompanyDepartment> getCompanyDepartmentsByCompany(final long id) {
+        final List<?> objs = em.createQuery("SELECT d FROM CompanyDepartment d WHERE d.company.id=:id")
+                .setParameter("id", id).getResultList();
+        return objs.stream().filter(CompanyDepartment.class::isInstance).map(CompanyDepartment.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public CompanyDepartment getCompanyDepartment(final long id) {
         return em.find(CompanyDepartment.class, id);
     }
