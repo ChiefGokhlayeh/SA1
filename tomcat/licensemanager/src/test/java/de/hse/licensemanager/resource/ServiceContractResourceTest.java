@@ -18,7 +18,6 @@ public class ServiceContractResourceTest {
 
     private ServiceContract serviceContract;
     private ServiceContractResource serviceContractResource;
-    private UriInfo uriInfo;
 
     @Before
     public void setUp() {
@@ -26,9 +25,7 @@ public class ServiceContractResourceTest {
 
         serviceContract = ServiceContractDao.getInstance().getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_A);
 
-        uriInfo = mock(UriInfo.class);
-
-        serviceContractResource = new ServiceContractResource(uriInfo, serviceContract.getId());
+        serviceContractResource = new ServiceContractResource(serviceContract.getId());
     }
 
     @Test
@@ -51,6 +48,8 @@ public class ServiceContractResourceTest {
 
     @Test
     public void testPut() {
-        serviceContractResource.put(serviceContract);
+        final UriInfo uriInfo = mock(UriInfo.class);
+
+        serviceContractResource.put(serviceContract, uriInfo);
     }
 }

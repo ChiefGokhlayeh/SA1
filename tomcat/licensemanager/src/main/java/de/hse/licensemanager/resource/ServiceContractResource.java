@@ -18,11 +18,9 @@ import de.hse.licensemanager.model.ServiceContract;
 @Login
 public class ServiceContractResource {
     @Context
-    private final UriInfo uriInfo;
     private final long id;
 
-    public ServiceContractResource(final UriInfo uriInfo, final long id) {
-        this.uriInfo = uriInfo;
+    public ServiceContractResource(final long id) {
         this.id = id;
     }
 
@@ -44,7 +42,7 @@ public class ServiceContractResource {
     @PUT
     @SystemAdminOnly
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final ServiceContract serviceContract) {
+    public Response put(final ServiceContract serviceContract, @Context final UriInfo uriInfo) {
         ServiceContractDao.getInstance().save(serviceContract);
         return Response.created(uriInfo.getAbsolutePath()).build();
     }

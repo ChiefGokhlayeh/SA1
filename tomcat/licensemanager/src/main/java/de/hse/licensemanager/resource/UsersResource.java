@@ -5,10 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import javax.ws.rs.GET;
@@ -26,6 +24,16 @@ import de.hse.licensemanager.model.User.Group;
 
 @Path("/users")
 public class UsersResource {
+
+    private final ILoginChecker checker;
+
+    public UsersResource() {
+        this(new LoginChecker());
+    }
+
+    public UsersResource(final ILoginChecker checker) {
+        this.checker = checker;
+    }
 
     @GET
     @Login
@@ -63,15 +71,18 @@ public class UsersResource {
     }
 
     @Path("{user}")
-    @Login
     public UserResource getUser(@PathParam("user") final Long id) {
         return new UserResource(id);
     }
 
     @Path("me")
-    @Login
-    public UserResource me(@Context final HttpServletRequest servletRequest) throws IOException {
-        return new UserResource(getLoginUser(servletRequest));
+    public UserResource me(@Context final HttpServletRequest servletRequest,
+            @Context final HttpServletResponse servletResponse) throws IOException {
+        final User loginUser = checker.getLoginUser(servletRequest, servletResponse);
+        if (loginUser != null)
+            return new UserResource(loginUser);
+        else
+            return null;
     }
 
     @GET
@@ -82,22 +93,13 @@ public class UsersResource {
     public List<User> getUsersByCompany(@PathParam("company") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
-        final User loginUser = getLoginUser(servletRequest);
+        final User loginUser = checker.getLoginUser(servletRequest);
 
         if (loginUser.getGroup().equals(Group.SYSTEM_ADMIN) || loginUser.getCompany().getId() == id) {
             return UserDao.getInstance().getUsersByCompany(id);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return null;
-        }
-    }
-
-    private User getLoginUser(final HttpServletRequest servletRequest) {
-        final HttpSession session = servletRequest.getSession(false);
-        if (session == null) {
-            throw new IllegalStateException("Login-Filter protected REST API called without login.");
-        } else {
-            return (User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
         }
     }
 }
