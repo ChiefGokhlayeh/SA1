@@ -98,7 +98,7 @@ task yarnInstall(type: YarnTask) {
 
 task yarnBuild(type: YarnTask) {
     description = "Build yarn frontend app"
-    // dependsOn 'yarnInstall'
+    dependsOn 'yarnInstall'
     execOverrides {
         it.workingDir = "${project.projectDir}/src/main/frontend"
     }
