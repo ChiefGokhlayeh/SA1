@@ -1,7 +1,6 @@
-import "./App.css";
 import { useAsync } from "react-async";
-import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import React, { useState } from "react";
 import validator from "validator";

@@ -12,9 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.sql.Date;
 import java.util.HashSet;
@@ -23,7 +21,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "t_service_contract")
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@query_id")
 public class ServiceContract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

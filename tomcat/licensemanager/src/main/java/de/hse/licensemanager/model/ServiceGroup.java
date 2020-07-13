@@ -10,13 +10,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Entity
 @Table(name = "t_service_group")
 @IdClass(ServiceGroupId.class)
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@query_id")
 public class ServiceGroup {
     @Id
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
