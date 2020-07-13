@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.HttpHeaders;
 
@@ -51,14 +52,16 @@ public class CompaniesResourceTest {
         final User testUser = UserDao.getInstance().getUser(UnitTestSupport.USER_ID_MUSTERMANN);
 
         final HttpServletRequest fakeRequest = mock(HttpServletRequest.class);
+        final HttpServletResponse fakeResponse = mock(HttpServletResponse.class);
         final HttpSession fakeSession = mock(HttpSession.class);
         when(fakeRequest.getSession(anyBoolean())).thenReturn(fakeSession);
         when(fakeSession.getAttribute(HttpHeaders.AUTHORIZATION)).thenReturn(testUser);
 
-        final CompanyResource companyResource = companiesResource.mine(fakeRequest);
+        final CompanyResource companyResource = companiesResource.mine(fakeRequest, fakeResponse);
 
         assertThat(companyResource, notNullValue());
         verify(fakeRequest, atLeastOnce()).getSession(anyBoolean());
         verify(fakeSession, atLeastOnce()).getAttribute(HttpHeaders.AUTHORIZATION);
+        verifyNoInteractions(fakeResponse);
     }
 }

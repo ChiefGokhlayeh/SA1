@@ -27,6 +27,16 @@ import de.hse.licensemanager.model.User;
 @Path("/companies")
 public class CompaniesResource {
 
+    private final ILoginChecker checker;
+
+    public CompaniesResource() {
+        this(new LoginChecker());
+    }
+
+    public CompaniesResource(final ILoginChecker checker) {
+        this.checker = checker;
+    }
+
     @GET
     @Login
     @Produces(MediaType.APPLICATION_JSON)
@@ -44,27 +54,27 @@ public class CompaniesResource {
     }
 
     @Path("mine")
-    @Login
-    public CompanyResource mine(@Context final HttpServletRequest servletRequest) throws IOException {
-        final HttpSession session = servletRequest.getSession(false);
-        if (session == null) {
-            throw new IllegalStateException("Login-Filter protected REST API called without login.");
+    public CompanyResource mine(@Context final HttpServletRequest request, @Context final HttpServletResponse response)
+            throws IOException {
+        final User loginUser = checker.getLoginUser(request, response);
+
+        if (loginUser != null) {
+            return new CompanyResource(loginUser.getCompany());
         } else {
-            return new CompanyResource(((User) session.getAttribute(HttpHeaders.AUTHORIZATION)).getCompany());
+            return null;
         }
     }
 
     @Path("by-user/{user}")
-    @Login
     public CompanyResource byUser(@PathParam("user") final long id, @Context final HttpServletResponse servletResponse)
             throws IOException {
         final User user = UserDao.getInstance().getUser(id);
 
-        if (user == null) {
+        if (user != null) {
+            return new CompanyResource(user.getCompany());
+        } else {
             servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
-        } else {
-            return new CompanyResource(user.getCompany());
         }
     }
 
@@ -78,7 +88,6 @@ public class CompaniesResource {
     }
 
     @Path("{company}")
-    @Login
     public CompanyResource getCompany(@PathParam("company") final long id) {
         return new CompanyResource(id);
     }
