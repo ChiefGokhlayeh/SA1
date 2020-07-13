@@ -21,6 +21,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "t_credentials")
@@ -60,15 +62,15 @@ public class Credentials {
     private String loginname;
 
     @Column(name = "password_hash", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = Access.WRITE_ONLY)
     private byte passwordHash[];
 
     @Column(name = "password_salt", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = Access.WRITE_ONLY)
     private byte[] passwordSalt;
 
     @Column(name = "password_iterations", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = Access.WRITE_ONLY)
     private int passwordIterations;
 
     @OneToOne(cascade = { CascadeType.ALL })

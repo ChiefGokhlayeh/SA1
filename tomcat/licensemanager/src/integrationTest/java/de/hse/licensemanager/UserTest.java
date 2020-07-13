@@ -16,6 +16,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,6 +27,7 @@ import de.hse.licensemanager.dao.CompanyDepartmentDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.CompanyDepartment;
+import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
 
@@ -157,5 +161,44 @@ public class UserTest {
         assertThat(users, not(empty()));
         assertThat(users, hasSize(expectedUsers.size()));
         assertThat(users, everyItem(in(expectedUsers)));
+    }
+
+    @Test
+    public void testCreateNewUser() {
+        final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+        final User newUser = new User("Greg", "Long", "greg.long@email.com",
+                CompanyDepartmentDao.getInstance().getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_IT),
+                Group.USER, new Credentials("greg", "greg123") {
+                    @JsonProperty(access = Access.READ_WRITE)
+                    private byte passwordHash[];
+
+                    @JsonProperty(access = Access.READ_WRITE)
+                    private byte[] passwordSalt;
+
+                    @JsonProperty(access = Access.READ_WRITE)
+                    private int passwordIterations;
+                });
+
+        final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
+        cookies.forEach(b::cookie);
+        final Response response = b.buildPost(Entity.json(newUser)).invoke();
+
+        assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+
+        final User createdUser = response.readEntity(User.class);
+
+        assertThat(createdUser.getCredentials().getLoginname(), equalTo(newUser.getCredentials().getLoginname()));
+        assertThat(createdUser.getCredentials().getPasswordHash(), nullValue());
+        assertThat(createdUser.getCredentials().getPasswordIterations(), equalTo(0));
+        assertThat(createdUser.getCredentials().getPasswordSalt(), nullValue());
+        assertThat(newUser.getFirstname(), equalTo(createdUser.getFirstname()));
+        assertThat(newUser.getLastname(), equalTo(createdUser.getLastname()));
+        assertThat(newUser.getEmail(), equalTo(createdUser.getEmail()));
+        assertThat(newUser.getGroup(), equalTo(createdUser.getGroup()));
+        assertThat(newUser.getCompany(), equalTo(createdUser.getCompany()));
+        assertThat(createdUser, in(UserDao.getInstance().getUsers()));
     }
 }
