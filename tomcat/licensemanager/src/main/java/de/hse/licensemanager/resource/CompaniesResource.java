@@ -5,14 +5,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -81,10 +80,11 @@ public class CompaniesResource {
     @POST
     @Login
     @SystemAdminOnly
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response newCompany(final Company company, @Context final UriInfo uriInfo) {
         CompanyDao.getInstance().save(company);
-        return Response.created(null).entity(CompanyDao.getInstance().getCompany(company.getId())).build();
+        return Response.created(uriInfo.getRequestUri()).entity(company).build();
     }
 
     @Path("{company}")

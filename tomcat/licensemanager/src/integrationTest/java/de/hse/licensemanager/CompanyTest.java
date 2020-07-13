@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -180,6 +181,33 @@ public class CompanyTest {
             assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
             assertThat(CompanyDao.getInstance().getCompany(originalCompany.getId()).getAddress(),
                     is(equalTo(modifiedCompany.getAddress())));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testCreateNewCompany() {
+        final Lock l = RW_LOCK.writeLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final Company newCompany = new Company("Apple", "Apple Campus 2\nOne Apple Park Way");
+
+            final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
+            cookies.forEach(b::cookie);
+            final Response response = b.buildPost(Entity.json(newCompany)).invoke();
+
+            assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+            final Company createdCompany = response.readEntity(Company.class);
+            assertThat(createdCompany.getName(), equalTo(newCompany.getName()));
+            assertThat(createdCompany.getAddress(), equalTo(newCompany.getAddress()));
+            assertThat(newCompany.getName(), is(in(CompanyDao.getInstance().getCompanies().stream()
+                    .map((c) -> c.getName()).collect(Collectors.toList()))));
+            assertThat(createdCompany, is(in(CompanyDao.getInstance().getCompanies())));
         } finally {
             l.unlock();
         }

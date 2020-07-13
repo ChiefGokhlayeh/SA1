@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -112,6 +114,33 @@ public class CompanyDepartmentTest {
             assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
             assertThat(companyDepartments, hasSize(equalTo(company.getDepartments().size())));
             assertThat(companyDepartments, everyItem(in(company.getDepartments())));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testCreateNewCompanyDepartment() {
+        final Lock l = RW_LOCK.writeLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final CompanyDepartment newCompanyDepartment = new CompanyDepartment("Sales",
+                    CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER));
+
+            final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
+            cookies.forEach(b::cookie);
+            final Response response = b.buildPost(Entity.json(newCompanyDepartment)).invoke();
+
+            assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+            final CompanyDepartment createdCompanyDepartment = response.readEntity(CompanyDepartment.class);
+            assertThat(createdCompanyDepartment.getName(), equalTo(newCompanyDepartment.getName()));
+            assertThat(createdCompanyDepartment.getCompany(), equalTo(newCompanyDepartment.getCompany()));
+            assertThat(newCompanyDepartment.getName(), is(in(CompanyDepartmentDao.getInstance().getCompanyDepartments()
+                    .stream().map((d) -> d.getName()).collect(Collectors.toList()))));
         } finally {
             l.unlock();
         }

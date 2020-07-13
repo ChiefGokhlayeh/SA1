@@ -28,7 +28,7 @@ public class CompanyDepartment {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "company", nullable = false)
     private Company company;
 
