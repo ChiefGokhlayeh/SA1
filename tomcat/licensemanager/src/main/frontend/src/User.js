@@ -90,22 +90,20 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
 
   const toUserEndpoint = (userId) => (userId ? Number(userId) : "me");
 
-  const { data: userData } = useAsync({
+  const { data: userData, reload: reloadUser } = useAsync({
     promiseFn: fetchUser,
     endpoint: toUserEndpoint(userId),
   });
+
+  useEffect(() => {
+    if (reloadUser) reloadUser();
+  }, [userId, reloadUser]);
 
   useEffect(() => {
     if (userData && userData.success) {
       setUser(userData.user);
     }
   }, [userData]);
-
-  useEffect(() => {
-    if (user) {
-      setUser(user);
-    }
-  }, [user]);
 
   useEffect(() => {
     if (user) {

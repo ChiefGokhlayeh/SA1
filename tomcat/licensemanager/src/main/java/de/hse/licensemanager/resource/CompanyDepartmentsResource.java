@@ -39,7 +39,7 @@ public class CompanyDepartmentsResource {
     @Login
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CompanyDepartment> getCompanies() {
+    public List<CompanyDepartment> getCompanyDepartments() {
         return CompanyDepartmentDao.getInstance().getCompanyDepartments();
     }
 
@@ -67,7 +67,6 @@ public class CompanyDepartmentsResource {
     @GET
     @Path("by-company/{company}")
     @Login
-    @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
     public Response byCompany(@PathParam("company") final long id, @Context final HttpServletRequest request) {
         final User loginUser = checker.getLoginUser(request);

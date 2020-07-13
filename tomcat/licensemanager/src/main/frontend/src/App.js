@@ -3,6 +3,7 @@ import "react-tabs/style/react-tabs.css";
 import { LinkContainer } from "react-router-bootstrap";
 import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import Company from "./Company";
 import Container from "react-bootstrap/Container";
 import Dashboard from "./Dashboard";
 import Login, { url as loginUrl } from "./Login";
@@ -163,10 +164,23 @@ function App() {
                         "Changing password failed! Make sure your old password is correct."
                       )
                 }
-                onUserDetailsChanged={({ success, user }) => {
+                onUserDetailsChanged={({ success }) => {
                   if (success) {
                     alert("User details changed!");
                   } else alert("Failed to update user data!");
+                }}
+              />
+            )}
+          />
+          <Route
+            path={"/companies/mine"}
+            exact={true}
+            render={(props) => (
+              <Company
+                {...props}
+                onCompanyChanged={({ success }) => {
+                  if (success) alert("Company details changed!");
+                  else alert("Failed to update company data!");
                 }}
               />
             )}
@@ -177,7 +191,7 @@ function App() {
             render={(props) => (
               <Users
                 {...props}
-                onUserCreated={({ success, user }) => {
+                onUserCreated={({ success }) => {
                   if (success) alert("User created!");
                   else alert("Failed to create user!");
                 }}
