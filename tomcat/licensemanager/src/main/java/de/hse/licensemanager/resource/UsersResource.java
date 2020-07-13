@@ -15,10 +15,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
+import de.hse.licensemanager.dao.CompanyDepartmentDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.filter.SystemAdminOnly;
-import de.hse.licensemanager.filter.CompanyAdminOrAbove;
 import de.hse.licensemanager.filter.Login;
+import de.hse.licensemanager.model.CompanyDepartment;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
 
@@ -88,7 +89,6 @@ public class UsersResource {
     @GET
     @Path("by-company/{company}")
     @Login
-    @CompanyAdminOrAbove
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> getUsersByCompany(@PathParam("company") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
@@ -97,6 +97,28 @@ public class UsersResource {
 
         if (loginUser.getGroup().equals(Group.SYSTEM_ADMIN) || loginUser.getCompany().getId() == id) {
             return UserDao.getInstance().getUsersByCompany(id);
+        } else {
+            servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+    }
+
+    @GET
+    @Path("by-company-department/{company-department}")
+    @Login
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<User> getUsersByCompanyDepartment(@PathParam("company-department") final long id,
+            @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
+            throws IOException {
+        final User loginUser = checker.getLoginUser(servletRequest);
+        final CompanyDepartment companyDepartment = CompanyDepartmentDao.getInstance().getCompanyDepartment(id);
+
+        if (companyDepartment == null) {
+            servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        } else if (loginUser.getGroup().equals(Group.SYSTEM_ADMIN)
+                || loginUser.getCompanyDepartment().getCompany().equals(companyDepartment.getCompany())) {
+            return UserDao.getInstance().getUsersByCompanyDepartment(id);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return null;

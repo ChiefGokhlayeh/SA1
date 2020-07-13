@@ -20,8 +20,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.dao.CompanyDao;
+import de.hse.licensemanager.dao.CompanyDepartmentDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.Company;
+import de.hse.licensemanager.model.CompanyDepartment;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
 
@@ -29,10 +31,11 @@ public class UserTest {
     private Client client;
     private String restURI;
 
+    private static final String BY_COMPANY_DEPARTMENT_ENDPOINT = "/by-company-department";
+    private static final String BY_COMPANY_ENDPOINT = "/by-company";
     private static final String COUNT_ENDPOINT = "/count";
     private static final String GROUP_TYPES_ENDPOINT = "/group-types";
     private static final String ME_ENDPOINT = "/me";
-    private static final String BY_COMPANY_ENDPOINT = "/by-company";
 
     @Before
     public void setUp() {
@@ -127,6 +130,30 @@ public class UserTest {
         });
 
         assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertThat(users, not(empty()));
+        assertThat(users, hasSize(expectedUsers.size()));
+        assertThat(users, everyItem(in(expectedUsers)));
+    }
+
+    @Test
+    public void testGetUsersByCompanyDepartment() {
+        final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+        final CompanyDepartment company = CompanyDepartmentDao.getInstance()
+                .getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_IT);
+        final List<User> expectedUsers = company.getUsers();
+
+        final Invocation.Builder b = client
+                .target(restURI + String.format("%s/%d", BY_COMPANY_DEPARTMENT_ENDPOINT, company.getId()))
+                .request(MediaType.APPLICATION_JSON);
+        cookies.forEach(b::cookie);
+        final Response response = b.buildGet().invoke();
+
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        final List<User> users = response.readEntity(new GenericType<List<User>>() {
+        });
         assertThat(users, not(empty()));
         assertThat(users, hasSize(expectedUsers.size()));
         assertThat(users, everyItem(in(expectedUsers)));

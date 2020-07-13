@@ -68,7 +68,7 @@ public class ServiceContractsResourceTest {
     }
 
     @Test
-    public void testGetSingleServiceContractAsUserFromOtherCompany() throws IOException {
+    public void testGetSingleServiceContractAsUserNotInServiceGroup() throws IOException {
         final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
 
@@ -76,7 +76,7 @@ public class ServiceContractsResourceTest {
                 .thenReturn(UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE));
         when(checker.compareGroup(org.mockito.Mockito.any(User.class), eq(Group.SYSTEM_ADMIN))).thenCallRealMethod();
 
-        final long id = UnitTestSupport.SERVICE_CONTRACT_ID_A;
+        final long id = UnitTestSupport.SERVICE_CONTRACT_ID_B;
         final ServiceContractResource serviceContractResource = serviceContractsResource.getServiceContract(id,
                 servletRequest, servletResponse);
 

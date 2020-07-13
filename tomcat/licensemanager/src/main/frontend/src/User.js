@@ -88,8 +88,6 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
       (user ? validator.equals(lastname, user.lastname) : true) &&
       (user ? validator.equals(email, user.email) : true));
 
-  const toCompanyEndpoint = (userId) =>
-    userId ? `by-user/${Number(userId)}` : "mine";
   const toUserEndpoint = (userId) => (userId ? Number(userId) : "me");
 
   const { data: userData } = useAsync({

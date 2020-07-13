@@ -38,6 +38,18 @@ public class UserDao implements IUserDao {
     }
 
     @Override
+    public List<User> getUsersByCompanyDepartment(final long id) {
+        final List<?> objs = em.createQuery("SELECT u FROM User u WHERE u.companyDepartment.id=:id")
+                .setParameter("id", id).getResultList();
+        Stream<User> stream = objs.stream().filter(User.class::isInstance).map(User.class::cast);
+        stream = stream.map((c) -> {
+            this.refresh(c);/* this is only needed when running integration tests */
+            return c;
+        });
+        return stream.collect(Collectors.toList());
+    }
+
+    @Override
     public List<User> getUsers() {
         final List<?> objs = em.createQuery("SELECT u FROM User u").getResultList();
         Stream<User> stream = objs.stream().filter(User.class::isInstance).map(User.class::cast);

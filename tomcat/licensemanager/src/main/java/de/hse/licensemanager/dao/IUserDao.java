@@ -6,9 +6,11 @@ import de.hse.licensemanager.model.User;
 
 public interface IUserDao {
 
-    public List<User> getUsersByCompany(long id);
-
     public List<User> getUsers();
+
+    public List<User> getUsersByCompany(final long id);
+
+    public List<User> getUsersByCompanyDepartment(final long id);
 
     public User getUser(final long id);
 
