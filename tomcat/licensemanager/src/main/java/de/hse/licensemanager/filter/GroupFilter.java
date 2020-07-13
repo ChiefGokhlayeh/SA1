@@ -2,6 +2,7 @@ package de.hse.licensemanager.filter;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,7 +18,7 @@ import de.hse.licensemanager.model.User.Group;
 
 public class GroupFilter implements ContainerRequestFilter {
 
-    protected final Group group;
+    protected final Group[] allowedGroups;
 
     @Context
     protected ResourceInfo resourceInfo;
@@ -25,12 +26,13 @@ public class GroupFilter implements ContainerRequestFilter {
     @Context
     protected HttpServletRequest httpRequest;
 
-    public GroupFilter(final Group group) {
-        this(group, null, null);
+    public GroupFilter(final Group... allowedGroups) {
+        this(null, null, allowedGroups);
     }
 
-    public GroupFilter(final Group group, final ResourceInfo resourceInfo, final HttpServletRequest httpRequest) {
-        this.group = group;
+    public GroupFilter(final ResourceInfo resourceInfo, final HttpServletRequest httpRequest,
+            final Group... allowedGroups) {
+        this.allowedGroups = allowedGroups;
         this.resourceInfo = resourceInfo;
         this.httpRequest = httpRequest;
     }
@@ -60,7 +62,8 @@ public class GroupFilter implements ContainerRequestFilter {
             }
 
             final User user = (User) httpSession.getAttribute(HttpHeaders.AUTHORIZATION);
-            if (!user.isActive() || !user.getGroup().equals(group)) {
+            if (!user.isActive()
+                    || Arrays.stream(allowedGroups).noneMatch((allowedGroup) -> allowedGroup.equals(user.getGroup()))) {
                 requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());
                 return;
             }

@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -18,7 +19,9 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.UserDao;
+import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
 
@@ -29,6 +32,7 @@ public class UserTest {
     private static final String COUNT_ENDPOINT = "/count";
     private static final String GROUP_TYPES_ENDPOINT = "/group-types";
     private static final String ME_ENDPOINT = "/me";
+    private static final String BY_COMPANY_ENDPOINT = "/by-company";
 
     @Before
     public void setUp() {
@@ -101,5 +105,30 @@ public class UserTest {
         final Response response = b.buildPut(Entity.json(modifiedUser)).invoke();
 
         assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+    }
+
+    @Test
+    public void testGetUsersByCompany() {
+        final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+        final Company company = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER);
+        final List<User> expectedUsers = company.getDepartments().stream().flatMap((dep) -> dep.getUsers().stream())
+                .collect(Collectors.toList());
+
+        final Invocation.Builder b = client
+                .target(restURI + String.format("%s/%d", BY_COMPANY_ENDPOINT, company.getId()))
+                .request(MediaType.APPLICATION_JSON);
+        cookies.forEach(b::cookie);
+        final Response response = b.buildGet().invoke();
+
+        final List<User> users = response.readEntity(new GenericType<List<User>>() {
+        });
+
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertThat(users, not(empty()));
+        assertThat(users, hasSize(expectedUsers.size()));
+        assertThat(users, everyItem(in(expectedUsers)));
     }
 }

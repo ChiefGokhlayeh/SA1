@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.UnitTestSupport;
+import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.CompanyDepartment;
 import de.hse.licensemanager.model.Credentials;
 import de.hse.licensemanager.model.User;
@@ -67,6 +68,21 @@ public class UserDaoTest {
         assertThat(users.stream().map((u) -> u.getId()).collect(Collectors.toList()),
                 containsInAnyOrder(UnitTestSupport.USER_ID_HANNELORE, UnitTestSupport.USER_ID_MUSTERMANN,
                         UnitTestSupport.USER_ID_DELETEME));
+    }
+
+    @Test
+    public void testQueryUsersByCompany() {
+        final Company company = CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER);
+
+        final List<User> users = UserDao.getInstance().getUsersByCompany(company.getId());
+
+        final List<User> expectedUsers = company.getDepartments().stream().flatMap((dep) -> dep.getUsers().stream())
+                .collect(Collectors.toList());
+
+        assertThat(users, not(empty()));
+        assertThat(users, hasSize(expectedUsers.size()));
+        assertThat(users, everyItem(in(expectedUsers)));
+        assertThat(users, everyItem(hasProperty("company", equalTo(company))));
     }
 
     @Test

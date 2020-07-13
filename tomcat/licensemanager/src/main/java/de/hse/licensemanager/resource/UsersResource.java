@@ -19,6 +19,7 @@ import javax.ws.rs.Produces;
 
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.filter.SystemAdminOnly;
+import de.hse.licensemanager.filter.CompanyAdminOrAbove;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
@@ -69,14 +70,34 @@ public class UsersResource {
 
     @Path("me")
     @Login
-    public UserResource me(@Context final HttpServletRequest servletRequest,
-            @Context final HttpServletResponse servletResponse) throws IOException {
+    public UserResource me(@Context final HttpServletRequest servletRequest) throws IOException {
+        return new UserResource(getLoginUser(servletRequest));
+    }
+
+    @GET
+    @Path("by-company/{company}")
+    @Login
+    @CompanyAdminOrAbove
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<User> getUsersByCompany(@PathParam("company") final long id,
+            @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
+            throws IOException {
+        final User loginUser = getLoginUser(servletRequest);
+
+        if (loginUser.getGroup().equals(Group.SYSTEM_ADMIN) || loginUser.getCompany().getId() == id) {
+            return UserDao.getInstance().getUsersByCompany(id);
+        } else {
+            servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+    }
+
+    private User getLoginUser(final HttpServletRequest servletRequest) {
         final HttpSession session = servletRequest.getSession(false);
         if (session == null) {
-            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return null;
+            throw new IllegalStateException("Login-Filter protected REST API called without login.");
         } else {
-            return new UserResource((User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION));
+            return (User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION);
         }
     }
 }

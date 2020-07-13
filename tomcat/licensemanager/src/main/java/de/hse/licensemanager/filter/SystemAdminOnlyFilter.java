@@ -17,6 +17,6 @@ public class SystemAdminOnlyFilter extends GroupFilter {
     }
 
     public SystemAdminOnlyFilter(final ResourceInfo resourceInfo, final HttpServletRequest httpRequest) {
-        super(Group.SYSTEM_ADMIN, resourceInfo, httpRequest);
+        super(resourceInfo, httpRequest, Group.SYSTEM_ADMIN);
     }
 }

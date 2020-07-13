@@ -25,8 +25,16 @@ public class UserDao implements IUserDao {
         return dao;
     }
 
-    public User getUser(final long id) {
-        return em.find(User.class, id);
+    @Override
+    public List<User> getUsersByCompany(final long id) {
+        final List<?> objs = em.createQuery("SELECT u FROM User u WHERE u.companyDepartment.company.id=:id")
+                .setParameter("id", id).getResultList();
+        Stream<User> stream = objs.stream().filter(User.class::isInstance).map(User.class::cast);
+        stream = stream.map((c) -> {
+            this.refresh(c);/* this is only needed when running integration tests */
+            return c;
+        });
+        return stream.collect(Collectors.toList());
     }
 
     @Override
@@ -38,6 +46,11 @@ public class UserDao implements IUserDao {
             return c;
         });
         return stream.collect(Collectors.toList());
+    }
+
+    @Override
+    public User getUser(final long id) {
+        return em.find(User.class, id);
     }
 
     @Override
