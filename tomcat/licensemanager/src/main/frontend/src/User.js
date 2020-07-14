@@ -13,15 +13,17 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Row from "react-bootstrap/Row";
+import ServerInfo from "./ServerInfo";
 import validator from "validator";
 
-const fetchGroupTypes = async ({ signal }) => {
-  const resp = await fetch(
-    "https://localhost:8443/licensemanager/rest/users/group-types",
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchGroupTypes = async ({ signal, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/users/group-types`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, groupTypes: await resp.json() };
@@ -30,11 +32,12 @@ const fetchGroupTypes = async ({ signal }) => {
   }
 };
 
-const fetchUser = async ({ signal, endpoint }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/${endpoint}`,
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchUser = async ({ signal, endpoint, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/users/${endpoint}`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, user: await resp.json() };
@@ -43,19 +46,16 @@ const fetchUser = async ({ signal, endpoint }) => {
   }
 };
 
-const pushUser = async ({ signal, endpoint, modifiedUser }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/${endpoint}`,
-    {
-      signal,
-      credentials: "include",
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(modifiedUser),
-    }
-  );
+const pushUser = async ({ signal, endpoint, modifiedUser, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/users/${endpoint}`, {
+    signal,
+    credentials: "include",
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(modifiedUser),
+  });
 
   if (resp.ok) {
     return { success: true };
@@ -64,7 +64,9 @@ const pushUser = async ({ signal, endpoint, modifiedUser }) => {
   }
 };
 
-function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
+function User(props) {
+  const serverInfo = useContext(ServerInfo);
+
   const [user, setUser] = useState(null);
   const [firstname, setFirstname] = useState(user ? user.firstname : "");
   const [lastname, setLastname] = useState(user ? user.lastname : "");
@@ -93,6 +95,7 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
   const { data: userData, reload: reloadUser } = useAsync({
     promiseFn: fetchUser,
     endpoint: toUserEndpoint(userId),
+    restBaseUrl: serverInfo.restBaseUrl,
   });
 
   useEffect(() => {
@@ -161,11 +164,11 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                   setOldPassword("");
                   setNewPassword("");
                   setRepeatPassword("");
-                  if (onUserCredentialsChanged)
-                    onUserCredentialsChanged({ success: true });
+                  if (props.onUserCredentialsChanged)
+                    props.onUserCredentialsChanged({ success: true });
                 } else {
-                  if (onUserCredentialsChanged)
-                    onUserCredentialsChanged({ success: false });
+                  if (props.onUserCredentialsChanged)
+                    props.onUserCredentialsChanged({ success: false });
                 }
               }
             }
@@ -197,7 +200,10 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                     <FaUsers />
                   </InputGroup.Text>
                 </InputGroup.Prepend>
-                <Async promiseFn={fetchGroupTypes}>
+                <Async
+                  promiseFn={fetchGroupTypes}
+                  restBaseUrl={serverInfo.restBaseUrl}
+                >
                   {({ data, isPending, error }) => {
                     if (isPending) return "Loading...";
                     if (error) return `Something went wrong: ${error.message}`;
@@ -289,9 +295,10 @@ function User({ onUserCredentialsChanged, onUserDetailsChanged }) {
                   endpoint: toUserEndpoint(userId),
                 });
                 if (result.success) setUser(result.user);
-                if (onUserDetailsChanged) onUserDetailsChanged(result);
-              } else if (onUserDetailsChanged) {
-                onUserDetailsChanged({ success: false });
+                if (props.onUserDetailsChanged)
+                  props.onUserDetailsChanged(result);
+              } else if (props.onUserDetailsChanged) {
+                props.onUserDetailsChanged({ success: false });
               }
             }
             submit();

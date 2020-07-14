@@ -2,20 +2,18 @@ import { useAsync } from "react-async";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import ServerInfo from "./ServerInfo";
 import validator from "validator";
 
 export var url = "/auth/login";
 
-const queryLoginStatus = async ({ onLogin, signal }) => {
-  let resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/me`,
-    {
-      signal,
-      credentials: "include",
-      method: "GET",
-    }
-  );
+const queryLoginStatus = async ({ onLogin, signal, restBaseUrl }) => {
+  let resp = await fetch(`${restBaseUrl}/users/me`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     let user = await resp.json();
@@ -28,6 +26,7 @@ const queryLoginStatus = async ({ onLogin, signal }) => {
 };
 
 function Login({ oldUser, oldLocation, onLogin }) {
+  const serverInfo = useContext(ServerInfo);
   const [loginName, setLoginName] = useState(
     oldUser ? oldUser.credentials.loginName : "hanni"
   );
@@ -39,6 +38,7 @@ function Login({ oldUser, oldLocation, onLogin }) {
         onLogin(loginStatus.user, oldLocation);
       }
     },
+    restBaseUrl: serverInfo.restBaseUrl,
   });
 
   const disableLogin = () =>

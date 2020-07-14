@@ -6,14 +6,16 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Row from "react-bootstrap/Row";
+import ServerInfo from "./ServerInfo";
 
-const fetchCompany = async ({ signal, endpoint }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/companies/${endpoint}`,
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchCompany = async ({ signal, endpoint, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/companies/${endpoint}`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, company: await resp.json() };
@@ -22,11 +24,12 @@ const fetchCompany = async ({ signal, endpoint }) => {
   }
 };
 
-const fetchCompanyDepartments = async ({ signal, endpoint }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/company-departments/${endpoint}`,
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchCompanyDepartments = async ({ signal, endpoint, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/company-departments/${endpoint}`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, companyDepartments: await resp.json() };
@@ -35,11 +38,12 @@ const fetchCompanyDepartments = async ({ signal, endpoint }) => {
   }
 };
 
-const fetchUsers = async ({ signal, endpoint }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/${endpoint}`,
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchUsers = async ({ signal, endpoint, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/users/${endpoint}`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, users: await resp.json() };
@@ -48,7 +52,9 @@ const fetchUsers = async ({ signal, endpoint }) => {
   }
 };
 
-function Company({ onCompanyChanged }) {
+function Company(props) {
+  const serverInfo = useContext(ServerInfo);
+
   const [company, setCompany] = useState(null);
   const [companyName, setCompanyName] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
@@ -72,6 +78,7 @@ function Company({ onCompanyChanged }) {
   } = useAsync({
     promiseFn: fetchCompany,
     endpoint: toCompanyEndpoint(companyId),
+    restBaseUrl: serverInfo.restBaseUrl,
   });
 
   useEffect(() => {
@@ -165,6 +172,7 @@ function Company({ onCompanyChanged }) {
                       <Async
                         promiseFn={fetchCompanyDepartments}
                         endpoint={toCompanyDepartmentEndpoint(company.id)}
+                        restBaseUrl={serverInfo.restBaseUrl}
                       >
                         {({ data, isPending, error }) => {
                           if (isPending) return "Loading...";
@@ -213,6 +221,7 @@ function Company({ onCompanyChanged }) {
               <Async
                 promiseFn={fetchUsers}
                 endpoint={`by-company-department/${selectedCompanyDepartment.id}`}
+                restBaseUrl={serverInfo.restBaseUrl}
               >
                 {({ data, isPending, error }) => {
                   if (isPending) return "Loading...";
@@ -225,7 +234,7 @@ function Company({ onCompanyChanged }) {
                             <ListGroup.Item
                               action
                               key={user.id}
-                              href={`/users/${user.id}`}
+                              href={`${serverInfo.basename}/users/${user.id}`}
                             >
                               {user.firstname}
                             </ListGroup.Item>

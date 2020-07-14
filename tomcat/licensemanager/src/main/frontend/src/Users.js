@@ -1,20 +1,22 @@
 import { Async } from "react-async";
 import { FaSearch, FaEdit } from "react-icons/fa";
+import { LinkContainer } from "react-router-bootstrap";
 import { useHistory } from "react-router";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Fuse from "fuse.js";
 import InputGroup from "react-bootstrap/InputGroup";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import ServerInfo from "./ServerInfo";
 import Table from "react-bootstrap/Table";
-import { LinkContainer } from "react-router-bootstrap";
 
-const fetchUsers = async ({ signal }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/users/`,
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchUsers = async ({ signal, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/users/`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, users: await resp.json() };
@@ -24,6 +26,8 @@ const fetchUsers = async ({ signal }) => {
 };
 
 function Users() {
+  const serverInfo = useContext(ServerInfo);
+
   const fuseOptions = {
     keys: ["id", "credentials.loginname", "firstname", "lastname"],
   };
@@ -44,7 +48,7 @@ function Users() {
 
   return (
     <>
-      <Async promiseFn={fetchUsers}>
+      <Async promiseFn={fetchUsers} restBaseUrl={serverInfo.restBaseUrl}>
         {({ data, isPending, error }) => {
           if (isPending) return "Loading...";
           if (error) return `Something went wrong: ${error.message}`;

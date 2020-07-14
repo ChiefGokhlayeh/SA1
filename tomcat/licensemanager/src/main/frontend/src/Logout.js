@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import { useAsync } from "react-async";
-import React from "react";
 import { url as loginUrl } from "./Login";
+import { useAsync } from "react-async";
+import React, { useContext } from "react";
+import ServerInfo from "./ServerInfo";
 
 export var url = "/auth/logout";
 
-const logout = async ({ signal }) => {
+const logout = async ({ signal, restBaseUrl }) => {
   return await fetch("https://localhost:8443/licensemanager/rest/auth/logout", {
     credentials: "include",
     method: "GET",
@@ -14,11 +15,13 @@ const logout = async ({ signal }) => {
 };
 
 function Logout(onLogout) {
+  const serverInfo = useContext(ServerInfo);
   const { error, isPending } = useAsync({
     promiseFn: logout,
     onResolve: (response) => {
       if (response.ok && onLogout) onLogout.onLogout();
     },
+    restBaseUrl: serverInfo.restBaseUrl,
   });
 
   if (isPending) return <p>Logging out...</p>;

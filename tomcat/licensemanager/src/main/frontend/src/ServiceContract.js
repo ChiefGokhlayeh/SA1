@@ -1,21 +1,19 @@
-import { FaBriefcase } from "react-icons/fa";
 import { Async } from "react-async";
+import { FaBriefcase } from "react-icons/fa";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import React from "react";
+import React, { useContext } from "react";
+import ServerInfo from "./ServerInfo";
 import Table from "react-bootstrap/Table";
 
-const fetchServiceContract = async ({ signal, id }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/service-contracts/${id}`,
-    {
-      credentials: "include",
-      method: "GET",
-      signal,
-    }
-  );
+const fetchServiceContract = async ({ signal, id, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/service-contracts/${id}`, {
+    credentials: "include",
+    method: "GET",
+    signal,
+  });
 
   if (resp.ok) {
     return { success: true, serviceContract: await resp.json() };
@@ -24,9 +22,9 @@ const fetchServiceContract = async ({ signal, id }) => {
   }
 };
 
-const fetchLicenses = async ({ signal, id }) => {
+const fetchLicenses = async ({ signal, id, restBaseUrl }) => {
   const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/licenses/by-service-contract/${id}`,
+    `${restBaseUrl}/licenses/by-service-contract/${id}`,
     {
       credentials: "include",
       method: "GET",
@@ -41,11 +39,12 @@ const fetchLicenses = async ({ signal, id }) => {
   }
 };
 
-const fetchIpMappings = async ({ signal, id }) => {
-  const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/ip-mappings/by-license/${id}`,
-    { signal, credentials: "include", method: "GET" }
-  );
+const fetchIpMappings = async ({ signal, id, restBaseUrl }) => {
+  const resp = await fetch(`${restBaseUrl}/ip-mappings/by-license/${id}`, {
+    signal,
+    credentials: "include",
+    method: "GET",
+  });
 
   if (resp.ok) {
     return { success: true, ipMappings: await resp.json() };
@@ -54,9 +53,9 @@ const fetchIpMappings = async ({ signal, id }) => {
   }
 };
 
-const fetchServiceGroups = async ({ signal, id }) => {
+const fetchServiceGroups = async ({ signal, id, restBaseUrl }) => {
   const resp = await fetch(
-    `https://localhost:8443/licensemanager/rest/service-groups/by-service-contract/${id}`,
+    `${restBaseUrl}/service-groups/by-service-contract/${id}`,
     {
       credentials: "include",
       method: "GET",
@@ -72,9 +71,14 @@ const fetchServiceGroups = async ({ signal, id }) => {
 };
 
 function ServiceContract({ id }) {
+  const serverInfo = useContext(ServerInfo);
   return (
     <>
-      <Async promiseFn={fetchServiceContract} id={id}>
+      <Async
+        promiseFn={fetchServiceContract}
+        id={id}
+        restBaseUrl={serverInfo.restBaseUrl}
+      >
         {({ data, isPending, error }) => {
           if (isPending) return "Loading...";
           if (error) return `Something went wrong: ${error.message}`;
@@ -147,7 +151,11 @@ function ServiceContract({ id }) {
       </Async>
       <Container md="12">
         <h3 className="header">Licenses in contract:</h3>
-        <Async promiseFn={fetchLicenses} id={id}>
+        <Async
+          promiseFn={fetchLicenses}
+          id={id}
+          restBaseUrl={serverInfo.restBaseUrl}
+        >
           {({ data, isPending, error }) => {
             if (isPending) return "Loading...";
             if (error) return `Something went wrong: ${error.message}`;
@@ -175,7 +183,11 @@ function ServiceContract({ id }) {
                           </td>
                           <td>{license.count}</td>
                           <td>
-                            <Async promiseFn={fetchIpMappings} id={license.id}>
+                            <Async
+                              promiseFn={fetchIpMappings}
+                              id={license.id}
+                              restBaseUrl={serverInfo.restBaseUrl}
+                            >
                               {({ data, isPending, error }) => {
                                 if (isPending) return "Loading...";
                                 if (error)
@@ -216,7 +228,11 @@ function ServiceContract({ id }) {
       </Container>
       <Container md="12">
         <h3 className="header">Users with access:</h3>
-        <Async promiseFn={fetchServiceGroups} id={id}>
+        <Async
+          promiseFn={fetchServiceGroups}
+          id={id}
+          restBaseUrl={serverInfo.restBaseUrl}
+        >
           {({ data, isPending, error }) => {
             if (isPending) return "Loading...";
             if (error) return `Something went wrong: ${error.message}`;
