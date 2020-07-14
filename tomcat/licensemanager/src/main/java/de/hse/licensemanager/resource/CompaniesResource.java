@@ -39,7 +39,7 @@ public class CompaniesResource {
     @GET
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getCompanies() {
+    public List<Company> all() {
         return CompanyDao.getInstance().getCompanies();
     }
 
@@ -47,7 +47,7 @@ public class CompaniesResource {
     @Path("count")
     @Login
     @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
+    public String count() {
         final int count = CompanyDao.getInstance().getCompanies().size();
         return String.valueOf(count);
     }
@@ -88,7 +88,7 @@ public class CompaniesResource {
     }
 
     @Path("{company}")
-    public CompanyResource getCompany(@PathParam("company") final long id) {
+    public CompanyResource company(@PathParam("company") final long id) {
         return new CompanyResource(id);
     }
 }

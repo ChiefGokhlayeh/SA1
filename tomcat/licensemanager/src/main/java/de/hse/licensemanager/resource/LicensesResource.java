@@ -42,7 +42,7 @@ public class LicensesResource {
     @GET
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<License> getLicenses() {
+    public List<License> all() {
         return LicenseDao.getInstance().getLicenses();
     }
 
@@ -50,7 +50,7 @@ public class LicensesResource {
     @Path("count")
     @Login
     @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
+    public String count() {
         final int count = LicenseDao.getInstance().getLicenses().size();
         return String.valueOf(count);
     }
@@ -59,7 +59,7 @@ public class LicensesResource {
     @Path("by-service-contract/{service-contract}")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<License> getLicensesByServiceContract(@PathParam("service-contract") final long id,
+    public List<License> byServiceContract(@PathParam("service-contract") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
 
@@ -82,9 +82,8 @@ public class LicensesResource {
     @Path("by-user/{user}")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<License> getLicensesByUser(@PathParam("user") final long id,
-            @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
-            throws IOException {
+    public List<License> byUser(@PathParam("user") final long id, @Context final HttpServletRequest servletRequest,
+            @Context final HttpServletResponse servletResponse) throws IOException {
 
         final User loginUser = checker.getLoginUser(servletRequest);
         final User user = UserDao.getInstance().getUser(id);

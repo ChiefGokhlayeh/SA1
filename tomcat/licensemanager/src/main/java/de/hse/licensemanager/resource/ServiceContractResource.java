@@ -43,6 +43,8 @@ public class ServiceContractResource {
         if (serviceContract == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0
+                || (checker.compareGroup(loginUser, Group.COMPANY_ADMIN) >= 0
+                        && loginUser.getCompany().equals(serviceContract.getContractor()))
                 || loginUser.getServiceContracts().stream().anyMatch((sc) -> sc.equals(serviceContract))) {
             return Response.ok(serviceContract).build();
         } else {

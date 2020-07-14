@@ -8,7 +8,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import de.hse.licensemanager.dao.ServiceGroupDao;
@@ -16,16 +15,25 @@ import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceGroup;
 import de.hse.licensemanager.model.ServiceGroupId;
-import de.hse.licensemanager.model.User;
 
 @Path("/service-groups")
 public class ServiceGroupsResource {
+
+    private final ILoginChecker checker;
+
+    public ServiceGroupsResource() {
+        this(new LoginChecker());
+    }
+
+    public ServiceGroupsResource(final ILoginChecker checker) {
+        this.checker = checker;
+    }
 
     @GET
     @Login
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceGroup> getServiceGroups() {
+    public List<ServiceGroup> all() {
         return ServiceGroupDao.getInstance().getServiceGroups();
     }
 
@@ -33,7 +41,7 @@ public class ServiceGroupsResource {
     @Path("count")
     @Login
     @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
+    public String count() {
         final int count = ServiceGroupDao.getInstance().getServiceGroups().size();
         return String.valueOf(count);
     }
@@ -42,16 +50,15 @@ public class ServiceGroupsResource {
     @Path("mine")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceGroup> mine(@Context final HttpServletRequest servletRequest) {
-        return ServiceGroupDao.getInstance().getServiceGroupsByUser(
-                (User) servletRequest.getSession(false).getAttribute(HttpHeaders.AUTHORIZATION));
+    public List<ServiceGroup> mine(@Context final HttpServletRequest request) {
+        return ServiceGroupDao.getInstance().getServiceGroupsByUser(checker.getLoginUser(request));
     }
 
     @GET
     @Login
     @Path("by-service-contract/{service-contract}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceGroup> getServiceGroupsByContractor(@PathParam("service-contract") final long id) {
+    public List<ServiceGroup> byServiceContract(@PathParam("service-contract") final long id) {
         return ServiceGroupDao.getInstance().getServiceGroupsByServiceContract(id);
     }
 
@@ -60,17 +67,14 @@ public class ServiceGroupsResource {
     @SystemAdminOnly
     @Path("by-user/{user}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceGroup> getContractorByUser(@PathParam("user") final long id) {
+    public List<ServiceGroup> byUser(@PathParam("user") final long id) {
         return ServiceGroupDao.getInstance().getServiceGroupsByUser(id);
     }
 
     @GET
-    @Login
-    @SystemAdminOnly
     @Path("by-service-contract-and-user/{service-contract}:{user}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ServiceGroupResource getServiceGroupsByContractorAndUser(
-            @PathParam("service-contract") final long serviceContractId, @PathParam("user") final long userId) {
+    public ServiceGroupResource byServiceContractAndUser(@PathParam("service-contract") final long serviceContractId,
+            @PathParam("user") final long userId) {
         return new ServiceGroupResource(new ServiceGroupId(serviceContractId, userId));
     }
 }

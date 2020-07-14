@@ -35,14 +35,14 @@ public class CompaniesResourceTest {
 
     @Test
     public void testGetCompanies() {
-        final List<Company> companies = companiesResource.getCompanies();
+        final List<Company> companies = companiesResource.all();
 
         assertThat(companies, everyItem(is(in(CompanyDao.getInstance().getCompanies()))));
     }
 
     @Test
     public void testGetCount() {
-        final String countString = companiesResource.getCount();
+        final String countString = companiesResource.count();
 
         assertThat(Integer.parseInt(countString), is(equalTo(CompanyDao.getInstance().getCompanies().size())));
     }

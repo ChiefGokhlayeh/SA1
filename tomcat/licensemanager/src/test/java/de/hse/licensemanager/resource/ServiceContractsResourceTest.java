@@ -34,14 +34,14 @@ public class ServiceContractsResourceTest {
 
     @Test
     public void testGetAllServiceContract() {
-        final List<ServiceContract> serviceContracts = serviceContractsResource.getServiceContracts();
+        final List<ServiceContract> serviceContracts = serviceContractsResource.all();
 
         assertThat(serviceContracts, everyItem(is(in(ServiceContractDao.getInstance().getServiceContracts()))));
     }
 
     @Test
     public void testCountServiceContracts() {
-        final String count = serviceContractsResource.getCount();
+        final String count = serviceContractsResource.count();
 
         assertThat(Integer.parseInt(count), equalTo(ServiceContractDao.getInstance().getServiceContracts().size()));
     }
@@ -52,7 +52,7 @@ public class ServiceContractsResourceTest {
         final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
 
         final long id = UnitTestSupport.SERVICE_CONTRACT_ID_B;
-        final ServiceContractResource serviceContractResource = serviceContractsResource.getServiceContract(id,
+        final ServiceContractResource serviceContractResource = serviceContractsResource.serviceContract(id,
                 servletRequest, servletResponse);
 
         assertThat(serviceContractResource, notNullValue());

@@ -40,7 +40,7 @@ public class LoginFilterTest {
     public void testNoSessionAbortUnauthorized() throws NoSuchMethodException, SecurityException, IOException {
         when(httpRequest.getSession(false)).thenReturn(null);
 
-        final Method getCountMethod = UsersResource.class.getMethod("getCount");
+        final Method getCountMethod = UsersResource.class.getMethod("count");
 
         when(resourceInfo.getResourceMethod()).thenReturn(getCountMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> getCountMethod.getDeclaringClass());
@@ -58,7 +58,7 @@ public class LoginFilterTest {
         when(fakeSession.getAttribute(any())).thenReturn(null);
         when(httpRequest.getSession(false)).thenReturn(fakeSession);
 
-        final Method getCountMethod = UsersResource.class.getMethod("getCount");
+        final Method getCountMethod = UsersResource.class.getMethod("count");
 
         when(resourceInfo.getResourceMethod()).thenReturn(getCountMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> getCountMethod.getDeclaringClass());
@@ -91,7 +91,7 @@ public class LoginFilterTest {
         when(fakeSession.getAttribute(any())).thenReturn(user);
         when(httpRequest.getSession(false)).thenReturn(fakeSession);
 
-        final Method hashCodeMethod = UsersResource.class.getMethod("getCount");
+        final Method hashCodeMethod = UsersResource.class.getMethod("count");
 
         when(resourceInfo.getResourceMethod()).thenReturn(hashCodeMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> hashCodeMethod.getDeclaringClass());

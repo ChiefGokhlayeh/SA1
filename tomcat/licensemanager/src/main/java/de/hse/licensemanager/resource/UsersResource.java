@@ -41,7 +41,7 @@ public class UsersResource {
     @Login
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUsers() {
+    public List<User> all() {
         return UserDao.getInstance().getUsers();
     }
 
@@ -49,7 +49,7 @@ public class UsersResource {
     @Path("count")
     @Login
     @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
+    public String count() {
         final int count = UserDao.getInstance().getUsers().size();
         return String.valueOf(count);
     }
@@ -58,7 +58,7 @@ public class UsersResource {
     @Path("group-types")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public Group[] getGroupTypes() {
+    public Group[] groupTypes() {
         return Group.values();
     }
 
@@ -73,7 +73,7 @@ public class UsersResource {
     }
 
     @Path("{user}")
-    public UserResource getUser(@PathParam("user") final Long id) {
+    public UserResource user(@PathParam("user") final Long id) {
         return new UserResource(id);
     }
 
@@ -91,9 +91,8 @@ public class UsersResource {
     @Path("by-company/{company}")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUsersByCompany(@PathParam("company") final long id,
-            @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
-            throws IOException {
+    public List<User> byCompany(@PathParam("company") final long id, @Context final HttpServletRequest servletRequest,
+            @Context final HttpServletResponse servletResponse) throws IOException {
         final User loginUser = checker.getLoginUser(servletRequest);
 
         if (loginUser.getGroup().equals(Group.SYSTEM_ADMIN) || loginUser.getCompany().getId() == id) {
@@ -108,7 +107,7 @@ public class UsersResource {
     @Path("by-company-department/{company-department}")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUsersByCompanyDepartment(@PathParam("company-department") final long id,
+    public List<User> byCompanyDepartment(@PathParam("company-department") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
         final User loginUser = checker.getLoginUser(servletRequest);

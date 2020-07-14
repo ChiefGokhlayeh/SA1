@@ -42,7 +42,7 @@ public class CompanyDepartmentsResource {
     @Login
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CompanyDepartment> getCompanyDepartments() {
+    public List<CompanyDepartment> all() {
         return CompanyDepartmentDao.getInstance().getCompanyDepartments();
     }
 
@@ -50,7 +50,7 @@ public class CompanyDepartmentsResource {
     @Path("count")
     @Login
     @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
+    public String count() {
         final int count = CompanyDepartmentDao.getInstance().getCompanyDepartments().size();
         return String.valueOf(count);
     }

@@ -52,7 +52,7 @@ public class SystemAdminOnlyFilterTest {
     public void testNoSessionAbortError() throws NoSuchMethodException, SecurityException, IOException {
         when(httpRequest.getSession(false)).thenReturn(null);
 
-        final Method getCountMethod = UsersResource.class.getMethod("getUsers");
+        final Method getCountMethod = UsersResource.class.getMethod("all");
 
         when(resourceInfo.getResourceMethod()).thenReturn(getCountMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> getCountMethod.getDeclaringClass());
@@ -70,7 +70,7 @@ public class SystemAdminOnlyFilterTest {
         when(fakeSession.getAttribute(any())).thenReturn(user);
         when(httpRequest.getSession(false)).thenReturn(fakeSession);
 
-        final Method resourceMethod = UsersResource.class.getMethod("getUsers");
+        final Method resourceMethod = UsersResource.class.getMethod("all");
 
         when(resourceInfo.getResourceMethod()).thenReturn(resourceMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> resourceMethod.getDeclaringClass());
@@ -88,7 +88,7 @@ public class SystemAdminOnlyFilterTest {
         when(fakeSession.getAttribute(any())).thenReturn(admin);
         when(httpRequest.getSession(false)).thenReturn(fakeSession);
 
-        final Method resourceMethod = UsersResource.class.getMethod("getUsers");
+        final Method resourceMethod = UsersResource.class.getMethod("all");
 
         when(resourceInfo.getResourceMethod()).thenReturn(resourceMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> resourceMethod.getDeclaringClass());
@@ -105,7 +105,7 @@ public class SystemAdminOnlyFilterTest {
         when(fakeSession.getAttribute(any())).thenReturn(disabledAdmin);
         when(httpRequest.getSession(false)).thenReturn(fakeSession);
 
-        final Method resourceMethod = UsersResource.class.getMethod("getUsers");
+        final Method resourceMethod = UsersResource.class.getMethod("all");
 
         when(resourceInfo.getResourceMethod()).thenReturn(resourceMethod);
         when(resourceInfo.getResourceClass()).thenAnswer((inv) -> resourceMethod.getDeclaringClass());

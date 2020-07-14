@@ -45,7 +45,7 @@ public class ServiceContractsResource {
     @Login
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContracts() {
+    public List<ServiceContract> all() {
         return ServiceContractDao.getInstance().getServiceContracts();
     }
 
@@ -54,7 +54,7 @@ public class ServiceContractsResource {
     @Login
     @CompanyAdminOrAbove
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContractsByContractor(@PathParam("contractor") final long id,
+    public List<ServiceContract> byContractor(@PathParam("contractor") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
 
@@ -77,7 +77,7 @@ public class ServiceContractsResource {
     @Login
     @CompanyAdminOrAbove
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContractsByUser(@PathParam("user") final long id,
+    public List<ServiceContract> byUser(@PathParam("user") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
 
@@ -110,13 +110,13 @@ public class ServiceContractsResource {
     @Path("count")
     @Login
     @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
+    public String count() {
         final int count = ServiceContractDao.getInstance().getServiceContracts().size();
         return String.valueOf(count);
     }
 
     @Path("{service-contract}")
-    public ServiceContractResource getServiceContract(@PathParam("service-contract") final long id,
+    public ServiceContractResource serviceContract(@PathParam("service-contract") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
         return new ServiceContractResource(id);

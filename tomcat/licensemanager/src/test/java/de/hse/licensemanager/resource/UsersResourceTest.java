@@ -32,14 +32,14 @@ public class UsersResourceTest {
 
     @Test
     public void testGetUsers() {
-        final List<User> users = usersResource.getUsers();
+        final List<User> users = usersResource.all();
 
         assertThat(users, everyItem(is(in(UserDao.getInstance().getUsers()))));
     }
 
     @Test
     public void testCountUsers() {
-        final String count = usersResource.getCount();
+        final String count = usersResource.count();
 
         assertThat(Integer.parseInt(count), equalTo(UserDao.getInstance().getUsers().size()));
     }

@@ -13,6 +13,7 @@ import javax.ws.rs.core.UriInfo;
 
 import de.hse.licensemanager.dao.CompanyDao;
 import de.hse.licensemanager.dao.CompanyDepartmentDao;
+import de.hse.licensemanager.filter.CompanyAdminOrAbove;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.model.CompanyDepartment;
@@ -60,16 +61,23 @@ public class CompanyDepartmentResource {
     }
 
     @PUT
-    @SystemAdminOnly
+    @CompanyAdminOrAbove
     @Consumes(MediaType.APPLICATION_JSON)
     public Response put(final CompanyDepartment modifiedCompanyDepartment, @Context final UriInfo uriInfo,
             @Context final HttpServletRequest request) {
-        try {
-            CompanyDepartmentDao.getInstance().modify(id, modifiedCompanyDepartment);
-        } catch (final IllegalArgumentException ex) {
+        final User loginUser = checker.getLoginUser(request);
+        final CompanyDepartment companyDepartment = CompanyDepartmentDao.getInstance().getCompanyDepartment(id);
+
+        if (companyDepartment == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0
+                || (checker.compareGroup(loginUser, Group.COMPANY_ADMIN) >= 0
+                        && loginUser.getCompany().equals(companyDepartment.getCompany()))) {
+            CompanyDepartmentDao.getInstance().modify(id, modifiedCompanyDepartment);
+            return Response.created(uriInfo.getAbsolutePath()).build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
-        return Response.created(uriInfo.getAbsolutePath()).build();
     }
 
     @DELETE
