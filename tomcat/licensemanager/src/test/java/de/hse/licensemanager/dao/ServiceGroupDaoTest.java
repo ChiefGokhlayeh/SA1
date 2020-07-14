@@ -9,11 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.UnitTestSupport;
-import de.hse.licensemanager.model.Credentials;
-import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.ServiceGroup;
-import de.hse.licensemanager.model.User;
-import de.hse.licensemanager.model.User.Group;
 
 public class ServiceGroupDaoTest {
 
@@ -99,19 +95,5 @@ public class ServiceGroupDaoTest {
         final List<ServiceGroup> serviceGroups = ServiceGroupDao.getInstance().getServiceGroups();
 
         assertThat(serviceGroup, is(in(serviceGroups)));
-    }
-
-    @Test
-    public void testSaveCascadePersistence() {
-        final ServiceGroup serviceGroup = new ServiceGroup(
-                new ServiceContract(CompanyDao.getInstance().getCompany(UnitTestSupport.COMPANY_ID_LICENSEMANAGER)),
-                new User("Homer", "Simpson", "homer.simpson@email.com",
-                        CompanyDepartmentDao.getInstance()
-                                .getCompanyDepartment(UnitTestSupport.COMPANY_DEPARTMENT_ID_ACCOUNTING),
-                        Group.COMPANY_ADMIN, new Credentials("homi", "1234")));
-
-        ServiceGroupDao.getInstance().save(serviceGroup);
-
-        assertThat(serviceGroup, is(in(ServiceGroupDao.getInstance().getServiceGroups())));
     }
 }

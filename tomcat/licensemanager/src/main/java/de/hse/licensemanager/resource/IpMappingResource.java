@@ -46,6 +46,7 @@ public class IpMappingResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response put(final IpMapping modifiedIpMapping, @Context final UriInfo uriInfo,
             @Context final HttpServletRequest request) {
         final User loginUser = checker.getLoginUser(request);

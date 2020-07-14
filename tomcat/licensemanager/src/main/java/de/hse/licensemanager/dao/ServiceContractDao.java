@@ -77,7 +77,8 @@ public class ServiceContractDao implements IServiceContractDao {
             em.remove(serviceContract);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -97,7 +98,8 @@ public class ServiceContractDao implements IServiceContractDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -109,7 +111,8 @@ public class ServiceContractDao implements IServiceContractDao {
             em.refresh(serviceContract);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -121,7 +124,8 @@ public class ServiceContractDao implements IServiceContractDao {
             em.persist(serviceContract);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

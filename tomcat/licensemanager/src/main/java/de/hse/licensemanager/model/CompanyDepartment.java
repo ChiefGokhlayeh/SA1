@@ -96,4 +96,9 @@ public class CompanyDepartment {
         return Objects.equals(this.id, otherDepartment.id) && Objects.equals(this.name, otherDepartment.name)
                 && Objects.equals(this.company.getId(), otherDepartment.company.getId());
     }
+
+    @Override
+    public String toString() {
+        return String.format("{ id: %d, name: %s }", id, name);
+    }
 }

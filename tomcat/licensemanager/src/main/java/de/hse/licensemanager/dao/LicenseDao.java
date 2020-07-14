@@ -85,7 +85,8 @@ public class LicenseDao implements ILicenseDao {
             em.remove(license);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -115,7 +116,8 @@ public class LicenseDao implements ILicenseDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -127,7 +129,8 @@ public class LicenseDao implements ILicenseDao {
             em.refresh(license);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -139,7 +142,8 @@ public class LicenseDao implements ILicenseDao {
             em.persist(license);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

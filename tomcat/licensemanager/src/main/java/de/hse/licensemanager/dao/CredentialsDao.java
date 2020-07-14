@@ -54,7 +54,8 @@ public class CredentialsDao implements ICredentialsDao {
             em.remove(credentials);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -83,7 +84,8 @@ public class CredentialsDao implements ICredentialsDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -95,7 +97,8 @@ public class CredentialsDao implements ICredentialsDao {
             em.refresh(credentials);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -107,7 +110,8 @@ public class CredentialsDao implements ICredentialsDao {
             em.persist(credentials);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

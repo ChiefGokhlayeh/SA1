@@ -7,6 +7,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import de.hse.licensemanager.model.PlainCredentials;
 
@@ -30,6 +31,9 @@ public class IntegrationTestSupport {
         final PlainCredentials credentials = new PlainCredentials(loginname, password);
         final Response response = client.target(IntegrationTestSupport.getRestURI() + "/auth/login")
                 .request(MediaType.APPLICATION_JSON).buildPost(Entity.json(credentials)).invoke();
+        if (response.getStatus() != Status.OK.getStatusCode()) {
+            throw new IllegalStateException("Unable to login");
+        }
         return response.getCookies().values();
     }
 }

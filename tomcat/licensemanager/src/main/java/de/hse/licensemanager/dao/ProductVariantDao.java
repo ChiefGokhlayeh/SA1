@@ -43,7 +43,8 @@ public class ProductVariantDao implements IProductVariantDao {
             em.remove(productVariant);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -70,7 +71,8 @@ public class ProductVariantDao implements IProductVariantDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -82,7 +84,8 @@ public class ProductVariantDao implements IProductVariantDao {
             em.refresh(productVariant);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -94,7 +97,8 @@ public class ProductVariantDao implements IProductVariantDao {
             em.persist(productVariant);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

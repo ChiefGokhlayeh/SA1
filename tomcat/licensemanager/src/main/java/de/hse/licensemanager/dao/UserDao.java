@@ -72,7 +72,8 @@ public class UserDao implements IUserDao {
             em.remove(user);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -110,7 +111,8 @@ public class UserDao implements IUserDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -122,7 +124,8 @@ public class UserDao implements IUserDao {
             em.refresh(user);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -134,7 +137,8 @@ public class UserDao implements IUserDao {
             em.persist(user);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

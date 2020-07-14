@@ -66,7 +66,8 @@ public class IpMappingDao implements IIpMappingDao {
             em.remove(ipMapping);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -93,7 +94,8 @@ public class IpMappingDao implements IIpMappingDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -105,7 +107,8 @@ public class IpMappingDao implements IIpMappingDao {
             em.refresh(ipMapping);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -117,7 +120,8 @@ public class IpMappingDao implements IIpMappingDao {
             em.persist(ipMapping);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

@@ -83,7 +83,8 @@ public class ServiceGroupDao implements IServiceGroupDao {
             em.remove(serviceGroup);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -115,7 +116,8 @@ public class ServiceGroupDao implements IServiceGroupDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -127,7 +129,8 @@ public class ServiceGroupDao implements IServiceGroupDao {
             em.refresh(serviceGroup);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -139,7 +142,8 @@ public class ServiceGroupDao implements IServiceGroupDao {
             em.persist(serviceGroup);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }

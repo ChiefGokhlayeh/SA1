@@ -51,7 +51,8 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
             em.remove(department);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -78,7 +79,8 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
             em.flush();
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -90,7 +92,8 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
             em.refresh(department);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
@@ -102,7 +105,8 @@ public class CompanyDepartmentDao implements ICompanyDepartmentDao {
             em.persist(department);
             em.getTransaction().commit();
         } catch (final Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             throw e;
         }
     }
