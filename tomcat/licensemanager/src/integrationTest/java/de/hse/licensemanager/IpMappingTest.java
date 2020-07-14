@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -109,6 +110,33 @@ public class IpMappingTest {
             });
             assertThat(ipMappings, hasSize(IpMappingDao.getInstance().getIpMappingsByLicense(license).size()));
             assertThat(ipMappings, everyItem(in(IpMappingDao.getInstance().getIpMappingsByLicense(license))));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testCreateNewIpMapping() {
+        final Lock l = RW_LOCK.writeLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final IpMapping newIpMapping = new IpMapping(
+                    LicenseDao.getInstance().getLicense(UnitTestSupport.LICENSE_ID_WINDOWS), "231.240.0.3");
+
+            final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
+            cookies.forEach(b::cookie);
+            final Response response = b.buildPost(Entity.json(newIpMapping)).invoke();
+
+            assertThat(response.getStatus(), equalTo(Response.Status.CREATED.getStatusCode()));
+            final IpMapping createdIpMapping = response.readEntity(IpMapping.class);
+            assertThat(createdIpMapping.getIpAddress(), equalTo(newIpMapping.getIpAddress()));
+            assertThat(createdIpMapping.getLicense(), equalTo(newIpMapping.getLicense()));
+            assertThat(createdIpMapping,
+                    in(IpMappingDao.getInstance().getIpMappingsByLicense(newIpMapping.getLicense())));
         } finally {
             l.unlock();
         }
