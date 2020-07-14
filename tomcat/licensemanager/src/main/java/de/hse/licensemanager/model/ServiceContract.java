@@ -28,7 +28,7 @@ public class ServiceContract {
     private final long id;
 
     @JoinColumn(name = "contractor", nullable = false)
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     private Company contractor;
 
     @Column(name = "start")
@@ -42,6 +42,7 @@ public class ServiceContract {
     private final Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "serviceContract", cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
+    @JsonIgnore
     private final Set<License> licenses = new HashSet<>();
 
     public ServiceContract() {

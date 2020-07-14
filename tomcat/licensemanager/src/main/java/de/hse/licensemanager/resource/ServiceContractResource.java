@@ -1,5 +1,6 @@
 package de.hse.licensemanager.resource;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,23 +15,40 @@ import de.hse.licensemanager.dao.ServiceContractDao;
 import de.hse.licensemanager.filter.SystemAdminOnly;
 import de.hse.licensemanager.filter.Login;
 import de.hse.licensemanager.model.ServiceContract;
+import de.hse.licensemanager.model.User;
+import de.hse.licensemanager.model.User.Group;
 
 @Login
 public class ServiceContractResource {
-    @Context
     private final long id;
 
+    private final ILoginChecker checker;
+
     public ServiceContractResource(final long id) {
+        this(id, new LoginChecker());
+    }
+
+    public ServiceContractResource(final long id, final ILoginChecker checker) {
         this.id = id;
+        this.checker = checker;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() {
+    public Response get(@Context HttpServletRequest request) {
+
+        final User loginUser = checker.getLoginUser(request);
         final ServiceContract serviceContract = ServiceContractDao.getInstance().getServiceContract(id);
-        if (serviceContract == null)
+
+        if (serviceContract == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        return Response.ok(serviceContract).build();
+        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0
+                || loginUser.getServiceContracts().stream().anyMatch((sc) -> sc.equals(serviceContract))) {
+            return Response.ok(serviceContract).build();
+        } else {
+            Response.status(Response.Status.FORBIDDEN).build();
+            return null;
+        }
     }
 
     @DELETE

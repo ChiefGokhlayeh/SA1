@@ -27,7 +27,7 @@ public class ServiceGroupTest {
 
     private static final String COUNT_ENDPOINT = "/count";
     private static final String MINE_ENDPOINT = "/mine";
-    private static final String BY_CONTRACTOR_ENDPOINT = "/by-contractor";
+    private static final String BY_SERVICE_CONTRACT_ENDPOINT = "/by-service-contract";
     private static final String BY_USER_ENDPOINT = "/by-user";
 
     @Before
@@ -82,14 +82,14 @@ public class ServiceGroupTest {
     }
 
     @Test
-    public void testGetServiceGroupsByContrator() {
+    public void testGetServiceGroupsByServiceContract() {
         final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
                 UnitTestSupport.CREDENTIALS_LOGINNAME_HANNELORE, UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_HANNELORE);
 
         final ServiceGroup serviceGroup = ServiceGroupDao.getInstance().getServiceGroups().stream().findFirst().get();
 
         final Invocation.Builder b = client
-                .target(restURI + BY_CONTRACTOR_ENDPOINT
+                .target(restURI + BY_SERVICE_CONTRACT_ENDPOINT
                         + String.format("/%d", serviceGroup.getServiceContract().getId()))
                 .request(MediaType.APPLICATION_JSON);
         cookies.forEach(b::cookie);

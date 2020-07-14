@@ -16,56 +16,62 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import de.hse.licensemanager.dao.CompanyDao;
+import de.hse.licensemanager.dao.LicenseDao;
 import de.hse.licensemanager.dao.ServiceContractDao;
 import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.filter.SystemAdminOnly;
-import de.hse.licensemanager.filter.CompanyAdminOrAbove;
 import de.hse.licensemanager.filter.Login;
-import de.hse.licensemanager.model.Company;
+import de.hse.licensemanager.model.License;
 import de.hse.licensemanager.model.ServiceContract;
 import de.hse.licensemanager.model.User;
 import de.hse.licensemanager.model.User.Group;
 
-@Path("/service-contracts")
-@Login
-public class ServiceContractsResource {
+@Path("/licenses")
+public class LicensesResource {
 
     private final ILoginChecker checker;
 
-    public ServiceContractsResource() {
+    public LicensesResource() {
         this(new LoginChecker());
     }
 
-    public ServiceContractsResource(final ILoginChecker checker) {
+    public LicensesResource(final ILoginChecker checker) {
         this.checker = checker;
     }
 
     @GET
-    @Login
     @SystemAdminOnly
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContracts() {
-        return ServiceContractDao.getInstance().getServiceContracts();
+    public List<License> getLicenses() {
+        return LicenseDao.getInstance().getLicenses();
     }
 
     @GET
-    @Path("by-contractor/{contractor}")
+    @Path("count")
     @Login
-    @CompanyAdminOrAbove
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getCount() {
+        final int count = LicenseDao.getInstance().getLicenses().size();
+        return String.valueOf(count);
+    }
+
+    @GET
+    @Path("by-service-contract/{service-contract}")
+    @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContractsByContractor(@PathParam("contractor") final long id,
+    public List<License> getLicensesByServiceContract(@PathParam("service-contract") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
 
         final User loginUser = checker.getLoginUser(servletRequest);
-        final Company company = CompanyDao.getInstance().getCompany(id);
+        final ServiceContract serviceContract = ServiceContractDao.getInstance().getServiceContract(id);
 
-        if (company == null) {
+        if (serviceContract == null) {
             servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
-        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0 || loginUser.getCompany().getId() == id) {
-            return ServiceContractDao.getInstance().getServiceContractsByContractor(company);
+        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0
+                || loginUser.getServiceContracts().contains(serviceContract)) {
+            return LicenseDao.getInstance().getLicensesByServiceContract(serviceContract);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return null;
@@ -75,9 +81,8 @@ public class ServiceContractsResource {
     @GET
     @Path("by-user/{user}")
     @Login
-    @CompanyAdminOrAbove
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> getServiceContractsByUser(@PathParam("user") final long id,
+    public List<License> getLicensesByUser(@PathParam("user") final long id,
             @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
             throws IOException {
 
@@ -87,8 +92,11 @@ public class ServiceContractsResource {
         if (user == null) {
             servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
-        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0 || loginUser.getCompany().getId() == id) {
-            return ServiceContractDao.getInstance().getServiceContractsByUser(user);
+        } else if (checker.compareGroup(loginUser, Group.SYSTEM_ADMIN) >= 0
+                || (checker.compareGroup(loginUser, Group.COMPANY_ADMIN) >= 0
+                        && loginUser.getCompany().equals(user.getCompany()))
+                || loginUser.equals(user)) {
+            return LicenseDao.getInstance().getLicensesByUser(user);
         } else {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return null;
@@ -99,27 +107,11 @@ public class ServiceContractsResource {
     @Path("mine")
     @Login
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceContract> mine(@Context final HttpServletRequest servletRequest) throws IOException {
+    public List<License> mine(@Context final HttpServletRequest servletRequest) throws IOException {
 
         final User loginUser = checker.getLoginUser(servletRequest);
 
-        return ServiceContractDao.getInstance().getServiceContractsByUser(loginUser);
-    }
-
-    @GET
-    @Path("count")
-    @Login
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getCount() {
-        final int count = ServiceContractDao.getInstance().getServiceContracts().size();
-        return String.valueOf(count);
-    }
-
-    @Path("{service-contract}")
-    public ServiceContractResource getServiceContract(@PathParam("service-contract") final long id,
-            @Context final HttpServletRequest servletRequest, @Context final HttpServletResponse servletResponse)
-            throws IOException {
-        return new ServiceContractResource(id);
+        return LicenseDao.getInstance().getLicensesByUser(loginUser);
     }
 
     @POST
@@ -127,8 +119,8 @@ public class ServiceContractsResource {
     @SystemAdminOnly
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response newServiceContract(final ServiceContract serviceContract, @Context final UriInfo uriInfo) {
-        ServiceContractDao.getInstance().save(serviceContract);
-        return Response.created(uriInfo.getRequestUri()).entity(serviceContract).build();
+    public Response newLicense(final License license, @Context final UriInfo uriInfo) {
+        LicenseDao.getInstance().save(license);
+        return Response.created(uriInfo.getRequestUri()).entity(license).build();
     }
 }

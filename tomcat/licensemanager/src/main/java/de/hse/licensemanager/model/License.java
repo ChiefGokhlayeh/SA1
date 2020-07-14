@@ -2,6 +2,7 @@ package de.hse.licensemanager.model;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -25,9 +26,8 @@ public class License {
     @Column(name = "id")
     private final long id;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "service_contract", nullable = false)
-    @JsonIgnore
     private ServiceContract serviceContract;
 
     @Column(name = "expiration_date")
@@ -39,11 +39,12 @@ public class License {
     @Column(name = "count", nullable = false)
     private int count;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "product_variant", nullable = false)
     private ProductVariant productVariant;
 
     @OneToMany(mappedBy = "license", cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE })
+    @JsonIgnore
     private final Set<IpMapping> ipMappings = new HashSet<>();
 
     public License() {
@@ -116,5 +117,30 @@ public class License {
 
     public void setServiceContract(final ServiceContract serviceContract) {
         this.serviceContract = serviceContract;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, key, expirationDate);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other)
+            return true;
+
+        if (other == null || other.getClass() != this.getClass())
+            return false;
+
+        final License otherLicense = (License) other;
+        return Objects.equals(this.id, otherLicense.id) && Objects.equals(this.key, otherLicense.key)
+                && Objects.equals(this.count, otherLicense.count)
+                && Objects.equals(this.expirationDate, otherLicense.expirationDate);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{ id: %d, key: %s, count: %d, productVariant: %s, expirationDate: %s }", id, key, count,
+                productVariant, expirationDate.toString());
     }
 }

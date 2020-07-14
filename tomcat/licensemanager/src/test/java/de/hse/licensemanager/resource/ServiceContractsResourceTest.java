@@ -15,10 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.hse.licensemanager.dao.ServiceContractDao;
-import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.ServiceContract;
-import de.hse.licensemanager.model.User;
-import de.hse.licensemanager.model.User.Group;
 import de.hse.licensemanager.UnitTestSupport;
 
 public class ServiceContractsResourceTest {
@@ -50,39 +47,14 @@ public class ServiceContractsResourceTest {
     }
 
     @Test
-    public void testGetSingleServiceContractAsSysAdminFromOtherCompany() throws IOException {
+    public void testGetSpecificServiceContract() throws IOException {
         final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
-
-        when(checker.getLoginUser(eq(servletRequest)))
-                .thenReturn(UserDao.getInstance().getUser(UnitTestSupport.USER_ID_MUSTERMANN));
-        when(checker.compareGroup(org.mockito.Mockito.any(User.class), eq(Group.SYSTEM_ADMIN))).thenCallRealMethod();
 
         final long id = UnitTestSupport.SERVICE_CONTRACT_ID_B;
         final ServiceContractResource serviceContractResource = serviceContractsResource.getServiceContract(id,
                 servletRequest, servletResponse);
 
         assertThat(serviceContractResource, notNullValue());
-        verify(checker).getLoginUser(eq(servletRequest));
-        verify(checker).compareGroup(org.mockito.Mockito.any(User.class), eq(Group.SYSTEM_ADMIN));
-    }
-
-    @Test
-    public void testGetSingleServiceContractAsUserNotInServiceGroup() throws IOException {
-        final HttpServletRequest servletRequest = mock(HttpServletRequest.class);
-        final HttpServletResponse servletResponse = mock(HttpServletResponse.class);
-
-        when(checker.getLoginUser(eq(servletRequest)))
-                .thenReturn(UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE));
-        when(checker.compareGroup(org.mockito.Mockito.any(User.class), eq(Group.SYSTEM_ADMIN))).thenCallRealMethod();
-
-        final long id = UnitTestSupport.SERVICE_CONTRACT_ID_B;
-        final ServiceContractResource serviceContractResource = serviceContractsResource.getServiceContract(id,
-                servletRequest, servletResponse);
-
-        assertThat(serviceContractResource, nullValue());
-        verify(checker).getLoginUser(eq(servletRequest));
-        verify(checker).compareGroup(org.mockito.Mockito.any(User.class), eq(Group.SYSTEM_ADMIN));
-        verify(servletResponse).sendError(eq(HttpServletResponse.SC_FORBIDDEN));
     }
 }

@@ -1,5 +1,7 @@
 package de.hse.licensemanager.model;
 
+import java.util.Objects;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,8 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "t_ip_mapping")
 public class IpMapping {
@@ -20,9 +20,8 @@ public class IpMapping {
     @Column(name = "id")
     private long id;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "license", nullable = false)
-    @JsonIgnore
     private License license;
 
     @Column(name = "ip_address", nullable = false)
@@ -60,5 +59,27 @@ public class IpMapping {
 
     public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, ipAddress);
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (this == other)
+            return true;
+
+        if (other == null || other.getClass() != this.getClass())
+            return false;
+
+        final IpMapping otherIpMapping = (IpMapping) other;
+        return Objects.equals(this.id, otherIpMapping.id) && Objects.equals(this.ipAddress, otherIpMapping.ipAddress);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{ id: %d, ipAddress: %s }", id, ipAddress);
     }
 }

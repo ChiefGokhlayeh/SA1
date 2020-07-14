@@ -3,8 +3,13 @@ package de.hse.licensemanager.dao;
 import java.util.List;
 
 import de.hse.licensemanager.model.IpMapping;
+import de.hse.licensemanager.model.License;
 
 public interface IIpMappingDao {
+
+    public List<IpMapping> getIpMappingsByLicense(final long id);
+
+    public List<IpMapping> getIpMappingsByLicense(final License license);
 
     public IpMapping getIpMapping(final long id);
 

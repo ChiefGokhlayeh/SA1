@@ -49,9 +49,9 @@ public class ServiceGroupsResource {
 
     @GET
     @Login
-    @Path("by-contractor/{contractor}")
+    @Path("by-service-contract/{service-contract}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceGroup> getServiceGroupsByContractor(@PathParam("contractor") final Long id) {
+    public List<ServiceGroup> getServiceGroupsByContractor(@PathParam("service-contract") final long id) {
         return ServiceGroupDao.getInstance().getServiceGroupsByServiceContract(id);
     }
 
@@ -60,17 +60,17 @@ public class ServiceGroupsResource {
     @SystemAdminOnly
     @Path("by-user/{user}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ServiceGroup> getContractorByUser(@PathParam("user") final Long id) {
+    public List<ServiceGroup> getContractorByUser(@PathParam("user") final long id) {
         return ServiceGroupDao.getInstance().getServiceGroupsByUser(id);
     }
 
     @GET
     @Login
     @SystemAdminOnly
-    @Path("by-contractor-and-user/{contractor}:{user}")
+    @Path("by-service-contract-and-user/{service-contract}:{user}")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceGroupResource getServiceGroupsByContractorAndUser(
-            @PathParam("contractor") final long serviceContractId, @PathParam("user") final long userId) {
+            @PathParam("service-contract") final long serviceContractId, @PathParam("user") final long userId) {
         return new ServiceGroupResource(new ServiceGroupId(serviceContractId, userId));
     }
 }

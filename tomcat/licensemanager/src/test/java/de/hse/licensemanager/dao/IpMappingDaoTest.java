@@ -47,4 +47,13 @@ public class IpMappingDaoTest {
         assertThat(host1, notNullValue());
         assertThat(host1.getIpAddress(), equalTo(UnitTestSupport.IP_MAPPING_IP_ADDRESS_HOST1));
     }
+
+    @Test
+    public void testQueryIpMappingsByLicense() {
+        final List<IpMapping> ipMappings = IpMappingDao.getInstance()
+                .getIpMappingsByLicense(UnitTestSupport.LICENSE_ID_CANOE_NEW);
+
+        assertThat(ipMappings, hasSize(1));
+        assertThat(ipMappings, everyItem(notNullValue()));
+    }
 }

@@ -4,13 +4,30 @@ import React, { Component } from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
-const loadServiceContracts = async ({ signal }) => {
-  const res = await fetch(
-    `https://localhost:8443/licensemanager/rest/service-groups/mine/`,
+const fetchLicenses = async ({ signal }) => {
+  const resp = await fetch(
+    "https://localhost:8443/licensemanager/rest/licenses/mine/",
     { signal, credentials: "include", method: "GET" }
   );
-  if (!res.ok) throw new Error(res.statusText);
-  return res.json();
+
+  if (resp.ok) {
+    return { success: true, licenses: await resp.json() };
+  } else {
+    return { success: false, status: resp.status };
+  }
+};
+
+const fetchIpMappings = async ({ signal, id }) => {
+  const resp = await fetch(
+    `https://localhost:8443/licensemanager/rest/ip-mappings/by-license/${id}`,
+    { signal, credentials: "include", method: "GET" }
+  );
+
+  if (resp.ok) {
+    return { success: true, ipMappings: await resp.json() };
+  } else {
+    return { success: false, status: resp.status };
+  }
 };
 
 class Dashboard extends Component {
@@ -30,26 +47,26 @@ class Dashboard extends Component {
         <h2 className="header">
           Welcome {this.state.loginUser.firstname}, here are your licenses:
         </h2>
-        <Async promiseFn={loadServiceContracts}>
+        <Async promiseFn={fetchLicenses}>
           {({ data, err, isPending }) => {
             if (isPending) return "Loading...";
             if (err) return `Something went wrong: ${err.message}`;
             if (data) {
-              return (
-                <Table hover={true}>
-                  <thead>
-                    <tr>
-                      <th scope="col">Product</th>
-                      <th scope="col">Valid From</th>
-                      <th scope="col">Valid To</th>
-                      <th scope="col">Count</th>
-                      <th scope="col">Mapping</th>
-                      <th scope="col">Service Contract</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((serviceGroup) =>
-                      serviceGroup.serviceContract.licenses.map((license) => (
+              if (data.success) {
+                return (
+                  <Table hover={true}>
+                    <thead>
+                      <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col">Valid From</th>
+                        <th scope="col">Valid To</th>
+                        <th scope="col">Count</th>
+                        <th scope="col">Mapping</th>
+                        <th scope="col">Service Contract</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.licenses.map((license) => (
                         <tr key={license.id}>
                           <td>
                             {license.productVariant.product}{" "}
@@ -57,31 +74,46 @@ class Dashboard extends Component {
                           </td>
                           <td>
                             {new Date(
-                              serviceGroup.serviceContract.start
+                              license.serviceContract.start
                             ).toLocaleString()}
                           </td>
                           <td>
                             {earlier(
-                              new Date(serviceGroup.serviceContract.end),
+                              new Date(license.serviceContract.end),
                               new Date(license.expirationDate)
                             )}
                           </td>
                           <td className="text-center">{license.count}</td>
                           <td>
-                            <ul>
-                              {license.ipMappings.map((ipMapping) => (
-                                <li key={ipMapping.id}>
-                                  {ipMapping.ipAddress}
-                                </li>
-                              ))}
-                            </ul>
+                            <Async promiseFn={fetchIpMappings} id={license.id}>
+                              {({ data, isPending, error }) => {
+                                if (isPending) return "Loading...";
+                                if (error)
+                                  return `Something went wrong: ${error.message}`;
+                                if (data) {
+                                  if (data.success) {
+                                    return (
+                                      <ul>
+                                        {data.ipMappings.map((ipMapping) => (
+                                          <li key={ipMapping.id}>
+                                            {ipMapping.ipAddress}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    );
+                                  } else {
+                                    return `Something went wrong: ${data.status}`;
+                                  }
+                                }
+                              }}
+                            </Async>
                           </td>
                           <td className="text-center">
                             <Button
                               onClick={() => {
                                 if (this.props.onOpenServiceContract)
                                   this.props.onOpenServiceContract(
-                                    serviceGroup.serviceContract
+                                    license.serviceContract
                                   );
                               }}
                             >
@@ -90,15 +122,17 @@ class Dashboard extends Component {
                                 this.state.loginUser.group === "COMPANY_ADMIN")
                                 ? "Edit"
                                 : "View"}{" "}
-                              #{serviceGroup.serviceContract.id}
+                              #{license.serviceContract.id}
                             </Button>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </Table>
-              );
+                      ))}
+                    </tbody>
+                  </Table>
+                );
+              } else {
+                return `Something went wrong: ${data.status}`;
+              }
             }
           }}
         </Async>

@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 
 import de.hse.licensemanager.model.Company;
 import de.hse.licensemanager.model.ServiceContract;
+import de.hse.licensemanager.model.User;
 
 public class ServiceContractDao implements IServiceContractDao {
 
@@ -33,11 +34,30 @@ public class ServiceContractDao implements IServiceContractDao {
     }
 
     @Override
-    public List<ServiceContract> getServiceContractsByCompany(final Company company) {
-        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s WHERE s.contractor=:contractor")
-                .setParameter("contractor", company).getResultList();
+    public List<ServiceContract> getServiceContractsByContractor(final Company contractor) {
+        return getServiceContractsByContractor(contractor.getId());
+    }
+
+    @Override
+    public List<ServiceContract> getServiceContractsByContractor(final long id) {
+        final List<?> objs = em.createQuery("SELECT s FROM ServiceContract s WHERE s.contractor.id=:id")
+                .setParameter("id", id).getResultList();
         return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ServiceContract> getServiceContractsByUser(final long id) {
+        final List<?> objs = em.createQuery(
+                "SELECT s FROM ServiceContract s INNER JOIN ServiceGroup sg ON sg.serviceContract=s WHERE sg.user.id=:id")
+                .setParameter("id", id).getResultList();
+        return objs.stream().filter(ServiceContract.class::isInstance).map(ServiceContract.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ServiceContract> getServiceContractsByUser(final User user) {
+        return getServiceContractsByUser(user.getId());
     }
 
     @Override

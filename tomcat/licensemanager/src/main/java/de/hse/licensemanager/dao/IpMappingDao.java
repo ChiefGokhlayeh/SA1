@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 
 import de.hse.licensemanager.model.IpMapping;
+import de.hse.licensemanager.model.License;
 
 public class IpMappingDao implements IIpMappingDao {
 
@@ -22,6 +23,19 @@ public class IpMappingDao implements IIpMappingDao {
             dao = new IpMappingDao();
         }
         return dao;
+    }
+
+    @Override
+    public List<IpMapping> getIpMappingsByLicense(final long id) {
+        final List<?> objs = em.createQuery("SELECT i FROM IpMapping i WHERE i.license.id=:id").setParameter("id", id)
+                .getResultList();
+        return objs.stream().filter(IpMapping.class::isInstance).map(IpMapping.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<IpMapping> getIpMappingsByLicense(final License license) {
+        return getIpMappingsByLicense(license.getId());
     }
 
     @Override
