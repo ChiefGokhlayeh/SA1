@@ -1,5 +1,4 @@
 import { FaBriefcase, FaMapMarker } from "react-icons/fa";
-import { LinkContainer } from "react-router-bootstrap";
 import { useParams } from "react-router";
 import Async, { useAsync } from "react-async";
 import Col from "react-bootstrap/Col";
