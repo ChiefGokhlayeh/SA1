@@ -106,4 +106,9 @@ public class IpMappingsResource {
             }
         }
     }
+
+    @Path("{ip-mapping}")
+    public IpMappingResource ipMapping(@PathParam("ip-mapping") final long id) {
+        return new IpMappingResource(id);
+    }
 }

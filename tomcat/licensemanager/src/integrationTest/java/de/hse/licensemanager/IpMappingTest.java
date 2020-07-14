@@ -89,7 +89,7 @@ public class IpMappingTest {
     }
 
     @Test
-    public void testGetLicensesByLicense() {
+    public void testGetIpMappingByLicense() {
         final Lock l = RW_LOCK.readLock();
         l.lock();
         try {
@@ -137,6 +137,82 @@ public class IpMappingTest {
             assertThat(createdIpMapping.getLicense(), equalTo(newIpMapping.getLicense()));
             assertThat(createdIpMapping,
                     in(IpMappingDao.getInstance().getIpMappingsByLicense(newIpMapping.getLicense())));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testGetSpecificIpMapping() {
+        final Lock l = RW_LOCK.readLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final IpMapping ipMapping = IpMappingDao.getInstance().getIpMapping(UnitTestSupport.IP_MAPPING_ID_HOST2);
+
+            final Invocation.Builder b = client.target(restURI + String.format("/%d", ipMapping.getId()))
+                    .request(MediaType.APPLICATION_JSON);
+            cookies.forEach(b::cookie);
+            final Response response = b.buildGet().invoke();
+
+            assertThat(response.getStatus(), equalTo(Response.Status.OK.getStatusCode()));
+            final IpMapping respIpMappings = response.readEntity(IpMapping.class);
+            assertThat(respIpMappings, equalTo(ipMapping));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testChangeAddress() {
+        final Lock l = RW_LOCK.writeLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final IpMapping originalIpMapping = IpMappingDao.getInstance()
+                    .getIpMapping(UnitTestSupport.IP_MAPPING_ID_HOST2);
+            final IpMapping ipMapping = new IpMapping(originalIpMapping.getLicense(), "231.240.0.3");
+
+            final Invocation.Builder b = client.target(restURI + String.format("/%d", originalIpMapping.getId()))
+                    .request(MediaType.APPLICATION_JSON);
+            cookies.forEach(b::cookie);
+            final Response response = b.buildPut(Entity.json(ipMapping)).invoke();
+
+            assertThat(response.getStatus(), equalTo(Response.Status.CREATED.getStatusCode()));
+            final IpMapping modifiedIpMapping = response.readEntity(IpMapping.class);
+            assertThat(modifiedIpMapping.getId(), equalTo(originalIpMapping.getId()));
+            assertThat(modifiedIpMapping.getIpAddress(), equalTo(ipMapping.getIpAddress()));
+            assertThat(modifiedIpMapping.getLicense(), equalTo(originalIpMapping.getLicense()));
+            assertThat(modifiedIpMapping,
+                    in(IpMappingDao.getInstance().getIpMappingsByLicense(originalIpMapping.getLicense())));
+        } finally {
+            l.unlock();
+        }
+    }
+
+    @Test
+    public void testDeleteIpMapping() {
+        final Lock l = RW_LOCK.writeLock();
+        l.lock();
+        try {
+            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+            final IpMapping ipMapping = IpMappingDao.getInstance().getIpMapping(UnitTestSupport.IP_MAPPING_ID_HOST2);
+
+            final Invocation.Builder b = client.target(restURI + String.format("/%d", ipMapping.getId())).request();
+            cookies.forEach(b::cookie);
+            final Response response = b.buildDelete().invoke();
+
+            assertThat(response.getStatus(), equalTo(Response.Status.OK.getStatusCode()));
+            assertThat(ipMapping, not(in(IpMappingDao.getInstance().getIpMappings())));
         } finally {
             l.unlock();
         }

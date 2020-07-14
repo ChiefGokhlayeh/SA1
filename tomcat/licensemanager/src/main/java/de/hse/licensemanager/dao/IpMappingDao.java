@@ -2,6 +2,7 @@ package de.hse.licensemanager.dao;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
@@ -29,8 +30,12 @@ public class IpMappingDao implements IIpMappingDao {
     public List<IpMapping> getIpMappingsByLicense(final long id) {
         final List<?> objs = em.createQuery("SELECT i FROM IpMapping i WHERE i.license.id=:id").setParameter("id", id)
                 .getResultList();
-        return objs.stream().filter(IpMapping.class::isInstance).map(IpMapping.class::cast)
-                .collect(Collectors.toList());
+        Stream<IpMapping> stream = objs.stream().filter(IpMapping.class::isInstance).map(IpMapping.class::cast);
+        stream = stream.map((c) -> {
+            this.refresh(c);/* this is only needed when running integration tests */
+            return c;
+        });
+        return stream.collect(Collectors.toList());
     }
 
     @Override
@@ -46,8 +51,12 @@ public class IpMappingDao implements IIpMappingDao {
     @Override
     public List<IpMapping> getIpMappings() {
         final List<?> objs = em.createQuery("SELECT i FROM IpMapping i").getResultList();
-        return objs.stream().filter(IpMapping.class::isInstance).map(IpMapping.class::cast)
-                .collect(Collectors.toList());
+        Stream<IpMapping> stream = objs.stream().filter(IpMapping.class::isInstance).map(IpMapping.class::cast);
+        stream = stream.map((c) -> {
+            this.refresh(c);/* this is only needed when running integration tests */
+            return c;
+        });
+        return stream.collect(Collectors.toList());
     }
 
     @Override
