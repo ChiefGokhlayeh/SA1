@@ -15,12 +15,12 @@ import javax.persistence.Table;
 @IdClass(ServiceGroupId.class)
 public class ServiceGroup {
     @Id
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "service_contract", nullable = false)
     private ServiceContract serviceContract;
 
     @Id
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "`user`", nullable = false)
     private User user;
 

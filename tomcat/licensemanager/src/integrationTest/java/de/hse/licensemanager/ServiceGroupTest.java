@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -17,7 +18,9 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.hse.licensemanager.dao.ServiceContractDao;
 import de.hse.licensemanager.dao.ServiceGroupDao;
+import de.hse.licensemanager.dao.UserDao;
 import de.hse.licensemanager.model.ServiceGroup;
 
 public class ServiceGroupTest {
@@ -119,5 +122,27 @@ public class ServiceGroupTest {
         assertThat(response.readEntity(new GenericType<List<ServiceGroup>>() {
         }), everyItem(in(
                 ServiceGroupDao.getInstance().getServiceGroupsByServiceContract(serviceGroup.getServiceContract()))));
+    }
+
+    @Test
+    public void testCreateNewServiceGroup() {
+        final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
+                UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
+                UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
+
+        final ServiceGroup newServiceGroup = new ServiceGroup(
+                ServiceContractDao.getInstance().getServiceContract(UnitTestSupport.SERVICE_CONTRACT_ID_D),
+                UserDao.getInstance().getUser(UnitTestSupport.USER_ID_HANNELORE));
+
+        final Invocation.Builder b = client.target(restURI).request(MediaType.APPLICATION_JSON);
+        cookies.forEach(b::cookie);
+        final Response response = b.buildPost(Entity.json(newServiceGroup)).invoke();
+
+        assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+        final ServiceGroup createdServiceGroup = response.readEntity(ServiceGroup.class);
+        assertThat(createdServiceGroup,
+                in(ServiceGroupDao.getInstance().getServiceGroupsByUser(newServiceGroup.getUser())));
+        assertThat(createdServiceGroup.getUser(), equalTo(newServiceGroup.getUser()));
+        assertThat(createdServiceGroup.getServiceContract(), equalTo(newServiceGroup.getServiceContract()));
     }
 }
