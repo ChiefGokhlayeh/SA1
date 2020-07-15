@@ -91,7 +91,7 @@ function Login({ oldUser, oldLocation, onLogin }) {
     e.preventDefault();
 
     let resp = await fetch(
-      "https://localhost:8443/licensemanager/rest/auth/login",
+      `${serverInfo.restBaseUrl}/auth/login`,
       {
         credentials: "include",
         method: "POST",

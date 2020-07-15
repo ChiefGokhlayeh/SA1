@@ -7,7 +7,7 @@ import ServerInfo from "./ServerInfo";
 export var url = "/auth/logout";
 
 const logout = async ({ signal, restBaseUrl }) => {
-  return await fetch("https://localhost:8443/licensemanager/rest/auth/logout", {
+  return await fetch(`${restBaseUrl}/auth/logout`, {
     credentials: "include",
     method: "GET",
     signal,

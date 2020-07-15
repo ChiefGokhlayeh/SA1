@@ -146,7 +146,7 @@ function User(props) {
                 newPassword === repeatPassword
               ) {
                 const resp = await fetch(
-                  `https://localhost:8443/licensemanager/rest/auth/change`,
+                  `${serverInfo.restBaseUrl}/auth/change`,
                   {
                     credentials: "include",
                     method: "PUT",

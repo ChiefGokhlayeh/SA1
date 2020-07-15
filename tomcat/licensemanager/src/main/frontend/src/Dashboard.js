@@ -4,9 +4,9 @@ import React, { useContext } from "react";
 import ServerInfo from "./ServerInfo";
 import Table from "react-bootstrap/Table";
 
-const fetchLicenses = async ({ signal }) => {
+const fetchLicenses = async ({ signal, restBaseUrl }) => {
   const resp = await fetch(
-    "https://localhost:8443/licensemanager/rest/licenses/mine/",
+    `${restBaseUrl}/licenses/mine`,
     { signal, credentials: "include", method: "GET" }
   );
 
@@ -43,7 +43,7 @@ function Dashboard(props) {
         Welcome {props.loginUser ? props.loginUser.firstname : "???"}, here are
         your licenses:
       </h2>
-      <Async promiseFn={fetchLicenses}>
+      <Async promiseFn={fetchLicenses} restBaseUrl={serverInfo.restBaseUrl}>
         {({ data, error, isPending }) => {
           if (isPending) return "Loading...";
           if (error) return `Something went wrong: ${error.message}`;
@@ -118,8 +118,8 @@ function Dashboard(props) {
                             }}
                           >
                             {props.loginUser &&
-                            (props.loginUser.group === "SYSTEM_ADMIN" ||
-                              props.loginUser.group === "COMPANY_ADMIN")
+                              (props.loginUser.group === "SYSTEM_ADMIN" ||
+                                props.loginUser.group === "COMPANY_ADMIN")
                               ? "Edit"
                               : "View"}{" "}
                             #{license.serviceContract.id}
