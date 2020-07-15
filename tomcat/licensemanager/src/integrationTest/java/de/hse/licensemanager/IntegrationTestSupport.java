@@ -18,10 +18,20 @@ public class IntegrationTestSupport {
     }
 
     public static String getBaseURI() {
-        if (System.getProperty("gretty.httpsBaseURI") != null) {
-            return System.getProperty("gretty.httpsBaseURI");
-        } else if (System.getProperty("gretty.httpBaseURI") != null) {
+        // Enable this if your tomcat has HTTPS set-up properly
+        // if (System.getProperty("gretty.httpsBaseURI") != null) {
+        //     return System.getProperty("gretty.httpsBaseURI");
+        // } else if (System.getProperty("gretty.httpBaseURI") != null) {
+        //     return System.getProperty("gretty.httpBaseURI");
+        // } else {
+        //     return "http://localhost:8080/licensemanager";
+        // }
+
+        // Here we use HTTP over HTTPS... not optimal
+        if (System.getProperty("gretty.httpBaseURI") != null) {
             return System.getProperty("gretty.httpBaseURI");
+        } else if (System.getProperty("gretty.httpsBaseURI") != null) {
+            return System.getProperty("gretty.httpsBaseURI");
         } else {
             return "http://localhost:8080/licensemanager";
         }
