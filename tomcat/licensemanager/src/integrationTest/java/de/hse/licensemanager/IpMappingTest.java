@@ -143,30 +143,6 @@ public class IpMappingTest {
     }
 
     @Test
-    public void testGetSpecificIpMapping() {
-        final Lock l = RW_LOCK.readLock();
-        l.lock();
-        try {
-            final Collection<NewCookie> cookies = IntegrationTestSupport.login(client,
-                    UnitTestSupport.CREDENTIALS_LOGINNAME_MUSTERMANN,
-                    UnitTestSupport.CREDENTIALS_PASSWORD_PLAIN_MUSTERMANN);
-
-            final IpMapping ipMapping = IpMappingDao.getInstance().getIpMapping(UnitTestSupport.IP_MAPPING_ID_HOST2);
-
-            final Invocation.Builder b = client.target(restURI + String.format("/%d", ipMapping.getId()))
-                    .request(MediaType.APPLICATION_JSON);
-            cookies.forEach(b::cookie);
-            final Response response = b.buildGet().invoke();
-
-            assertThat(response.getStatus(), equalTo(Response.Status.OK.getStatusCode()));
-            final IpMapping respIpMappings = response.readEntity(IpMapping.class);
-            assertThat(respIpMappings, equalTo(ipMapping));
-        } finally {
-            l.unlock();
-        }
-    }
-
-    @Test
     public void testChangeAddress() {
         final Lock l = RW_LOCK.writeLock();
         l.lock();
